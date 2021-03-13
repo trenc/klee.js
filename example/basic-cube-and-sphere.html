@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<title>klee.js - cube</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link rel="stylesheet" href="css/styles.css" />
+	</head>
+	<body>
+
+		<script type="module">
+
+			import * as THREE from './jsm/three.module.js';
+			import { OrbitControls } from './jsm/OrbitControls.js';
+			import * as KLEE from '../dist/klee.js';
+
+			const options = {
+
+				debugLevel: 3,
+
+				renderer: {
+					clearColor: '#103c48'
+				},
+
+				camera: {
+					properties: {
+						position: { x: -2, z: 10 }
+					}
+				}
+
+			};
+
+			const controls = {
+				// no type and args here, we need the object direct
+				// and args (camera, renderElement are given)
+				properties: {
+					//autoRotate: true,
+					enableDampling: true,
+					enablePan: true,
+					dampingFactor: 0.25,
+					enableZoom: true,
+					minDistance: 5,
+					maxDistance: 30,
+					minPolarAngle: 0.1,
+					maxPolarAngle: 1.5
+				}
+
+			};
+
+			const lights = [
+				{
+					type: 'AmbientLight',
+					properties: {
+						name: 'light-1',
+						color: '#404040'
+					}
+				},
+				{
+					type: 'DirectionalLight',
+					properties: {
+						name: 'light-2',
+						color: '#ffffff',
+						castShadow: true,
+						shadow: { mapSize: { x: 1024, y: 1024 } }, // INFO: x,y instead of width, height
+						position: { x: 30, y: 30, z: 30 }
+					}
+				}
+			];
+
+			const items = [ // aka meshs
+				{
+					geometry: {
+						type: 'BoxBufferGeometry',
+						args: [1, 1, 1]
+					},
+					material: {
+						type: 'MeshPhongMaterial',
+						properties: {
+							color: '#dbb32d'
+						}
+					},
+					properties: {
+						name: 'some box',
+						position: { x: -0.5, y: 0.5, z: -0.5 },
+						castShadow: true,
+						receiveShadow: true
+					}
+				},
+				{
+					geometry: {
+						type: 'SphereGeometry',
+						args: [0.5, 32, 32]
+					},
+					material: {
+						type: 'MeshPhongMaterial',
+						properties: {
+							color: '#69ad21'
+						}
+					},
+					properties: {
+						name: 'some sphere',
+						position: { x: 0.5, y: 1, z: 0.5 },
+						castShadow: true,
+						receiveShadow: true
+					}
+				}
+			];
+
+			const gridHelper = {
+
+				type: 'GridHelper',
+				args: [100, 100],
+				properties: {
+					color: '#72898f'
+				}
+
+			};
+
+			// initalize app and scene
+			KLEE.App.init(THREE, options);
+			KLEE.Scene.init();
+
+			// optional controls
+			KLEE.Controls.init(OrbitControls, controls);
+
+			// shed some light
+			const test = KLEE.Light.add(lights);
+
+			// add a box and sphere
+			KLEE.Item.add(items);
+
+			// add a grid
+			KLEE.Object3d.add(gridHelper);
+
+			// run the app
+			KLEE.App.run();
+
+			console.log(KLEE.App.scene);
+		</script>
+
+	</body>
+</html>

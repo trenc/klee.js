@@ -14,6 +14,8 @@
 			import { OrbitControls } from './jsm/OrbitControls.js';
 			import * as KLEE from '../dist/klee.js';
 
+			// some opinionated default options declared in /src/default.options.js
+			// you can overwrite these here or add additional options
 			const options = {
 
 				debugLevel: 3,
@@ -124,7 +126,7 @@
 			KLEE.Controls.init(OrbitControls, controls);
 
 			// shed some light
-			const test = KLEE.Light.add(lights);
+			KLEE.Light.add(lights);
 
 			// add a box and sphere
 			KLEE.Item.add(items);
@@ -135,6 +137,7 @@
 			// run the app
 			KLEE.App.run();
 
+			// inspect the scene in console
 			console.log(KLEE.App.scene);
 		</script>
 

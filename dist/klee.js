@@ -455,8 +455,20 @@ const Object3d = (function () {
 
 			if (options[prop] instanceof Object) {
 
-				// apply vectors
-				if (isVector(object[prop])) {
+				// prefer prototype »copy» property before direct assignment
+				// this handles non-writable object like Vectors, Euler, Quaternions etc.
+				if ('copy' in object[prop]) {
+
+					// a workaround for THREE.Euler which does use uderscored properties
+					// in »copy« method
+					if ('toVector3' in object[prop] && 'setFromVector3' in object[prop]) {
+
+						const toVector3 = object[prop].toVector3();
+						const mergedVector3 = { ...toVector3, ...options[prop] };
+
+						object[prop].setFromVector3(mergedVector3);
+
+					}
 
 					const v = { ...object[prop], ...options[prop] };
 
@@ -485,18 +497,6 @@ const Object3d = (function () {
 		}
 
 		return object;
-
-	}
-
-	function isVector (object) {
-
-		const THREE = App.THREE;
-
-		return (
-			object instanceof THREE.Vector2 ||
-			object instanceof THREE.Vector3 ||
-			object instanceof THREE.Vector4
-		);
 
 	}
 

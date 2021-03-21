@@ -43,18 +43,24 @@ body {
 	line-height: 1.6;
 	font-family: 'Open Sans', sans-serif;
 	-webkit-font-smoothing: antialiased;
-	text-rendering: optimizelegibility
+	text-rendering: optimizelegibility;
 }
 
 body, html {
-	margin: 0;
 	height: 100%;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
 }
 
 canvas {
 	display: block;
 	height: 100%;
 	width: 100%;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
 }
 
 main {

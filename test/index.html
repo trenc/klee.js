@@ -9,15 +9,15 @@
   <body>
     <div id="mocha"></div>
 
-    <script src="../node_modules/chai/chai.js"></script>
     <script src="../node_modules/mocha/mocha.js"></script>
+    <script src="../node_modules/chai/chai.js"></script>
 
     <script class="mocha-init">
       mocha.setup('bdd');
-      // mocha.checkLeaks();
     </script>
     <script type="module" src="./utils.test.js"></script>
-    <script class="mocha-exec">
+    <script type="module" class="mocha-exec">
+      mocha.checkLeaks();
       mocha.run();
     </script>
   </body>

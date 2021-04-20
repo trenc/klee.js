@@ -44,7 +44,7 @@ describe('Utils', function () {
 
 	describe('isThreeColorValue (string)', function () {
 
-		it('should return true if string is a THREE object property key that has a color value otherwisee false', () => {
+		it('should return true if string is a THREE object property key that has a color value otherwise false', () => {
 
 			const threeColorValues = [
 

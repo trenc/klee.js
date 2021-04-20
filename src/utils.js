@@ -55,9 +55,9 @@ class Utils {
 				console.log('Applied object has no method: ' + method);
 
 			} else {
-			
+
 				object[method](...args);
-			
+
 			}
 
 		}

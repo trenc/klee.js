@@ -69,8 +69,8 @@ describe('Utils', function () {
 			const expectedTruely = [true, true, true, true, true];
 			const expectedFalsy = [false, false, false, false, false];
 
-			const trulyResults = threeColorValues.map(color => Utils.isThreeColorValue(color)); 
-			const falsyResults = noColorValues.map(color => Utils.isThreeColorValue(color)); 
+			const trulyResults = threeColorValues.map(color => Utils.isThreeColorValue(color));
+			const falsyResults = noColorValues.map(color => Utils.isThreeColorValue(color));
 
 			expect(trulyResults).to.eql(expectedTruely);
 			expect(falsyResults).to.eql(expectedFalsy);
@@ -83,8 +83,8 @@ describe('Utils', function () {
 
 		it('should call methods of an object and returns the object', () => {
 
-			class testClass {
-				
+			class TestClass {
+
 				constructor () {
 
 					this.result1 = null;
@@ -94,7 +94,7 @@ describe('Utils', function () {
 
 				method1 (x, y) {
 
-					this.result1 =  x + y;
+					this.result1 = x + y;
 
 				}
 
@@ -108,17 +108,17 @@ describe('Utils', function () {
 
 			const testMethods = {
 
-				'method1': [2, 3],
-				'method2': [],
-				'method3': []
+				method1: [2, 3],
+				method2: [],
+				method3: []
 
-			}
+			};
 
-			const testObject = new testClass();
+			const testObject = new TestClass();
 
 			const resultObject = Utils.applyMethods(testObject, testMethods);
-			const result1 = resultObject.result1; 
-			const result2 = resultObject.result2; 
+			const result1 = resultObject.result1;
+			const result2 = resultObject.result2;
 
 			expect(resultObject).to.equal(testObject);
 			expect(result1).to.equal(5);

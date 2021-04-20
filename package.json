@@ -28,6 +28,9 @@
       "browser": true,
       "es2021": true
     },
+    "globals": {
+      "chai": true
+    },
     "extends": [
       "standard"
     ],

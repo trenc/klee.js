@@ -44,8 +44,8 @@ describe('KLEE app', function () {
 
 			const material = {
 				type: 'MeshBasicMaterial',
-				args: [{ color: 0x00ff00}]
-			}
+				args: [{ color: 0x00ff00 }]
+			};
 			const materialColor = new THREE.Color(material.args[0].color);
 
 			const materialObject = KLEE.App.create(material);
@@ -59,7 +59,7 @@ describe('KLEE app', function () {
 
 	describe('initSize ()', function () {
 
-		it('it should set the size of the THREE.WebGLRenderer');
+		it('it should set the size of the renderer and the camera aspect');
 
 	});
 
@@ -70,34 +70,40 @@ describe('KLEE app', function () {
 	});
 
 	describe('error (message)', function () {
-	
-		it('throws and error with argumnents message');
+
+		it('throws and error with arguments message', () => {
+
+			const message = 'Error message';
+
+			expect(() => KLEE.App.error(message)).to.throw(message);
+
+		});
 
 	});
-	
+
 	describe('warn (message)', function () {
-	
+
 		it('shows a warning in console with message if debugLevel > 0');
 
 	});
-	
+
 	describe('log (message)', function () {
-	
+
 		it('shows log in console with message if debugLevel > 1');
 
 	});
-	
+
 	describe('info (message)', function () {
-	
+
 		it('shows info in console with message if debugLevel > 2');
 
 	});
-	
+
 	describe('setter', function () {
 
 		it('scene, set the THREE.Scene');
-		it('camera, set the THREE camera');
-		it('controls, set the THREE controls');
+		it('camera, set the THREE.Camera');
+		it('controls, set the THREE.Controls');
 
 	});
 
@@ -106,9 +112,9 @@ describe('KLEE app', function () {
 		it('options, returns the options set from init');
 		it('THREE, returns the THREE module set from init');
 		it('scene, returns the generated THREE.Scene');
-		it('camera, returns the generated THREE Camera');
-		it('controls, returns the generated THREE controls');
-		it('renderer, returns the generated THREE renderer');
+		it('camera, returns the generated THREE.Camera');
+		it('controls, returns the generated THREE.Controls');
+		it('renderer, returns the generated THREE.Renderer');
 
 	});
 

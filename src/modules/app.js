@@ -85,6 +85,7 @@ const App = (function () {
 
 		}
 
+		// TODO: refactor to resize observer
 		window.addEventListener('resize', () => {
 
 			const wWidth = window.innerWidth;

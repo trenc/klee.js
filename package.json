@@ -4,9 +4,6 @@
   "main": "src/klee.js",
   "private": true,
   "type": "module",
-  "directories": {
-    "test": "test"
-  },
   "scripts": {
     "clean": "rm -fR dist && mkdir dist",
     "bundle:min": "esbuild src/klee.js --bundle --format=esm --sourcemap --minify --outfile=dist/klee.min.js",
@@ -15,24 +12,26 @@
     "serve": "browser-sync start -s -f 'example/*.html, dist/klee.js' --startPath 'example/'",
     "build": "npm run clean && npm run bundle",
     "start": "npm run clean && npm run bundle:js & npm run serve",
-    "test:unit": "browser-sync start -s -f 'test' --startPath 'test/'",
+    "test:serve": "browser-sync start --port 8000 -s --no-ui --no-open",
+    "test:cy:open": "npx cypress open",
+    "test:cy:run": "npx cypress run",
     "test:lint": "eslint src/*.js src/modules/*.js",
-    "test": "npm run test:lint & npm run test:unit"
+    "test": "npm run test:lint & npm run test:cy:run"
   },
   "author": "Tommy Schmucker",
   "license": "AGPL",
   "description": "A data driven generator and wrapper for three.js",
   "eslintConfig": {
     "env": {
-      "mocha": true,
       "browser": true,
       "es2021": true
     },
     "globals": {
-      "chai": true
+      "cy": true
     },
     "extends": [
-      "standard"
+      "standard",
+      "plugin:cypress/recommended"
     ],
     "parserOptions": {
       "ecmaVersion": 12,
@@ -72,14 +71,13 @@
   },
   "devDependencies": {
     "browser-sync": "^2.26.14",
-    "chai": "^4.3.4",
-    "eslint": "^7.24.0",
-    "eslint-plugin-node": "^11.1.0",
-    "eslint-config-standard": "^16.0.2",
-    "eslint-plugin-import": "^2.22.1",
-    "eslint-plugin-mocha": "^8.1.0",
-    "eslint-plugin-promise": "^4.3.1",
+    "cypress": "^7.2.0",
     "esbuild": "^0.11.11",
-    "mocha": "^8.3.2"
+    "eslint": "^7.24.0",
+    "eslint-config-standard": "^16.0.2",
+    "eslint-plugin-cypress": "^2.11.3",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.3.1"
   }
 }

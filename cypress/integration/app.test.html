@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Tests</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      body, html { height: 100%; margin: 0; padding: 0; overflow: hidden; }
+      canvas { display: block; height: 100%; width: 100%; }
+    </style>
+  </head>
+  <body>
+		<script type="module">
+
+			import * as THREE from '../../example/jsm/three.module.js';
+			import * as KLEE from '../../dist/klee.js';
+
+			// initalize app and scene
+			KLEE.App.init(THREE, {});
+			KLEE.Scene.init();
+
+			window.App = KLEE.App;
+
+		</script>
+  </body>
+</html>
+

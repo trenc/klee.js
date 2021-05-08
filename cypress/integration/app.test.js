@@ -1,6 +1,4 @@
-import * as THREE from '../../example/jsm/three.module.js';
 import { getDefaultOptions } from '../../src/default.options.js';
-import * as KLEE from '../../dist/klee.js';
 
 describe('KLEE app', function () {
 
@@ -10,9 +8,17 @@ describe('KLEE app', function () {
 
 			it('should throw an error', () => {
 
-				expect(() => KLEE.App.init()).to.throw();
-				expect(() => KLEE.App.init(2)).to.throw();
-				expect(() => KLEE.App.init('some-string')).to.throw();
+				cy.visit('/test.html');
+
+				cy.window().then(win => {
+
+					const KLEE = win.KLEE;
+
+					expect(() => KLEE.App.init()).to.throw();
+					expect(() => KLEE.App.init(2)).to.throw();
+					expect(() => KLEE.App.init('some-string')).to.throw();
+
+				});
 
 			});
 
@@ -22,21 +28,27 @@ describe('KLEE app', function () {
 
 			it('should create a THREE.WebGLRenderer with options and/or default options', () => {
 
-				const defaultOptions = getDefaultOptions(THREE);
-				const defaultRendererElement = defaultOptions.renderer.domElement;
-				const options = { renderer: { properties: { shadowMap: { enabled: false } } } };
-				const optionsShadows = options.renderer.properties.shadowMap.enabled;
+				cy.visit('/test.html?test=initOptions');
 
-				KLEE.App.init(THREE, options);
-				const renderer = KLEE.App.renderer;
-				const rendererElement = renderer.domElement.parentElement.localName;
-				const rendererShadows = renderer.shadowMap.enabled;
+				cy.window().then(win => {
 
-				expect(renderer).to.be.an.instanceof(THREE.WebGLRenderer);
-				expect(rendererElement).to.be.equal(defaultRendererElement);
-				expect(rendererShadows).to.be.equal(optionsShadows);
+					const KLEE = win.KLEE;
+					const options = win.KleeOptions;
+					const THREE = KLEE.App.THREE;
 
-				renderer.dispose();
+					const defaultOptions = getDefaultOptions(THREE);
+					const defaultRendererElement = defaultOptions.renderer.domElement;
+					const optionsShadows = options.renderer.properties.shadowMap.enabled;
+
+					const renderer = KLEE.App.renderer;
+					const rendererElement = renderer.domElement.parentElement.localName;
+					const rendererShadows = renderer.shadowMap.enabled;
+
+					expect(renderer).to.be.an.instanceof(THREE.WebGLRenderer);
+					expect(rendererElement).to.be.equal(defaultRendererElement);
+					expect(rendererShadows).to.be.equal(optionsShadows);
+
+				});
 
 			});
 
@@ -48,16 +60,25 @@ describe('KLEE app', function () {
 
 		it('should create a THREE object width a THREE method and some args', () => {
 
-			const material = {
-				type: 'MeshBasicMaterial',
-				args: [{ color: 0x00ff00 }]
-			};
-			const materialColor = new THREE.Color(material.args[0].color);
+			cy.visit('/test.html?test=initScene');
 
-			const materialObject = KLEE.App.create(material);
+			cy.window().then(win => {
 
-			expect(materialObject.color).to.be.eql(materialColor);
-			expect(materialObject).to.be.an.instanceof(THREE.MeshBasicMaterial);
+				const KLEE = win.KLEE;
+				const THREE = KLEE.App.THREE;
+
+				const material = {
+					type: 'MeshBasicMaterial',
+					args: [{ color: 0x00ff00 }]
+				};
+				const materialColor = new THREE.Color(material.args[0].color);
+
+				const materialObject = KLEE.App.create(material);
+
+				expect(materialObject.color).to.be.eql(materialColor);
+				expect(materialObject).to.be.an.instanceof(THREE.MeshBasicMaterial);
+
+			});
 
 		});
 
@@ -67,17 +88,18 @@ describe('KLEE app', function () {
 
 		it('it should set the size of the renderer and the camera aspect', () => {
 
-			cy.visit('/app.test.html');
+			cy.visit('/test.html?test=initScene');
 
 			cy.window().then(win => {
 
-				const App = win.App;
-				const renderer = App.renderer;
+				const KLEE = win.KLEE;
+				const THREE = KLEE.App.THREE;
+				const renderer = KLEE.App.renderer;
 				const canvas = win.document.querySelector('canvas');
 				const initialWidth = canvas.width;
 				const initialHeight = canvas.height;
 				const changeFactor = 1.25;
-				const initialAspect = App.camera.aspect;
+				const initialAspect = KLEE.App.camera.aspect;
 				const initialV2 = new THREE.Vector2();
 				renderer.getSize(initialV2);
 
@@ -85,10 +107,10 @@ describe('KLEE app', function () {
 				canvas.style.height = initialHeight * changeFactor + 'px';
 				canvas.width = initialWidth * changeFactor;
 				canvas.height = initialHeight * changeFactor;
-				App.initSize();
+				KLEE.App.initSize();
 				const resizedV2 = new THREE.Vector2();
 				renderer.getSize(resizedV2);
-				const resizedAspect = App.camera.aspect;
+				const resizedAspect = KLEE.App.camera.aspect;
 
 				expect(initialV2.x).to.be.eql(initialWidth);
 				expect(initialV2.y).to.be.eql(initialHeight);
@@ -114,9 +136,16 @@ describe('KLEE app', function () {
 
 		it('throws and error with arguments message', () => {
 
-			const message = 'Error message';
+			cy.visit('/test.html');
 
-			expect(() => KLEE.App.error(message)).to.throw(message);
+			cy.window().then(win => {
+
+				const KLEE = win.KLEE;
+				const message = 'Error message';
+
+				expect(() => KLEE.App.error(message)).to.throw(message);
+
+			});
 
 		});
 

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Tests</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      body, html { height: 100%; margin: 0; padding: 0; overflow: hidden; }
+      canvas { display: block; height: 100%; width: 100%; }
+    </style>
+  </head>
+  <body>
+		<script type="module">
+
+			import * as THREE from '../../example/jsm/three.module.js';
+			import * as KLEE from '../../dist/klee.js';
+
+			window.KLEE = KLEE;
+
+      const params = new URLSearchParams(window.location.search);
+      const test = params.get('test');
+
+      switch (test) {
+
+        case 'initOptions':
+    		  const options = { renderer: { properties: { shadowMap: { enabled: false } } } };
+		      KLEE.App.init(THREE, options);
+          window.KleeOptions = options;
+          break;
+
+        case 'initScene':
+			    KLEE.App.init(THREE, {});
+			    KLEE.Scene.init();
+          break;
+          
+        default:
+          break;
+
+      }
+
+		</script>
+  </body>
+</html>
+

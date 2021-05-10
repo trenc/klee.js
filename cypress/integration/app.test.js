@@ -132,40 +132,112 @@ describe('KLEE app', function () {
 
 	});
 
-	describe('error (message)', function () {
+	describe('show error(message), warn(message), info(message) an log(message) depending on debugLevels', function () {
 
-		it('throws and error with arguments message', () => {
+		beforeEach(() => {
 
-			cy.visit('/test.html');
+			cy.visit('/test.html', {
 
-			cy.window().then(win => {
+				onBeforeLoad (win) {
 
-				const KLEE = win.KLEE;
-				const message = 'Error message';
+					cy.stub(win.console, 'warn').as('consoleWarn');
+					cy.stub(win.console, 'info').as('consoleInfo');
+					cy.stub(win.console, 'log').as('consoleLog');
 
-				expect(() => KLEE.App.error(message)).to.throw(message);
+				}
 
 			});
 
 		});
 
-	});
+		const errorMessage = 'Error message Error';
+		const warnMessage = 'Warn message Warn';
+		const logMessage = 'Log message Log';
+		const infoMessage = 'Info message Info';
 
-	describe('warn (message)', function () {
+		it('debugLevel 0 throws only error (message)', () => {
 
-		it('shows a warning in console with message if debugLevel > 0');
+			cy.window().then(win => {
 
-	});
+				const KLEE = win.KLEE;
+				const THREE = win.THREE;
 
-	describe('log (message)', function () {
+				KLEE.App.init(THREE, { debugLevel: 0 });
+				KLEE.App.warn(warnMessage);
+				KLEE.App.log(logMessage);
+				KLEE.App.info(infoMessage);
 
-		it('shows log in console with message if debugLevel > 1');
+				expect(() => KLEE.App.error(errorMessage)).to.throw(errorMessage);
+				cy.get('@consoleWarn').should('not.be.calledWith', warnMessage);
+				cy.get('@consoleLog').should('not.be.calledWith', logMessage);
+				cy.get('@consoleInfo').should('not.be.calledWith', infoMessage);
 
-	});
+			});
 
-	describe('info (message)', function () {
+		});
 
-		it('shows info in console with message if debugLevel > 2');
+		it('debugLevel 1 throws error (message) and shows warn (message)', () => {
+
+			cy.window().then(win => {
+
+				const KLEE = win.KLEE;
+				const THREE = win.THREE;
+
+				KLEE.App.init(THREE, { debugLevel: 1 });
+				KLEE.App.warn(warnMessage);
+				KLEE.App.log(logMessage);
+				KLEE.App.info(infoMessage);
+
+				expect(() => KLEE.App.error(errorMessage)).to.throw(errorMessage);
+				cy.get('@consoleWarn').should('be.calledWith', warnMessage);
+				cy.get('@consoleLog').should('not.be.calledWith', logMessage);
+				cy.get('@consoleInfo').should('not.be.calledWith', infoMessage);
+
+			});
+
+		});
+
+		it('debugLevel 2 throws error (message) and shows warn (message) and log (message)', () => {
+
+			cy.window().then(win => {
+
+				const KLEE = win.KLEE;
+				const THREE = win.THREE;
+
+				KLEE.App.init(THREE, { debugLevel: 2 });
+				KLEE.App.warn(warnMessage);
+				KLEE.App.log(logMessage);
+				KLEE.App.info(infoMessage);
+
+				expect(() => KLEE.App.error(errorMessage)).to.throw(errorMessage);
+				cy.get('@consoleWarn').should('be.calledWith', warnMessage);
+				cy.get('@consoleLog').should('be.calledWith', logMessage);
+				cy.get('@consoleInfo').should('not.be.calledWith', infoMessage);
+
+			});
+
+		});
+
+		it('debugLevel 3 throws error (message) and shows warn (message), log (message) and info (mesage)', () => {
+
+			cy.window().then(win => {
+
+				const KLEE = win.KLEE;
+				const THREE = win.THREE;
+
+				KLEE.App.init(THREE, { debugLevel: 3 });
+				KLEE.App.warn(warnMessage);
+				KLEE.App.log(logMessage);
+				KLEE.App.info(infoMessage);
+
+				expect(() => KLEE.App.error(errorMessage)).to.throw(errorMessage);
+				cy.get('@consoleWarn').should('be.calledWith', warnMessage);
+				cy.get('@consoleLog').should('be.calledWith', logMessage);
+				cy.get('@consoleInfo').should('be.calledWith', infoMessage);
+
+			});
+
+		});
 
 	});
 

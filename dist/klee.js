@@ -167,7 +167,7 @@ var App = function() {
     return Utils.merge(renderer, o);
   }
   function logMessage(message, type) {
-    const level = options.debugLevel || 3;
+    const level = options.debugLevel !== void 0 ? options.debugLevel : 3;
     switch (type) {
       case "error":
         throw message;

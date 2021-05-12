@@ -71,7 +71,7 @@
   },
   "devDependencies": {
     "browser-sync": "^2.26.14",
-    "cypress": "^7.2.0",
+    "cypress": "^7.3.0",
     "esbuild": "^0.11.11",
     "eslint": "^7.24.0",
     "eslint-config-standard": "^16.0.2",

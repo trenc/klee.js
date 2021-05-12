@@ -62,7 +62,7 @@ const App = (function () {
 
 		}
 
-		requestAnimationFrame(() => run());
+		requestAnimationFrame(() => run(callback));
 
 	}
 

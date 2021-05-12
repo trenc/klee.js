@@ -128,7 +128,32 @@ describe('KLEE app', function () {
 
 	describe('run (callback)', function () {
 
-		it('it sets the requestAnimationFrame and runs an optional callback inside');
+		it('it sets the requestAnimationFrame and runs an optional callback inside', () => {
+
+			cy.visit('/test.html?test=initScene');
+
+			cy.window().then(win => {
+
+				const KLEE = win.KLEE;
+				const returnValue = '123';
+				const obj = {
+					myFunction () {
+
+						return '123';
+
+					}
+				};
+				const requestAnimationFrame = cy.spy(win, 'requestAnimationFrame');
+				const myFunction = cy.spy(obj, 'myFunction');
+
+				KLEE.App.run(() => obj.myFunction());
+
+				expect(requestAnimationFrame).to.have.been.called;
+				expect(myFunction.returnValues[0]).to.be.eql(returnValue);
+
+			});
+
+		});
 
 	});
 

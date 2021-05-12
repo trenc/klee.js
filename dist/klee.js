@@ -115,7 +115,7 @@ var App = function() {
     if (typeof callback === "function") {
       callback();
     }
-    requestAnimationFrame(() => run());
+    requestAnimationFrame(() => run(callback));
   }
   function initSize() {
     const isResponsive = options.responsive || false;

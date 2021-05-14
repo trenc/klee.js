@@ -18,7 +18,6 @@ describe('KLEE light', function () {
 				KLEE.Light.add(options);
 				const addedLight = KLEE.App.scene.getObjectByName(testNameProperty);
 
-				expect(addedLight).to.be.ok;
 				expect(addedLight).to.be.an.instanceof(THREE.DirectionalLight);
 
 			});

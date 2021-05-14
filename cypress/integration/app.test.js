@@ -33,13 +33,11 @@ describe('KLEE app', function () {
 				cy.window().then(win => {
 
 					const KLEE = win.KLEE;
+					const THREE = win.THREE;
 					const options = win.KleeOptions;
-					const THREE = KLEE.App.THREE;
-
 					const defaultOptions = getDefaultOptions(THREE);
 					const defaultRendererElement = defaultOptions.renderer.domElement;
 					const optionsShadows = options.renderer.properties.shadowMap.enabled;
-
 					const renderer = KLEE.App.renderer;
 					const rendererElement = renderer.domElement.parentElement.localName;
 					const rendererShadows = renderer.shadowMap.enabled;
@@ -60,13 +58,12 @@ describe('KLEE app', function () {
 
 		it('should create a THREE object width a THREE method and some args', () => {
 
-			cy.visit('/test.html?test=initScene');
+			cy.visit('/test.html?test=SceneInit');
 
 			cy.window().then(win => {
 
 				const KLEE = win.KLEE;
-				const THREE = KLEE.App.THREE;
-
+				const THREE = win.THREE;
 				const material = {
 					type: 'MeshBasicMaterial',
 					args: [{ color: 0x00ff00 }]
@@ -88,12 +85,12 @@ describe('KLEE app', function () {
 
 		it('it should set the size of the renderer and the camera aspect', () => {
 
-			cy.visit('/test.html?test=initScene');
+			cy.visit('/test.html?test=SceneInit');
 
 			cy.window().then(win => {
 
 				const KLEE = win.KLEE;
-				const THREE = KLEE.App.THREE;
+				const THREE = win.THREE;
 				const renderer = KLEE.App.renderer;
 				const canvas = win.document.querySelector('canvas');
 				const initialWidth = canvas.width;
@@ -130,11 +127,12 @@ describe('KLEE app', function () {
 
 		it('it sets the requestAnimationFrame and runs an optional callback inside', () => {
 
-			cy.visit('/test.html?test=initScene');
+			cy.visit('/test.html?test=SceneInit');
 
 			cy.window().then(win => {
 
 				const KLEE = win.KLEE;
+				const THREE = win.THREE;
 				const returnValue = '123';
 				const obj = {
 					myFunction () {

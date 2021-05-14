@@ -4,7 +4,7 @@ describe('KLEE light', function () {
 
 		it('should add one or more THREE light objects to the scene', () => {
 
-			cy.visit('/test.html?test=initScene');
+			cy.visit('/test.html?test=SceneInit');
 
 			cy.window().then(win => {
 
@@ -30,7 +30,7 @@ describe('KLEE light', function () {
 
 		it('should create a THREE light object', () => {
 
-			cy.visit('/test.html?test=initScene');
+			cy.visit('/test.html?test=SceneInit');
 
 			cy.window().then(win => {
 
@@ -57,7 +57,7 @@ describe('KLEE light', function () {
 
 		it('should change the properties of a THREE light object', () => {
 
-			cy.visit('/test.html?test=initScene');
+			cy.visit('/test.html?test=SceneInit');
 
 			cy.window().then(win => {
 

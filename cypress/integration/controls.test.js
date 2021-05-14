@@ -4,12 +4,11 @@ describe('KLEE controls', function () {
 
 		it('should init Controls (OrbitControls)', () => {
 
-			cy.visit('/test.html');
+			cy.visit('/test.html?test=SceneInit');
 
 			cy.window().then(win => {
 
 				const KLEE = win.KLEE;
-				const THREE = win.THREE;
 				const OrbitControls = win.OrbitControls;
 				const controls = {
 					properties: {
@@ -17,8 +16,6 @@ describe('KLEE controls', function () {
 					}
 				};
 
-				KLEE.App.init(THREE, {});
-				KLEE.Scene.init();
 				KLEE.Controls.init(OrbitControls, controls);
 
 				expect(KLEE.App.controls).to.be.instanceof(OrbitControls);

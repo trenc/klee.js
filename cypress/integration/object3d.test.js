@@ -4,12 +4,14 @@ describe('KLEE Object3d', function () {
 
 		it('should add one THREE Object3d to the scene', () => {
 
-			cy.visit('/test.html?test=initScene');
+			cy.visit('/test.html');
 
 			cy.window().then(win => {
 
 				const KLEE = win.KLEE;
 				const THREE = win.THREE;
+				KLEE.App.init(THREE, {});
+				KLEE.Scene.init();
 				const testName = 'This-Is-Test-Grid';
 				const gridOptions = {
 					type: 'GridHelper',
@@ -36,12 +38,14 @@ describe('KLEE Object3d', function () {
 
 		it('should create a THREE Object3d', () => {
 
-			cy.visit('/test.html?test=initScene');
+			cy.visit('/test.html');
 
 			cy.window().then(win => {
 
 				const KLEE = win.KLEE;
 				const THREE = win.THREE;
+				KLEE.App.init(THREE, {});
+				KLEE.Scene.init();
 				const testName = 'This-Is-Test-Grid';
 				const gridOptions = {
 					type: 'GridHelper',
@@ -67,12 +71,14 @@ describe('KLEE Object3d', function () {
 
 		it('should change the properties of a THREE Object3d', () => {
 
-			cy.visit('/test.html?test=initScene');
+			cy.visit('/test.html');
 
 			cy.window().then(win => {
 
 				const KLEE = win.KLEE;
 				const THREE = win.THREE;
+				KLEE.App.init(THREE, {});
+				KLEE.Scene.init();
 				const testName = 'This-Is-Test-Grid';
 				const gridOptions = {
 					type: 'GridHelper',

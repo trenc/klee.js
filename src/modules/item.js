@@ -66,7 +66,8 @@ const Item = (function () {
 	return {
 
 		add: add,
-		create: create
+		create: create,
+		change: change
 
 	};
 

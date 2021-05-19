@@ -71,7 +71,11 @@ var Utils = class {
     methods = methods || {};
     for (const method in methods) {
       const args = Array.isArray(methods[method]) ? methods[method] : [];
-      object[method](...args);
+      if (!(method in object)) {
+        console.log("Applied object has no method: " + method);
+      } else {
+        object[method](...args);
+      }
     }
     return object;
   }
@@ -111,7 +115,7 @@ var App = function() {
     if (typeof callback === "function") {
       callback();
     }
-    requestAnimationFrame(() => run());
+    requestAnimationFrame(() => run(callback));
   }
   function initSize() {
     const isResponsive = options.responsive || false;
@@ -163,7 +167,7 @@ var App = function() {
     return Utils.merge(renderer, o);
   }
   function logMessage(message, type) {
-    const level = options.debugLevel || 3;
+    const level = options.debugLevel !== void 0 ? options.debugLevel : 3;
     switch (type) {
       case "error":
         throw message;
@@ -265,7 +269,12 @@ var Object3d = function() {
     }
     for (const prop in options) {
       if (options[prop] instanceof Object) {
-        if (isVector(object[prop])) {
+        if ("copy" in object[prop]) {
+          if ("toVector3" in object[prop] && "setFromVector3" in object[prop]) {
+            const toVector3 = object[prop].toVector3();
+            const mergedVector3 = {...toVector3, ...options[prop]};
+            object[prop].setFromVector3(mergedVector3);
+          }
           const v = {...object[prop], ...options[prop]};
           object[prop].copy(v);
         } else {
@@ -280,10 +289,6 @@ var Object3d = function() {
       }
     }
     return object;
-  }
-  function isVector(object) {
-    const THREE = App.THREE;
-    return object instanceof THREE.Vector2 || object instanceof THREE.Vector3 || object instanceof THREE.Vector4;
   }
   return {
     add,
@@ -373,6 +378,7 @@ var Material = function() {
         args: [{color: 16777215}]
       };
     }
+    App.info("No options for material given, using default MeshPhongMaterial in white");
     let material = App.create(options);
     material = change(material, options);
     return material;
@@ -415,9 +421,10 @@ var Geometry = function() {
   function create(options) {
     if (!options) {
       options = {
-        type: "BoxBufferGeometry",
+        type: "BoxGeometry",
         args: [1, 1, 1]
       };
+      App.info("No options for geometry given, using default BoxGeometry 1x1x1");
     }
     let geometry = App.create(options);
     geometry = Utils.merge(geometry, options.properties);
@@ -458,11 +465,15 @@ var Item = function() {
   }
   function change(object, options) {
     object = Object3d.change(object, options);
+    if (options.material) {
+      Material.change(object.material, options.material);
+    }
     return object;
   }
   return {
     add,
-    create
+    create,
+    change
   };
 }(App);
 

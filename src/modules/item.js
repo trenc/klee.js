@@ -59,6 +59,12 @@ const Item = (function () {
 
 		object = Object3d.change(object, options);
 
+		if (options.material) {
+
+			Material.change(object.material, options.material);
+
+		}
+
 		return object;
 
 	}
@@ -66,7 +72,8 @@ const Item = (function () {
 	return {
 
 		add: add,
-		create: create
+		create: create,
+		change: change
 
 	};
 

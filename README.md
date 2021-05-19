@@ -38,6 +38,20 @@ For more details and clarifications see examples in the example folder and the d
 
 See examples in the example folder.
 
+## tests
+
+Running tests with Cypress requires a running webserver. So first start it:
+
+    $ npm run test:serve &
+
+Then start either the runner UI with
+
+    $ npm run test:cy:open
+
+or run all tests in CLI mode:
+
+    $ npm run test:cy:run
+
 ## TODO in no particular order
 
 * tests

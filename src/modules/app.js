@@ -62,7 +62,7 @@ const App = (function () {
 
 		}
 
-		requestAnimationFrame(() => run());
+		requestAnimationFrame(() => run(callback));
 
 	}
 
@@ -85,6 +85,7 @@ const App = (function () {
 
 		}
 
+		// TODO: refactor to resize observer
 		window.addEventListener('resize', () => {
 
 			const wWidth = window.innerWidth;
@@ -155,7 +156,7 @@ const App = (function () {
 	function logMessage (message, type) {
 
 		// be chatty if no proper options are set
-		const level = options.debugLevel || 3;
+		const level = options.debugLevel !== undefined ? options.debugLevel : 3;
 
 		switch (type) {
 

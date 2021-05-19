@@ -9,10 +9,12 @@ const Geometry = (function () {
 
 			options = {
 
-				type: 'BoxBufferGeometry',
+				type: 'BoxGeometry',
 				args: [1, 1, 1]
 
 			};
+
+			App.info('No options for geometry given, using default BoxGeometry 1x1x1');
 
 		}
 

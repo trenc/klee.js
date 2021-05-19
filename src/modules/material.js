@@ -16,6 +16,8 @@ const Material = (function () {
 
 		}
 
+		App.info('No options for material given, using default MeshPhongMaterial in white');
+
 		let material = App.create(options);
 
 		material = change(material, options);

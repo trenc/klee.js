@@ -59,6 +59,12 @@ const Item = (function () {
 
 		object = Object3d.change(object, options);
 
+		if (options.material) {
+
+			Material.change(object.material, options.material);
+
+		}
+
 		return object;
 
 	}

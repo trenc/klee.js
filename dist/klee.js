@@ -378,6 +378,7 @@ var Material = function() {
         args: [{color: 16777215}]
       };
     }
+    App.info("No options for material given, using default MeshPhongMaterial in white");
     let material = App.create(options);
     material = change(material, options);
     return material;
@@ -464,11 +465,15 @@ var Item = function() {
   }
   function change(object, options) {
     object = Object3d.change(object, options);
+    if (options.material) {
+      Material.change(object.material, options.material);
+    }
     return object;
   }
   return {
     add,
-    create
+    create,
+    change
   };
 }(App);
 

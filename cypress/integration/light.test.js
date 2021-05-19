@@ -11,14 +11,24 @@ describe('KLEE light', function () {
 				const KLEE = win.KLEE;
 				const THREE = win.THREE;
 				const testNameProperty = 'This-Is-Test-DirectionalLight';
-				const options = {
-					type: 'DirectionalLight',
-					properties: { name: testNameProperty }
-				};
+				const testNameProperty2 = 'This-Is-Test-AmbientLight';
+				const options = [
+					{
+						type: 'DirectionalLight',
+						properties: { name: testNameProperty }
+					},
+					{
+						type: 'AmbientLight',
+						properties: { name: testNameProperty2 }
+					}
+				];
+
 				KLEE.Light.add(options);
 				const addedLight = KLEE.App.scene.getObjectByName(testNameProperty);
+				const addedLight2 = KLEE.App.scene.getObjectByName(testNameProperty2);
 
 				expect(addedLight).to.be.an.instanceof(THREE.DirectionalLight);
+				expect(addedLight2).to.be.an.instanceof(THREE.AmbientLight);
 
 			});
 

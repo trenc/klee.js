@@ -17,6 +17,31 @@ const App = (function () {
 
 	};
 
+	async function preLoadImages (imageArray = []) {
+
+		if (!Array.isArray(imageArray) || imageArray.length <= 0) {
+
+			warn('Images could not be preloaded. Wrong or no argument given.');
+			return;
+
+		}
+
+		THREE.Cache.enabled = true;
+
+		const loader = new THREE.ImageLoader();
+
+		return await Promise.all(
+
+			imageArray.map(async image => {
+
+				return await loader.loadAsync(image);
+
+			})
+
+		);
+
+	}
+
 	function init (three, initOptions = {}) {
 
 		if (!three || !three.REVISION) {
@@ -275,6 +300,7 @@ const App = (function () {
 
 		},
 
+		preLoadImages: preLoadImages,
 		initSize: initSize,
 		create: createObject,
 		error: error,

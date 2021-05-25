@@ -32,11 +32,7 @@ const App = (function () {
 
 		return await Promise.all(
 
-			imageArray.map(async image => {
-
-				return await loader.loadAsync(image);
-
-			})
+			imageArray.map(async image => await loader.loadAsync(image))
 
 		);
 

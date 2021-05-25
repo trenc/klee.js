@@ -17,7 +17,7 @@ const App = (function () {
 
 	};
 
-	async function preLoadImages (imageArray = []) {
+	async function preloadImages (imageArray = []) {
 
 		if (!Array.isArray(imageArray) || imageArray.length <= 0) {
 

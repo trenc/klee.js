@@ -296,7 +296,7 @@ const App = (function () {
 
 		},
 
-		preLoadImages: preLoadImages,
+		preloadImages: preloadImages,
 		initSize: initSize,
 		create: createObject,
 		error: error,

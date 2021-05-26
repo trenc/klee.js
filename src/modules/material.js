@@ -28,6 +28,8 @@ const Material = (function () {
 
 	function change (object, options) {
 
+		const THREE = App.THREE;
+
 		if (options.properties) {
 
 			object = applyProperties(object, options.properties);
@@ -37,6 +39,34 @@ const Material = (function () {
 		if (options.methods) {
 
 			object = Utils.applyMethods(object, options.methods);
+
+		}
+
+		if (options.textures) {
+
+			options.textures.forEach(texture => {
+
+				const loader = new THREE.TextureLoader();
+				const mapType = texture.type;
+				const mapTexture = loader.load(texture.url);
+
+				object[mapType] = mapTexture;
+
+				if (texture.properties) {
+
+					object[mapType] = applyProperties(object[mapType], texture.properties);
+
+				}
+
+				if (texture.methods) {
+
+					object[mapType] = Utils.applyMethods(object, texture.methods);
+
+				}
+
+			});
+
+			object.needsUpdate = true;
 
 		}
 

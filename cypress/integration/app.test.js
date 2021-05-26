@@ -132,7 +132,6 @@ describe('KLEE app', function () {
 			cy.window().then(win => {
 
 				const KLEE = win.KLEE;
-				const THREE = win.THREE;
 				const returnValue = '123';
 				const obj = {
 					myFunction () {
@@ -148,6 +147,36 @@ describe('KLEE app', function () {
 
 				expect(requestAnimationFrame).to.have.been.called;
 				expect(myFunction.returnValues[0]).to.be.eql(returnValue);
+
+			});
+
+		});
+
+	});
+
+	describe('preloadImages (images)', function () {
+
+		it('preload and cache an array with images ', () => {
+
+			cy.visit('/test.html?test=AppInit');
+
+			cy.window().then(async win => {
+
+				const KLEE = win.KLEE;
+				const THREE = win.THREE;
+				const images = [
+					'../../example/textures/rock.jpg',
+					'../../example/textures/brick.jpg'
+				];
+
+				await KLEE.App.preloadImages(images);
+
+				console.log(THREE.Cache.enabled);
+				expect(THREE.Cache.enabled).to.be.true;
+				expect(THREE.Cache.files).to.have.property(images[0]);
+				expect(THREE.Cache.files).to.have.property(images[1]);
+				expect(() => KLEE.App.preloadImages()).not.to.throw();
+				expect(() => KLEE.App.preloadImages('testString')).not.to.throw();
 
 			});
 

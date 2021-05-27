@@ -63,7 +63,8 @@ var Utils = class {
       "specular",
       "emissive",
       "diffuse",
-      "background"
+      "background",
+      "sheen"
     ];
     return colorProperties.includes(string);
   }
@@ -92,6 +93,15 @@ var App = function() {
     scene: null,
     controls: null
   };
+  async function preloadImages(imageArray = []) {
+    if (!Array.isArray(imageArray) || imageArray.length <= 0) {
+      warn("Images could not be preloaded. Wrong or no argument given.");
+      return;
+    }
+    THREE.Cache.enabled = true;
+    const loader = new THREE.ImageLoader();
+    return await Promise.all(imageArray.map(async (image) => await loader.loadAsync(image)));
+  }
   function init(three, initOptions = {}) {
     if (!three || !three.REVISION) {
       error("THREE is not inserted");
@@ -228,6 +238,7 @@ var App = function() {
     get renderer() {
       return local.renderer;
     },
+    preloadImages,
     initSize,
     create: createObject,
     error,
@@ -377,8 +388,8 @@ var Material = function() {
         type: "MeshPhongMaterial",
         args: [{color: 16777215}]
       };
+      App.info("No options for material given, using default MeshPhongMaterial in white");
     }
-    App.info("No options for material given, using default MeshPhongMaterial in white");
     let material = App.create(options);
     material = change(material, options);
     return material;
@@ -389,6 +400,22 @@ var Material = function() {
     }
     if (options.methods) {
       object = Utils.applyMethods(object, options.methods);
+    }
+    if (options.textures) {
+      options.textures.forEach((texture) => {
+        const loaderType = texture.type || "TextureLoader";
+        const loader = App.create({type: loaderType});
+        const mapType = texture.map;
+        const mapTexture = loader.load(texture.url);
+        object[mapType] = mapTexture;
+        if (texture.properties) {
+          object[mapType] = applyProperties(object[mapType], texture.properties);
+        }
+        if (texture.methods) {
+          object[mapType] = Utils.applyMethods(object, texture.methods);
+        }
+      });
+      object.needsUpdate = true;
     }
     return object;
   }

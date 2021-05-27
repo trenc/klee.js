@@ -46,8 +46,9 @@ An item/mesh has an enhanced specification for material and textures:
 				},
 				textures: [ // array of textures images
 					{
-						type: mapType, // type of the map (normalMap, aoMap, bumpMap etc)
-						url: path/to/image, // path to the image
+				    type: constructor, // a three.js texture constructor (default: TextureLoader)
+						map: mapType, // type of the map (normalMap, aoMap, bumpMap etc)
+						url: path/to/image, // path to the image, array for cube texture
 						properties: { // properties of the map/texture
 						  property1: value
 						}

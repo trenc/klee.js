@@ -34,7 +34,8 @@ class Utils {
 			'specular',
 			'emissive',
 			'diffuse',
-			'background'
+			'background',
+			'sheen'
 
 		];
 
@@ -50,7 +51,15 @@ class Utils {
 
 			const args = Array.isArray(methods[method]) ? methods[method] : [];
 
-			object[method](...args);
+			if (!(method in object)) {
+
+				console.log('Applied object has no method: ' + method);
+
+			} else {
+
+				object[method](...args);
+
+			}
 
 		}
 

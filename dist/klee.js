@@ -1,5 +1,5 @@
 // src/modules/constants.js
-var KLEEVERSION = "0.1.0-rc1";
+var KLEEVERSION = "0.1.0";
 
 // src/default.options.js
 function getDefaultOptions(THREE) {
@@ -63,7 +63,8 @@ var Utils = class {
       "specular",
       "emissive",
       "diffuse",
-      "background"
+      "background",
+      "sheen"
     ];
     return colorProperties.includes(string);
   }
@@ -71,7 +72,11 @@ var Utils = class {
     methods = methods || {};
     for (const method in methods) {
       const args = Array.isArray(methods[method]) ? methods[method] : [];
-      object[method](...args);
+      if (!(method in object)) {
+        console.log("Applied object has no method: " + method);
+      } else {
+        object[method](...args);
+      }
     }
     return object;
   }
@@ -88,6 +93,15 @@ var App = function() {
     scene: null,
     controls: null
   };
+  async function preloadImages(imageArray = []) {
+    if (!Array.isArray(imageArray) || imageArray.length <= 0) {
+      warn("Images could not be preloaded. Wrong or no argument given.");
+      return;
+    }
+    THREE.Cache.enabled = true;
+    const loader = new THREE.ImageLoader();
+    return await Promise.all(imageArray.map(async (image) => await loader.loadAsync(image)));
+  }
   function init(three, initOptions = {}) {
     if (!three || !three.REVISION) {
       error("THREE is not inserted");
@@ -111,7 +125,7 @@ var App = function() {
     if (typeof callback === "function") {
       callback();
     }
-    requestAnimationFrame(() => run());
+    requestAnimationFrame(() => run(callback));
   }
   function initSize() {
     const isResponsive = options.responsive || false;
@@ -163,7 +177,7 @@ var App = function() {
     return Utils.merge(renderer, o);
   }
   function logMessage(message, type) {
-    const level = options.debugLevel || 3;
+    const level = options.debugLevel !== void 0 ? options.debugLevel : 3;
     switch (type) {
       case "error":
         throw message;
@@ -224,6 +238,7 @@ var App = function() {
     get renderer() {
       return local.renderer;
     },
+    preloadImages,
     initSize,
     create: createObject,
     error,
@@ -265,7 +280,12 @@ var Object3d = function() {
     }
     for (const prop in options) {
       if (options[prop] instanceof Object) {
-        if (isVector(object[prop])) {
+        if ("copy" in object[prop]) {
+          if ("toVector3" in object[prop] && "setFromVector3" in object[prop]) {
+            const toVector3 = object[prop].toVector3();
+            const mergedVector3 = {...toVector3, ...options[prop]};
+            object[prop].setFromVector3(mergedVector3);
+          }
           const v = {...object[prop], ...options[prop]};
           object[prop].copy(v);
         } else {
@@ -280,10 +300,6 @@ var Object3d = function() {
       }
     }
     return object;
-  }
-  function isVector(object) {
-    const THREE = App.THREE;
-    return object instanceof THREE.Vector2 || object instanceof THREE.Vector3 || object instanceof THREE.Vector4;
   }
   return {
     add,
@@ -372,6 +388,7 @@ var Material = function() {
         type: "MeshPhongMaterial",
         args: [{color: 16777215}]
       };
+      App.info("No options for material given, using default MeshPhongMaterial in white");
     }
     let material = App.create(options);
     material = change(material, options);
@@ -383,6 +400,22 @@ var Material = function() {
     }
     if (options.methods) {
       object = Utils.applyMethods(object, options.methods);
+    }
+    if (options.textures) {
+      options.textures.forEach((texture) => {
+        const loaderType = texture.type || "TextureLoader";
+        const loader = App.create({type: loaderType});
+        const mapType = texture.map;
+        const mapTexture = loader.load(texture.url);
+        object[mapType] = mapTexture;
+        if (texture.properties) {
+          object[mapType] = applyProperties(object[mapType], texture.properties);
+        }
+        if (texture.methods) {
+          object[mapType] = Utils.applyMethods(object, texture.methods);
+        }
+      });
+      object.needsUpdate = true;
     }
     return object;
   }
@@ -415,9 +448,10 @@ var Geometry = function() {
   function create(options) {
     if (!options) {
       options = {
-        type: "BoxBufferGeometry",
+        type: "BoxGeometry",
         args: [1, 1, 1]
       };
+      App.info("No options for geometry given, using default BoxGeometry 1x1x1");
     }
     let geometry = App.create(options);
     geometry = Utils.merge(geometry, options.properties);
@@ -458,11 +492,15 @@ var Item = function() {
   }
   function change(object, options) {
     object = Object3d.change(object, options);
+    if (options.material) {
+      Material.change(object.material, options.material);
+    }
     return object;
   }
   return {
     add,
-    create
+    create,
+    change
   };
 }(App);
 

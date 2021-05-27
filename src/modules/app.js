@@ -17,6 +17,27 @@ const App = (function () {
 
 	};
 
+	async function preloadImages (imageArray = []) {
+
+		if (!Array.isArray(imageArray) || imageArray.length <= 0) {
+
+			warn('Images could not be preloaded. Wrong or no argument given.');
+			return;
+
+		}
+
+		THREE.Cache.enabled = true;
+
+		const loader = new THREE.ImageLoader();
+
+		return await Promise.all(
+
+			imageArray.map(async image => await loader.loadAsync(image))
+
+		);
+
+	}
+
 	function init (three, initOptions = {}) {
 
 		if (!three || !three.REVISION) {
@@ -62,7 +83,7 @@ const App = (function () {
 
 		}
 
-		requestAnimationFrame(() => run());
+		requestAnimationFrame(() => run(callback));
 
 	}
 
@@ -85,6 +106,7 @@ const App = (function () {
 
 		}
 
+		// TODO: refactor to resize observer
 		window.addEventListener('resize', () => {
 
 			const wWidth = window.innerWidth;
@@ -155,7 +177,7 @@ const App = (function () {
 	function logMessage (message, type) {
 
 		// be chatty if no proper options are set
-		const level = options.debugLevel || 3;
+		const level = options.debugLevel !== undefined ? options.debugLevel : 3;
 
 		switch (type) {
 
@@ -274,6 +296,7 @@ const App = (function () {
 
 		},
 
+		preloadImages: preloadImages,
 		initSize: initSize,
 		create: createObject,
 		error: error,

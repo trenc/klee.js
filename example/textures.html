@@ -1,18 +1,21 @@
 <!doctype html>
 <html lang="en">
 	<head>
-		<title>klee.js - cube</title>
+		<title>klee.js - textures</title>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<link rel="stylesheet" href="css/styles.css" />
 	</head>
 	<body>
 
-		<script type="module">
+	<script type="module">
 
-			import * as THREE from './jsm/three.module.js';
-			import { OrbitControls } from './jsm/OrbitControls.js';
-			import * as KLEE from '../dist/klee.js';
+	import * as THREE from './jsm/three.module.js';
+	import { OrbitControls } from './jsm/OrbitControls.js';
+	import * as KLEE from '../dist/klee.js';
+
+	// for preloading wrap all in an async function
+	(async () => {
 
 			// some opinionated default options declared in /src/default.options.js
 			// you can overwrite these here or add additional options
@@ -76,10 +79,32 @@
 						args: [1, 1, 1]
 					},
 					material: {
-						type: 'MeshPhongMaterial',
-						properties: {
-							color: '#dbb32d'
-						}
+						type: 'MeshStandardMaterial',
+						textures: [
+							{
+								map: 'map',
+								url: './textures/Wood060_1K_Color.jpg'
+							},
+							{
+								map: 'normalMap',
+								url: './textures/Wood060_1K_Normal.jpg',
+								properties: {
+									flipY: false
+								}
+							},
+							{
+								map: 'roughnessMap',
+								url: './textures/Wood060_1K_Roughness.jpg'
+							},
+							{
+								map: 'aoMap',
+								url: './textures/Wood060_1K_AmbientOcclusion.jpg'
+							},
+							{
+								map: 'bumpMap',
+								url: './textures/Wood060_1K_Displacement.jpg'
+							}
+						]
 					},
 					properties: {
 						name: 'some box',
@@ -95,10 +120,36 @@
 						args: [0.5, 32, 32]
 					},
 					material: {
-						type: 'MeshPhongMaterial',
+						type: 'MeshStandardMaterial',
 						properties: {
-							color: '#69ad21'
-						}
+							displacementScale: 0.05,
+							metallness: 0
+						},
+						textures: [
+							{
+								map: 'map',
+								url: './textures/Rock031_1K_Color.jpg'
+							},
+							{
+								map: 'normalMap',
+								url: './textures/Rock031_1K_Normal.jpg',
+								properties: {
+									flipY: false
+								}
+							},
+							{
+								map: 'aoMap',
+								url: './textures/Rock031_1K_AmbientOcclusion.jpg'
+							},
+							{
+								map: 'roughnessMap',
+								url: './textures/Rock031_1K_Roughness.jpg'
+							},
+							{
+								map: 'displacementMap',
+								url: './textures/Rock031_1K_Displacement.jpg'
+							}
+						]
 					},
 					properties: {
 						name: 'some sphere',
@@ -119,8 +170,25 @@
 
 			};
 
-			// initalize app and scene
+			// used for preloading
+			const textures = [];
+			Object.values(items).map(item => {
+
+				Object.values(item.material.textures).map(texture => {
+
+					textures.push(texture.url);
+
+				});
+
+			});
+
+			// initalize app
 			KLEE.App.init(THREE, options);
+
+			// preload images
+			await KLEE.App.preloadImages(textures);
+
+			// initalize scene
 			KLEE.Scene.init();
 
 			// optional controls
@@ -129,7 +197,7 @@
 			// shed some light
 			KLEE.Light.add(lights);
 
-			// add a box and sphere
+			// add a box anda sphere
 			KLEE.Item.add(items);
 
 			// add a grid
@@ -140,7 +208,9 @@
 
 			// inspect the scene in console
 			console.log(KLEE.App.scene);
-		</script>
+
+	})();
+	</script>
 
 	</body>
 </html>

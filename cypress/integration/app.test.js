@@ -165,8 +165,8 @@ describe('KLEE app', function () {
 				const KLEE = win.KLEE;
 				const THREE = win.THREE;
 				const images = [
-					'../../example/textures/rock.jpg',
-					'../../example/textures/brick.jpg'
+					'../../example/textures/Wood060_1K_Color.jpg',
+					'../../example/textures/Rock031_1K_Color.jpg'
 				];
 
 				await KLEE.App.preloadImages(images);

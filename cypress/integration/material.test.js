@@ -50,7 +50,15 @@ describe('KLEE material', function () {
 					properties: {
 						name: testNameProperty2,
 						color: 0xff0000
-					}
+					},
+					textures: [
+						{
+							type: 'TextureLoader',
+							map: 'map',
+							url: '../../example/textures/Wood060_1K_Color.jpg',
+							properties: { flipY: false }
+						}
+					]
 				};
 				const material = KLEE.Material.create(options);
 
@@ -63,6 +71,8 @@ describe('KLEE material', function () {
 				expect(material.color.g).to.be.eql(0);
 				expect(material.color.b).to.be.eql(0);
 				expect(material.name).not.to.be.equal(testNameProperty);
+				expect(material.map).to.be.an.instanceof(THREE.Texture);
+				expect(material.map.flipY).to.be.false;
 
 			});
 

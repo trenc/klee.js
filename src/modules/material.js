@@ -28,8 +28,6 @@ const Material = (function () {
 
 	function change (object, options) {
 
-		const THREE = App.THREE;
-
 		if (options.properties) {
 
 			object = applyProperties(object, options.properties);
@@ -46,8 +44,9 @@ const Material = (function () {
 
 			options.textures.forEach(texture => {
 
-				const loader = new THREE.TextureLoader();
-				const mapType = texture.type;
+				const loaderType = texture.type ? texture.type : 'TextureLoader';
+				const loader = App.create({ type: loaderType });
+				const mapType = texture.map;
 				const mapTexture = loader.load(texture.url);
 
 				object[mapType] = mapTexture;

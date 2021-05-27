@@ -73,3 +73,7 @@ or run all tests in CLI mode:
 * userData
 * examples
 * ...
+
+## credits
+
+Examples contains assets from [CC0Textures.com](https://cc0textures.com/), licensed under CC0 1.0 Universal.

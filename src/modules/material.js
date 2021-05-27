@@ -14,9 +14,9 @@ const Material = (function () {
 
 			};
 
-		}
+			App.info('No options for material given, using default MeshPhongMaterial in white');
 
-		App.info('No options for material given, using default MeshPhongMaterial in white');
+		}
 
 		let material = App.create(options);
 
@@ -37,6 +37,35 @@ const Material = (function () {
 		if (options.methods) {
 
 			object = Utils.applyMethods(object, options.methods);
+
+		}
+
+		if (options.textures) {
+
+			options.textures.forEach(texture => {
+
+				const loaderType = texture.type || 'TextureLoader';
+				const loader = App.create({ type: loaderType });
+				const mapType = texture.map;
+				const mapTexture = loader.load(texture.url);
+
+				object[mapType] = mapTexture;
+
+				if (texture.properties) {
+
+					object[mapType] = applyProperties(object[mapType], texture.properties);
+
+				}
+
+				if (texture.methods) {
+
+					object[mapType] = Utils.applyMethods(object, texture.methods);
+
+				}
+
+			});
+
+			object.needsUpdate = true;
 
 		}
 

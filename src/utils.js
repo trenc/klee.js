@@ -34,7 +34,8 @@ class Utils {
 			'specular',
 			'emissive',
 			'diffuse',
-			'background'
+			'background',
+			'sheen'
 
 		];
 

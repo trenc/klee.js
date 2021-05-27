@@ -84,7 +84,7 @@ or run all tests in CLI mode:
 * tests
 * ~~simple objects~~
 * ~~OrbitControls~~
-* textures
+* ~~textures~~
 * groups
 * raycaster
 * selections

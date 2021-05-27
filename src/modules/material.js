@@ -44,7 +44,7 @@ const Material = (function () {
 
 			options.textures.forEach(texture => {
 
-				const loaderType = texture.type ? texture.type : 'TextureLoader';
+				const loaderType = texture.type || 'TextureLoader';
 				const loader = App.create({ type: loaderType });
 				const mapType = texture.map;
 				const mapTexture = loader.load(texture.url);

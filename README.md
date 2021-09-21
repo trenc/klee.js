@@ -52,7 +52,7 @@ An item/mesh has an enhanced specification for material and textures:
 						properties: { // properties of the map/texture
 							property1: value
 						}
-					},
+					}
 				]
 			},
 			properties: { // item/mesh properties

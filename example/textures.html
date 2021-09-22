@@ -64,7 +64,6 @@
 					type: 'DirectionalLight',
 					properties: {
 						name: 'light-2',
-						color: '#ffffff',
 						castShadow: true,
 						shadow: { mapSize: { x: 1024, y: 1024 } }, // INFO: x,y instead of width, height
 						position: { x: 30, y: 30, z: 30 }
@@ -164,6 +163,42 @@
 					properties: {
 						name: 'some sphere',
 						position: { x: 0.5, y: 1, z: 0.5 },
+						castShadow: true,
+						receiveShadow: true
+					}
+				},
+				{
+					geometry: {
+						type: 'TorusGeometry',
+						args: [0.5, 0.1, 64, 64]
+					},
+					material: {
+						type: 'MeshStandardMaterial',
+						properties: {
+							metalness: 1.0,
+							roughness: 0.0
+						},
+						textures: [
+							{
+								type: 'CubeTextureLoader',
+								properties: {
+								},
+								map: 'envMap',
+								url: [
+									'./textures/nx.png',
+									'./textures/ny.png',
+									'./textures/nz.png',
+									'./textures/px.png',
+									'./textures/py.png',
+									'./textures/pz.png'
+								]
+							}
+						]
+					},
+					properties: {
+						name: 'some torus',
+						position: { x: -1.5, y: 1.5, z: 1 },
+						rotation: { y: - Math.PI / 8 },
 						castShadow: true,
 						receiveShadow: true
 					}

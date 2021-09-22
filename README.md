@@ -104,4 +104,4 @@ or run all tests in CLI mode:
 
 ## credits
 
-Examples contains assets from [CC0Textures.com](https://cc0textures.com/), licensed under CC0 1.0 Universal.
+Examples contains assets from [ambientCG.com](https://ambientCG.com/) and [polyhaven.com](https://polyhaven.com/), licensed under CC0 1.0 Universal.

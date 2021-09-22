@@ -186,7 +186,19 @@
 
 				Object.values(item.material.textures).map(texture => {
 
-					textures.push(texture.url);
+					if (Array.isArray(texture.url)) {
+
+						texture.url.forEach((arrayUrl) => {
+
+							textures.push(arrayUrl);
+
+						});
+
+					} else {
+
+						textures.push(texture.url);
+
+					}
 
 				});
 

@@ -64,7 +64,7 @@ For more details and clarifications see examples in the example folder and the d
 
 ## demo/example
 
-See examples in the example folder.
+See the content in the example folder or see the deployment on the github pages: [examples](https://trenc.github.io/klee.js/example/),
 
 ## tests
 

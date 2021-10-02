@@ -19,52 +19,52 @@ Meshs are builds from geometries and materials and can be added as array. See th
 
 In general the literal for a basic object looks like the following: 
 
-    const obj = {
-      type: constructor, // a three.js constructor
-      args: argArray, // the args for the constructor as array
-      properties: { // object literal with properties
-        property1: value,
-        property2: { x: xValue, y: yValue }
-      },
-      methods: { // object literal with methods of this object/class
-        method1: argsArray1, // method args as array
-        method2: argsArray2
-      }
-    };
+		const obj = {
+			type: constructor, // a three.js constructor
+			args: argArray, // the args for the constructor as array
+			properties: { // object literal with properties
+				property1: value,
+				property2: { x: xValue, y: yValue }
+			},
+			methods: { // object literal with methods of this object/class
+				method1: argsArray1, // method args as array
+				method2: argsArray2
+			}
+		};
 
 An item/mesh has an enhanced specification for material and textures:
 
-    const item = {
+		const item = {
 			geometry: {
-        type: constructor, // a three.js geometry constructor
-        args: argArray // the args for the constructor as array
+				type: constructor, // a three.js geometry constructor
+				args: argArray // the args for the constructor as array
 			},
 			material: {
 				type: constructor, // a three.js material constructor
-        properties: { // object literal with properties for the material
-				  property1: value
+				properties: { // object literal with properties for the material
+					property1: value
 				},
 				textures: [ // array of textures images
 					{
-				    type: constructor, // a three.js texture constructor (default: TextureLoader)
+						type: constructor, // a three.js texture constructor (default: TextureLoader)
 						map: mapType, // type of the map (normalMap, aoMap, bumpMap etc)
 						url: path/to/image, // path to the image, array for cube texture
 						properties: { // properties of the map/texture
-						  property1: value
+							property1: value
 						}
-					},
+					}
 				]
 			},
 			properties: { // item/mesh properties
-			  property1: value
+				property1: value
 			}
-    }
+		}
 
 For more details and clarifications see examples in the example folder and the default.options.js in /src.
 
 ## demo/example
 
-See examples in the example folder.
+See the content in the example folder or see the deployment on the github pages: [examples](https://trenc.github.io/klee.js/example/),
 
 ## tests
 
@@ -104,4 +104,4 @@ or run all tests in CLI mode:
 
 ## credits
 
-Examples contains assets from [CC0Textures.com](https://cc0textures.com/), licensed under CC0 1.0 Universal.
+Examples contains assets from [ambientCG.com](https://ambientCG.com/) and [polyhaven.com](https://polyhaven.com/), licensed under CC0 1.0 Universal.

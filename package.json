@@ -10,10 +10,9 @@
     "bundle:js": "esbuild src/klee.js --bundle --format=esm --outfile=dist/klee.js",
     "bundle:watch": "esbuild src/klee.js --bundle --watch --format=esm --outfile=dist/klee.js",
     "bundle": "npm run bundle:js && npm run bundle:min",
-    "serve": "browser-sync start -s -f 'example/*.html, dist/klee.js' --startPath 'example/'",
+    "serve": "serve",
     "build": "npm run clean && npm run bundle",
     "start": "npm run clean && npm run bundle:watch & npm run serve",
-    "test:serve": "browser-sync start --port 8000 -s --no-ui --no-open",
     "test:cy:open": "npx cypress open",
     "test:cy:run": "npx cypress run",
     "test:lint": "eslint src/*.js src/modules/*.js",
@@ -71,7 +70,6 @@
     ]
   },
   "devDependencies": {
-    "browser-sync": "^2.26.14",
     "cypress": "^7.3.0",
     "esbuild": "^0.11.11",
     "eslint": "^7.24.0",
@@ -79,6 +77,7 @@
     "eslint-plugin-cypress": "^2.11.3",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-promise": "^4.3.1"
+    "eslint-plugin-promise": "^4.3.1",
+    "serve": "^13.0.2"
   }
 }

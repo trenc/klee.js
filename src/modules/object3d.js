@@ -66,7 +66,8 @@ const Object3d = (function () {
 					// in »copy« method
 					if ('toVector3' in object[prop] && 'setFromVector3' in object[prop]) {
 
-						const toVector3 = object[prop].toVector3();
+						const toVector3 = new THREE.Vector3();
+						toVector3.setFromEuler(object[prop]);
 						const mergedVector3 = { ...toVector3, ...options[prop] };
 
 						object[prop].setFromVector3(mergedVector3);

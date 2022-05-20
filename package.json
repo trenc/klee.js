@@ -70,7 +70,7 @@
     ]
   },
   "devDependencies": {
-    "cypress": "^7.3.0",
+    "cypress": "^9.6.1",
     "esbuild": "^0.11.11",
     "eslint": "^7.24.0",
     "eslint-config-standard": "^16.0.2",

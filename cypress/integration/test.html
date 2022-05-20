@@ -12,8 +12,8 @@
 	<body>
 		<script type="module">
 
-			import * as THREE from '../../example/jsm/three.module.js';
-			import { OrbitControls } from '../../example/jsm/OrbitControls.js';
+			import * as THREE from '../../example/build/three.module.js';
+			import { OrbitControls } from '../../example/modules/jsm/controls/OrbitControls.js';
 			import * as KLEE from '../../dist/klee.js';
 
 			window.KLEE = KLEE;
@@ -34,12 +34,12 @@
 				case 'AppInit':
 					KLEE.App.init(THREE, {});
 					break;
-					
+
 				case 'SceneInit':
 					KLEE.App.init(THREE, {});
 					KLEE.Scene.init();
 					break;
-					
+
 				default:
 					break;
 

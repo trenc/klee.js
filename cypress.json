@@ -1,7 +1,6 @@
 {
   "testFiles": "**/*.js",
   "watchForFileChanges": false,
-  "nodeVersion": "system",
   "baseUrl": "http://localhost:3000/cypress/integration/",
   "screenshotOnRunFailure": false,
   "video": false

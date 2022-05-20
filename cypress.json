@@ -2,7 +2,7 @@
   "testFiles": "**/*.js",
   "watchForFileChanges": false,
   "nodeVersion": "system",
-  "baseUrl": "http://localhost:8000/cypress/integration/",
+  "baseUrl": "http://localhost:3000/cypress/integration/",
   "screenshotOnRunFailure": false,
   "video": false
 }

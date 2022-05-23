@@ -11,274 +11,275 @@
 		<script async src="https://unpkg.com/es-module-shims@1.3.6/dist/es-module-shims.js"></script>
 
 		<script type="importmap">
-		{
-			"imports": {
-				"three": "./libs/three.module.js",
-				"klee": "./../dist/klee.js"
+			{
+				"imports": {
+					"three": "./libs/three.module.js",
+					"klee": "./../dist/klee.js"
+				}
 			}
-		}
 		</script>
 
-	<script type="module">
+		<script type="module">
 
-	import * as THREE from 'three';
-	import { OrbitControls } from './libs/jsm/controls/OrbitControls.js';
-	import * as KLEE from 'klee';
+			import * as THREE from 'three';
+			import { OrbitControls } from './libs/jsm/controls/OrbitControls.js';
+			import * as KLEE from 'klee';
 
-	// for preloading wrap all in an async function
-	(async () => {
+			// for preloading wrap all in an async function
+			(async () => {
 
-			// some opinionated default options declared in /src/default.options.js
-			// you can overwrite these here or add additional options
-			const options = {
+					// some opinionated default options declared in /src/default.options.js
+					// you can overwrite these here or add additional options
+					const options = {
 
-				debugLevel: 3,
+						debugLevel: 3,
 
-				renderer: {
-					clearColor: '#103c48'
-				},
-
-				camera: {
-					properties: {
-						position: { x: -2, z: 10 }
-					}
-				}
-
-			};
-
-			const controls = {
-				// no type and args here, we need the object direct
-				// and args (camera, renderElement are given)
-				properties: {
-					//autoRotate: true,
-					enableDampling: true,
-					enablePan: true,
-					dampingFactor: 0.25,
-					enableZoom: true,
-					minDistance: 5,
-					maxDistance: 30,
-					minPolarAngle: 0.1,
-					maxPolarAngle: 1.5
-				}
-
-			};
-
-			const lights = [
-				{
-					type: 'AmbientLight',
-					properties: {
-						name: 'light-1',
-						color: '#404040'
-					}
-				},
-				{
-					type: 'DirectionalLight',
-					properties: {
-						name: 'light-2',
-						castShadow: true,
-						shadow: { mapSize: { x: 1024, y: 1024 } }, // INFO: x,y instead of width, height
-						position: { x: 30, y: 30, z: 30 }
-					}
-				},
-				{
-					type: 'DirectionalLight',
-					properties: {
-						name: 'light-3',
-						color: '#ffffff',
-						castShadow: true,
-						shadow: { mapSize: { x: 1024, y: 1024 } }, // INFO: x,y instead of width, height
-						position: { x: -30, y: 30, z: 30 }
-					}
-				}
-			];
-
-			const items = [ // aka meshs
-				{
-					geometry: {
-						type: 'BoxGeometry',
-						args: [1, 1, 1]
-					},
-					material: {
-						type: 'MeshStandardMaterial',
-						textures: [
-							{
-								map: 'map',
-								url: './textures/Wood060_1K_Color.jpg'
-							},
-							{
-								map: 'normalMap',
-								url: './textures/Wood060_1K_Normal.jpg',
-								properties: {
-									flipY: false
-								}
-							},
-							{
-								map: 'roughnessMap',
-								url: './textures/Wood060_1K_Roughness.jpg'
-							},
-							{
-								map: 'aoMap',
-								url: './textures/Wood060_1K_AmbientOcclusion.jpg'
-							},
-							{
-								map: 'bumpMap',
-								url: './textures/Wood060_1K_Displacement.jpg'
-							}
-						]
-					},
-					properties: {
-						name: 'some box',
-						rotation: { y: Math.PI / 8 },
-						position: { x: -0.5, y: 0.5, z: -0.5 },
-						castShadow: true,
-						receiveShadow: true
-					}
-				},
-				{
-					geometry: {
-						type: 'SphereGeometry',
-						args: [0.5, 32, 32]
-					},
-					material: {
-						type: 'MeshStandardMaterial',
-						properties: {
-							displacementScale: 0.05,
-							metalness: 0
+						renderer: {
+							clearColor: '#103c48'
 						},
-						textures: [
-							{
-								map: 'map',
-								url: './textures/Rock031_1K_Color.jpg'
-							},
-							{
-								map: 'normalMap',
-								url: './textures/Rock031_1K_Normal.jpg',
-								properties: {
-									flipY: false
-								}
-							},
-							{
-								map: 'aoMap',
-								url: './textures/Rock031_1K_AmbientOcclusion.jpg'
-							},
-							{
-								map: 'roughnessMap',
-								url: './textures/Rock031_1K_Roughness.jpg'
-							},
-							{
-								map: 'displacementMap',
-								url: './textures/Rock031_1K_Displacement.jpg'
+
+						camera: {
+							properties: {
+								position: { x: -2, z: 10 }
 							}
-						]
-					},
-					properties: {
-						name: 'some sphere',
-						position: { x: 0.5, y: 1, z: 0.5 },
-						castShadow: true,
-						receiveShadow: true
-					}
-				},
-				{
-					geometry: {
-						type: 'TorusGeometry',
-						args: [0.5, 0.1, 64, 64]
-					},
-					material: {
-						type: 'MeshStandardMaterial',
+						}
+
+					};
+
+					const controls = {
+						// no type and args here, we need the object direct
+						// and args (camera, renderElement are given)
 						properties: {
-							metalness: 1.0,
-							roughness: 0.0
+							//autoRotate: true,
+							enableDampling: true,
+							enablePan: true,
+							dampingFactor: 0.25,
+							enableZoom: true,
+							minDistance: 5,
+							maxDistance: 30,
+							minPolarAngle: 0.1,
+							maxPolarAngle: 1.5
+						}
+
+					};
+
+					const lights = [
+						{
+							type: 'AmbientLight',
+							properties: {
+								name: 'light-1',
+								color: '#404040'
+							}
 						},
-						textures: [
-							{
-								type: 'CubeTextureLoader',
-								properties: {
-								},
-								map: 'envMap',
-								url: [
-									'./textures/nx.png',
-									'./textures/ny.png',
-									'./textures/nz.png',
-									'./textures/px.png',
-									'./textures/py.png',
-									'./textures/pz.png'
+						{
+							type: 'DirectionalLight',
+							properties: {
+								name: 'light-2',
+								castShadow: true,
+								shadow: { mapSize: { x: 1024, y: 1024 } }, // INFO: x,y instead of width, height
+								position: { x: 30, y: 30, z: 30 }
+							}
+						},
+						{
+							type: 'DirectionalLight',
+							properties: {
+								name: 'light-3',
+								color: '#ffffff',
+								castShadow: true,
+								shadow: { mapSize: { x: 1024, y: 1024 } }, // INFO: x,y instead of width, height
+								position: { x: -30, y: 30, z: 30 }
+							}
+						}
+					];
+
+					const items = [ // aka meshs
+						{
+							geometry: {
+								type: 'BoxGeometry',
+								args: [1, 1, 1]
+							},
+							material: {
+								type: 'MeshStandardMaterial',
+								textures: [
+									{
+										map: 'map',
+										url: './textures/Wood060_1K_Color.jpg'
+									},
+									{
+										map: 'normalMap',
+										url: './textures/Wood060_1K_Normal.jpg',
+										properties: {
+											flipY: false
+										}
+									},
+									{
+										map: 'roughnessMap',
+										url: './textures/Wood060_1K_Roughness.jpg'
+									},
+									{
+										map: 'aoMap',
+										url: './textures/Wood060_1K_AmbientOcclusion.jpg'
+									},
+									{
+										map: 'bumpMap',
+										url: './textures/Wood060_1K_Displacement.jpg'
+									}
 								]
+							},
+							properties: {
+								name: 'some box',
+								rotation: { y: Math.PI / 8 },
+								position: { x: -0.5, y: 0.5, z: -0.5 },
+								castShadow: true,
+								receiveShadow: true
 							}
-						]
-					},
-					properties: {
-						name: 'some torus',
-						position: { x: -1.5, y: 1.5, z: 1 },
-						rotation: { y: - Math.PI / 8 },
-						castShadow: true,
-						receiveShadow: true
-					}
-				}
-			];
+						},
+						{
+							geometry: {
+								type: 'SphereGeometry',
+								args: [0.5, 32, 32]
+							},
+							material: {
+								type: 'MeshStandardMaterial',
+								properties: {
+									displacementScale: 0.05,
+									metalness: 0
+								},
+								textures: [
+									{
+										map: 'map',
+										url: './textures/Rock031_1K_Color.jpg'
+									},
+									{
+										map: 'normalMap',
+										url: './textures/Rock031_1K_Normal.jpg',
+										properties: {
+											flipY: false
+										}
+									},
+									{
+										map: 'aoMap',
+										url: './textures/Rock031_1K_AmbientOcclusion.jpg'
+									},
+									{
+										map: 'roughnessMap',
+										url: './textures/Rock031_1K_Roughness.jpg'
+									},
+									{
+										map: 'displacementMap',
+										url: './textures/Rock031_1K_Displacement.jpg'
+									}
+								]
+							},
+							properties: {
+								name: 'some sphere',
+								position: { x: 0.5, y: 1, z: 0.5 },
+								castShadow: true,
+								receiveShadow: true
+							}
+						},
+						{
+							geometry: {
+								type: 'TorusGeometry',
+								args: [0.5, 0.1, 64, 64]
+							},
+							material: {
+								type: 'MeshStandardMaterial',
+								properties: {
+									metalness: 1.0,
+									roughness: 0.0
+								},
+								textures: [
+									{
+										type: 'CubeTextureLoader',
+										properties: {
+										},
+										map: 'envMap',
+										url: [
+											'./textures/nx.png',
+											'./textures/ny.png',
+											'./textures/nz.png',
+											'./textures/px.png',
+											'./textures/py.png',
+											'./textures/pz.png'
+										]
+									}
+								]
+							},
+							properties: {
+								name: 'some torus',
+								position: { x: -1.5, y: 1.5, z: 1 },
+								rotation: { y: - Math.PI / 8 },
+								castShadow: true,
+								receiveShadow: true
+							}
+						}
+					];
 
-			const gridHelper = {
+					const gridHelper = {
 
-				type: 'GridHelper',
-				args: [100, 100],
-				properties: {
-					color: '#72898f'
-				}
+						type: 'GridHelper',
+						args: [100, 100],
+						properties: {
+							color: '#72898f'
+						}
 
-			};
+					};
 
-			// used for preloading
-			const textures = [];
-			Object.values(items).map(item => {
+					// used for preloading
+					const textures = [];
+					Object.values(items).map(item => {
 
-				Object.values(item.material.textures).map(texture => {
+						Object.values(item.material.textures).map(texture => {
 
-					if (Array.isArray(texture.url)) {
+							if (Array.isArray(texture.url)) {
 
-						texture.url.forEach((arrayUrl) => {
+								texture.url.forEach((arrayUrl) => {
 
-							textures.push(arrayUrl);
+									textures.push(arrayUrl);
+
+								});
+
+							} else {
+
+								textures.push(texture.url);
+
+							}
 
 						});
 
-					} else {
+					});
 
-						textures.push(texture.url);
+					// initalize app
+					KLEE.App.init(THREE, options);
 
-					}
+					// preload images
+					await KLEE.App.preloadImages(textures);
 
-				});
+					// initalize scene
+					KLEE.Scene.init();
 
-			});
+					// optional controls
+					KLEE.Controls.init(OrbitControls, controls);
 
-			// initalize app
-			KLEE.App.init(THREE, options);
+					// shed some light
+					KLEE.Light.add(lights);
 
-			// preload images
-			await KLEE.App.preloadImages(textures);
+					// add a box anda sphere
+					KLEE.Item.add(items);
 
-			// initalize scene
-			KLEE.Scene.init();
+					// add a grid
+					KLEE.Object3d.add(gridHelper);
 
-			// optional controls
-			KLEE.Controls.init(OrbitControls, controls);
+					// run the app
+					KLEE.App.run();
 
-			// shed some light
-			KLEE.Light.add(lights);
+					// inspect the scene in console
+					console.log(KLEE.App.scene);
 
-			// add a box anda sphere
-			KLEE.Item.add(items);
+			})();
 
-			// add a grid
-			KLEE.Object3d.add(gridHelper);
-
-			// run the app
-			KLEE.App.run();
-
-			// inspect the scene in console
-			console.log(KLEE.App.scene);
-
-	})();
-	</script>
+		</script>
 
 	</body>
 </html>

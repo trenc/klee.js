@@ -18,12 +18,14 @@ describe('KLEE controls', function () {
 
 				KLEE.Controls.init(OrbitControls, controls);
 
-				expect(KLEE.App.controls).to.be.instanceof(OrbitControls);
-				expect(KLEE.App.controls.autoRotate).to.be.true;
+				expect(KLEE.App.controls.OrbitControls).to.be.instanceof(OrbitControls);
+				expect(KLEE.App.controls.OrbitControls.autoRotate).to.be.true;
 
 			});
 
 		});
+
+		it('add DragControls init');
 
 	});
 

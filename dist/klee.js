@@ -91,7 +91,8 @@ var App = function() {
     camera: null,
     renderer: null,
     scene: null,
-    controls: null
+    controls: {},
+    draggables: []
   };
   async function preloadImages(imageArray = []) {
     if (!Array.isArray(imageArray) || imageArray.length <= 0) {
@@ -117,9 +118,9 @@ var App = function() {
   }
   function run(callback) {
     local.renderer.render(local.scene, local.camera);
-    if (local.controls) {
-      if (local.controls.enableDamping || local.controls.autoRotate) {
-        local.controls.update();
+    if (local.controls.orbit) {
+      if (local.controls.orbit.enableDamping || local.controls.orbit.autoRotate) {
+        local.controls.orbit.update();
       }
     }
     if (typeof callback === "function") {
@@ -238,6 +239,12 @@ var App = function() {
     get renderer() {
       return local.renderer;
     },
+    get draggables() {
+      return local.draggables;
+    },
+    set draggables(draggables) {
+      local.draggables = draggables;
+    },
     preloadImages,
     initSize,
     create: createObject,
@@ -249,6 +256,30 @@ var App = function() {
     run
   };
 }();
+
+// src/modules/userdata.js
+var UserData = function() {
+  function handle(object, userData) {
+    const f = {
+      draggable: (action) => draggables(object, action)
+    };
+    for (const action in userData) {
+      if (!f[action]) {
+        App.warn("The userData \xBB" + action + "\xAB can not handled by app.");
+        return;
+      }
+      return f[action](action);
+    }
+  }
+  function draggables(object, action) {
+    if (action) {
+      App.draggables.push(object);
+    }
+  }
+  return {
+    handle
+  };
+}(App);
 
 // src/modules/object3d.js
 var Object3d = function() {
@@ -290,6 +321,9 @@ var Object3d = function() {
           const v = {...object[prop], ...options[prop]};
           object[prop].copy(v);
         } else {
+          if (prop === "userData") {
+            UserData.handle(object, options[prop]);
+          }
           object[prop] = applyProperties(object[prop], options[prop]);
         }
       } else {
@@ -334,10 +368,15 @@ var Scene = function() {
 // src/modules/controls.js
 var Controls = function() {
   function init(Controls2, options) {
-    App.controls = initControls(Controls2, options);
+    App.controls[Controls2.name] = initControls(Controls2, options);
   }
-  function initControls(Controls2, options) {
-    let controls = new Controls2(App.camera, App.renderer.domElement);
+  function initControls(Controls2, options, objects = null) {
+    let controls = null;
+    if (Controls2.name === "DragControls") {
+      controls = new Controls2(App.draggables, App.camera, App.renderer.domElement);
+    } else {
+      controls = new Controls2(App.camera, App.renderer.domElement);
+    }
     controls = Object3d.change(controls, options);
     return controls;
   }

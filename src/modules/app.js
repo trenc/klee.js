@@ -13,7 +13,8 @@ const App = (function () {
 		camera: null,
 		renderer: null,
 		scene: null,
-		controls: null
+		controls: {},
+		draggables: []
 
 	};
 
@@ -67,11 +68,11 @@ const App = (function () {
 
 		local.renderer.render(local.scene, local.camera);
 
-		if (local.controls) {
+		if (local.controls.orbit) {
 
-			if (local.controls.enableDamping || local.controls.autoRotate) {
+			if (local.controls.orbit.enableDamping || local.controls.orbit.autoRotate) {
 
-				local.controls.update();
+				local.controls.orbit.update();
 
 			}
 
@@ -293,6 +294,18 @@ const App = (function () {
 		get renderer () {
 
 			return local.renderer;
+
+		},
+
+		get draggables () {
+
+			return local.draggables;
+
+		},
+
+		set draggables (draggables) {
+
+			local.draggables = draggables;
 
 		},
 

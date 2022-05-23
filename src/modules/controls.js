@@ -5,13 +5,23 @@ const Controls = (function () {
 
 	function init (Controls, options) {
 
-		App.controls = initControls(Controls, options);
+		App.controls[Controls.name] = initControls(Controls, options);
 
 	}
 
-	function initControls (Controls, options) {
+	function initControls (Controls, options, objects = null) {
 
-		let controls = new Controls(App.camera, App.renderer.domElement);
+		let controls = null;
+
+		if (Controls.name === 'DragControls') {
+
+			controls = new Controls(App.draggables, App.camera, App.renderer.domElement);
+
+		} else {
+
+			controls = new Controls(App.camera, App.renderer.domElement);
+
+		}
 
 		controls = Object3d.change(controls, options);
 

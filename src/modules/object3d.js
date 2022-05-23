@@ -1,5 +1,6 @@
 import { App } from './app';
 import { Utils } from '../utils';
+import { UserData } from './userdata';
 
 const Object3d = (function () {
 
@@ -79,6 +80,12 @@ const Object3d = (function () {
 					object[prop].copy(v);
 
 				} else {
+
+					if (prop === 'userData') {
+
+						UserData.handle(object, options[prop]);
+
+					}
 
 					object[prop] = applyProperties(object[prop], options[prop]);
 

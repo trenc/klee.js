@@ -91,8 +91,11 @@ var App = function() {
     camera: null,
     renderer: null,
     scene: null,
+    mouse: null,
+    raycaster: null,
     controls: {},
-    draggables: []
+    draggables: [],
+    draggableObject: null
   };
   async function preloadImages(imageArray = []) {
     if (!Array.isArray(imageArray) || imageArray.length <= 0) {
@@ -118,9 +121,9 @@ var App = function() {
   }
   function run(callback) {
     local.renderer.render(local.scene, local.camera);
-    if (local.controls.orbit) {
-      if (local.controls.orbit.enableDamping || local.controls.orbit.autoRotate) {
-        local.controls.orbit.update();
+    if (local.controls.OrbitControls) {
+      if (local.controls.OrbitControls.enableDamping || local.controls.OrbitControls.autoRotate) {
+        local.controls.OrbitControls.update();
       }
     }
     if (typeof callback === "function") {
@@ -245,6 +248,24 @@ var App = function() {
     set draggables(draggables) {
       local.draggables = draggables;
     },
+    get draggableObject() {
+      return local.draggableObject;
+    },
+    set draggableObject(object) {
+      local.draggableObject = object;
+    },
+    get mouse() {
+      return local.mouse;
+    },
+    set mouse(mouseVector2) {
+      local.mouse = mouseVector2;
+    },
+    get raycaster() {
+      return local.raycaster;
+    },
+    set raycaster(raycaster) {
+      local.raycaster = raycaster;
+    },
     preloadImages,
     initSize,
     create: createObject,
@@ -261,19 +282,24 @@ var App = function() {
 var UserData = function() {
   function handle(object, userData) {
     const f = {
-      draggable: (action) => draggables(object, action)
+      draggable: (action) => addDraggables(object, action),
+      raycasterPlane: (action) => setRaycasterPlane(object, action)
     };
     for (const action in userData) {
       if (!f[action]) {
-        App.warn("The userData \xBB" + action + "\xAB can not handled by app.");
-        return;
+        App.warn("The userData \xBB" + action + "\xAB can not be handled by app.");
       }
-      return f[action](action);
+      f[action](action);
     }
   }
-  function draggables(object, action) {
+  function addDraggables(object, action) {
     if (action) {
       App.draggables.push(object);
+    }
+  }
+  function setRaycasterPlane(object, action) {
+    if (action) {
+      App.raycasterPlane = object;
     }
   }
   return {
@@ -371,12 +397,7 @@ var Controls = function() {
     App.controls[Controls2.name] = initControls(Controls2, options);
   }
   function initControls(Controls2, options, objects = null) {
-    let controls = null;
-    if (Controls2.name === "DragControls") {
-      controls = new Controls2(App.draggables, App.camera, App.renderer.domElement);
-    } else {
-      controls = new Controls2(App.camera, App.renderer.domElement);
-    }
+    let controls = new Controls2(App.camera, App.renderer.domElement);
     controls = Object3d.change(controls, options);
     return controls;
   }
@@ -544,11 +565,48 @@ var Item = function() {
   };
 }(App);
 
+// src/modules/events.js
+var Events = function() {
+  function init() {
+    const THREE = App.THREE;
+    App.raycaster = App.raycaster ?? new THREE.Raycaster();
+    App.mouse = App.mouse ?? {};
+    document.addEventListener("mousemove", (event) => {
+      onMouseMove(event);
+    });
+    document.addEventListener("mousedown", (event) => {
+      onMouseDown(event);
+    });
+    document.addEventListener("mouseup", (event) => {
+      onMouseUp(event);
+    });
+  }
+  function onMouseDown(event) {
+    const intersects = App.raycaster.intersectObjects(App.draggables);
+    if (intersects.length <= 0) {
+      return;
+    }
+    App.controls.OrbitControls.enabled = false;
+  }
+  function onMouseUp(event) {
+    App.controls.OrbitControls.enabled = true;
+  }
+  function onMouseMove(event) {
+    App.mouse.x = event.clientX / window.innerWidth * 2 - 1;
+    App.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+    App.raycaster.setFromCamera(App.mouse, App.camera);
+  }
+  return {
+    init
+  };
+}();
+
 // src/klee.js
 console.log("klee.js: " + KLEEVERSION);
 export {
   App,
   Controls,
+  Events,
   Geometry,
   Item,
   KLEEVERSION,

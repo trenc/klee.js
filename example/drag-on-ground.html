@@ -64,8 +64,6 @@
 
 					};
 
-					const dragControlsOptions = {};
-
 					const lights = [
 						{
 							type: 'AmbientLight',
@@ -105,11 +103,17 @@
 								name: 'ground',
 								position: { y: 0 },
 								rotation: { x: -Math.PI / 2 },
-								receiveShadow: true
+								receiveShadow: true,
+								userData: {
+									raycasterPlane: true
+								}
 							},
 							material: {
 								type: 'MeshStandardMaterial',
-								color: '#103c48'
+								properties: {
+									opacity: 0,
+									transparent: true
+								}
 							}
 						},
 						{
@@ -209,7 +213,9 @@
 
 					// optional controls
 					KLEE.Controls.init(OrbitControls, orbitControlsOptions);
-					KLEE.Controls.init(DragControls, dragControlsOptions);
+
+					// optional events
+					KLEE.Events.init();
 
 					// shed some light
 					KLEE.Light.add(lights);

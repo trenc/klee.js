@@ -6,7 +6,8 @@ const UserData = (function () {
 
 		const f = {
 
-			draggable: (action) => draggables(object, action)
+			draggable: (action) => addDraggables(object, action),
+			raycasterPlane: (action) => setRaycasterPlane(object, action)
 
 		};
 
@@ -14,7 +15,7 @@ const UserData = (function () {
 
 			if (!f[action]) {
 
-				App.warn('The userData »' + action + '« can not handled by app.');
+				App.warn('The userData »' + action + '« can not be handled by app.');
 
 			}
 
@@ -24,11 +25,21 @@ const UserData = (function () {
 
 	}
 
-	function draggables (object, action) {
+	function addDraggables (object, action) {
 
 		if (action) {
 
 			App.draggables.push(object);
+
+		}
+
+	}
+
+	function setRaycasterPlane (object, action) {
+
+		if (action) {
+
+			App.raycasterPlane = object;
 
 		}
 

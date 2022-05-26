@@ -19,7 +19,6 @@ const Events = (function () {
 		App.raycaster = App.raycaster ?? new THREE.Raycaster();
 		App.mouse = App.mouse ?? {};
 
-
 		document.addEventListener('mousemove', event => {
 
 			onMouseMove(event);
@@ -44,19 +43,19 @@ const Events = (function () {
 
 		const intersects = App.raycaster.intersectObjects(App.draggables);
 
-    if (intersects.length <= 0) {
+		if (intersects.length <= 0) {
 
-    	return;
+			return;
 
-    }
+		}
 
-   	pointIntersect.copy(intersects[0].point);
+		pointIntersect.copy(intersects[0].point);
 
-    plane.setFromNormalAndCoplanarPoint(planeNormal, pointIntersect);
+		plane.setFromNormalAndCoplanarPoint(planeNormal, pointIntersect);
 
 		distance.subVectors(intersects[0].object.position, intersects[0].point);
 
-    App.controls.OrbitControls.enabled = false;
+		App.controls.OrbitControls.enabled = false;
 
 		App.actions.isDragging = true;
 
@@ -68,9 +67,9 @@ const Events = (function () {
 
 	function onMouseUp () {
 
-    App.controls.OrbitControls.enabled = true;
+		App.controls.OrbitControls.enabled = true;
 
-    App.actions.isDragging = false;
+		App.actions.isDragging = false;
 
 		App.draggableObject = null;
 
@@ -80,8 +79,8 @@ const Events = (function () {
 
 	function onMouseMove (event) {
 
-		App.mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-		App.mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+		App.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+		App.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
 		App.raycaster.setFromCamera(App.mouse, App.camera);
 
@@ -89,16 +88,17 @@ const Events = (function () {
 
 			App.raycaster.ray.intersectPlane(plane, pointIntersect);
 
-      App.draggableObject.position.addVectors(pointIntersect, distance);
+			App.draggableObject.position.addVectors(pointIntersect, distance);
 
-    }
+		}
+
 	}
 
 	return {
 
 		init: init
 
-	}
+	};
 
 })();
 

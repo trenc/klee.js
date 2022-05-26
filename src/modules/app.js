@@ -347,7 +347,7 @@ const App = (function () {
 
 		},
 
-		get actions() {
+		get actions () {
 
 			return local.actions;
 

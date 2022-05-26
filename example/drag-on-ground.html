@@ -95,28 +95,6 @@
 					const items = [ // aka meshs
 						{
 							geometry: {
-								type: 'PlaneGeometry',
-								args: [100, 100]
-							},
-							properties: {
-								name: 'ground',
-								position: { y: 0 },
-								rotation: { x: -Math.PI / 2 },
-								receiveShadow: true,
-								userData: {
-									raycasterPlane: true
-								}
-							},
-							material: {
-								type: 'MeshStandardMaterial',
-								properties: {
-									opacity: 0,
-									transparent: true
-								}
-							}
-						},
-						{
-							geometry: {
 								type: 'BoxGeometry',
 								args: [1, 1, 1]
 							},

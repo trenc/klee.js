@@ -13,7 +13,16 @@ const App = (function () {
 		camera: null,
 		renderer: null,
 		scene: null,
-		controls: null
+		mouse: null,
+		raycaster: null,
+		controls: {
+			OrbitControls: null
+		},
+		draggables: [],
+		draggableObject: null,
+		actions: {
+			isDragging: false
+		}
 
 	};
 
@@ -67,11 +76,11 @@ const App = (function () {
 
 		local.renderer.render(local.scene, local.camera);
 
-		if (local.controls) {
+		if (local.controls.OrbitControls) {
 
-			if (local.controls.enableDamping || local.controls.autoRotate) {
+			if (local.controls.OrbitControls.enableDamping || local.controls.OrbitControls.autoRotate) {
 
-				local.controls.update();
+				local.controls.OrbitControls.update();
 
 			}
 
@@ -242,6 +251,12 @@ const App = (function () {
 
 	return {
 
+		get canvas () {
+
+			return local.canvas;
+
+		},
+
 		get options () {
 
 			return options;
@@ -284,15 +299,57 @@ const App = (function () {
 
 		},
 
-		set controls (object) {
-
-			local.controls = object;
-
-		},
-
 		get renderer () {
 
 			return local.renderer;
+
+		},
+
+		get draggables () {
+
+			return local.draggables;
+
+		},
+
+		get draggableObject () {
+
+			return local.draggableObject;
+
+		},
+
+		set draggableObject (object) {
+
+			local.draggableObject = object;
+
+		},
+
+		get mouse () {
+
+			return local.mouse;
+
+		},
+
+		set mouse (mouseVector2) {
+
+			local.mouse = mouseVector2;
+
+		},
+
+		get raycaster () {
+
+			return local.raycaster;
+
+		},
+
+		set raycaster (raycaster) {
+
+			local.raycaster = raycaster;
+
+		},
+
+		get actions () {
+
+			return local.actions;
 
 		},
 

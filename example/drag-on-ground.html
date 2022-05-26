@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<title>klee.js - drag on ground</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link rel="stylesheet" href="css/styles.css" />
+	</head>
+	<body>
+
+		<script async src="https://unpkg.com/es-module-shims@1.5.5/dist/es-module-shims.js"></script>
+
+		<script type="importmap">
+			{
+				"imports": {
+					"three": "./libs/three.module.js",
+					"klee": "./../dist/klee.js"
+				}
+			}
+		</script>
+
+		<script type="module">
+
+			import * as THREE from 'three';
+			import { OrbitControls } from './libs/jsm/controls/OrbitControls.js';
+			import * as KLEE from 'klee';
+
+			// for preloading wrap all in an async function
+			(async () => {
+
+					// some opinionated default options declared in /src/default.options.js
+					// you can overwrite these here or add additional options
+					const options = {
+
+						debugLevel: 3,
+
+						renderer: {
+							clearColor: '#103c48'
+						},
+
+						camera: {
+							properties: {
+								position: { x: -2, z: 10 }
+							}
+						}
+
+					};
+
+					const orbitControlsOptions = {
+						// no type and args here, we need the object direct
+						// and args (camera, renderElement are given)
+						properties: {
+							//autoRotate: true,
+							enableDampling: true,
+							enablePan: true,
+							dampingFactor: 0.25,
+							enableZoom: true,
+							minDistance: 5,
+							maxDistance: 30,
+							minPolarAngle: 0.1,
+							maxPolarAngle: 1.5
+						}
+
+					};
+
+					const lights = [
+						{
+							type: 'AmbientLight',
+							properties: {
+								name: 'light-1',
+								color: '#404040'
+							}
+						},
+						{
+							type: 'DirectionalLight',
+							properties: {
+								name: 'light-2',
+								castShadow: true,
+								shadow: { mapSize: { x: 1024, y: 1024 } }, // INFO: x,y instead of width, height
+								position: { x: 30, y: 30, z: 30 }
+							}
+						},
+						{
+							type: 'DirectionalLight',
+							properties: {
+								name: 'light-3',
+								color: '#ffffff',
+								castShadow: true,
+								shadow: { mapSize: { x: 1024, y: 1024 } }, // INFO: x,y instead of width, height
+								position: { x: -30, y: 30, z: 30 }
+							}
+						}
+					];
+
+					const items = [ // aka meshs
+						{
+							geometry: {
+								type: 'PlaneGeometry',
+								args: [100, 100]
+							},
+							properties: {
+								name: 'ground',
+								position: { y: 0 },
+								rotation: { x: -Math.PI / 2 },
+								receiveShadow: true,
+								userData: {
+									raycasterPlane: true
+								}
+							},
+							material: {
+								type: 'MeshStandardMaterial',
+								properties: {
+									opacity: 0,
+									transparent: true
+								}
+							}
+						},
+						{
+							geometry: {
+								type: 'BoxGeometry',
+								args: [1, 1, 1]
+							},
+							material: {
+								type: 'MeshStandardMaterial',
+								textures: [
+									{
+										map: 'map',
+										url: './textures/Wood060_1K_Color.jpg'
+									},
+									{
+										map: 'normalMap',
+										url: './textures/Wood060_1K_Normal.jpg',
+										properties: {
+											flipY: false
+										}
+									},
+									{
+										map: 'roughnessMap',
+										url: './textures/Wood060_1K_Roughness.jpg'
+									},
+									{
+										map: 'aoMap',
+										url: './textures/Wood060_1K_AmbientOcclusion.jpg'
+									},
+									{
+										map: 'bumpMap',
+										url: './textures/Wood060_1K_Displacement.jpg'
+									}
+								]
+							},
+							properties: {
+								name: 'some box',
+								rotation: { y: Math.PI / 8 },
+								position: { x: -0.5, y: 0.5, z: -0.5 },
+								castShadow: true,
+								receiveShadow: true,
+								userData: {
+										'draggable': true
+									}
+							}
+						}
+					];
+
+					const gridHelper = {
+
+						type: 'GridHelper',
+						args: [100, 100],
+						properties: {
+							color: '#72898f'
+						}
+
+					};
+
+					// used for preloading
+					const textures = [];
+					Object.values(items).map(item => {
+
+						if (!item.material.textures) {
+
+							return;
+
+						}
+
+						Object.values(item.material.textures).map(texture => {
+
+							if (Array.isArray(texture.url)) {
+
+								texture.url.forEach((arrayUrl) => {
+
+									textures.push(arrayUrl);
+
+								});
+
+							} else {
+
+								textures.push(texture.url);
+
+							}
+
+						});
+
+					});
+
+					// initalize app
+					KLEE.App.init(THREE, options);
+
+					// preload images
+					await KLEE.App.preloadImages(textures);
+
+					// initalize scene
+					KLEE.Scene.init();
+
+					// optional controls
+					KLEE.Controls.init(OrbitControls, orbitControlsOptions);
+
+					// optional events
+					KLEE.Events.init();
+
+					// shed some light
+					KLEE.Light.add(lights);
+
+					// add a box anda sphere
+					KLEE.Item.add(items);
+
+					// add a grid
+					KLEE.Object3d.add(gridHelper);
+
+					// run the app
+					KLEE.App.run();
+
+					// inspect the scene in console
+					console.log(KLEE.App.scene);
+
+			})();
+
+		</script>
+
+	</body>
+</html>

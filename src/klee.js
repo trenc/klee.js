@@ -11,3 +11,4 @@ export { Light } from './modules/light';
 export { Item } from './modules/item';
 export { Geometry } from './modules/geometry';
 export { Material } from './modules/material';
+export { Events } from './modules/events';

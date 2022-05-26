@@ -5,14 +5,13 @@ const Controls = (function () {
 
 	function init (Controls, options) {
 
-		App.controls = initControls(Controls, options);
+		App.controls[Controls.name] = initControls(Controls, options);
 
 	}
 
 	function initControls (Controls, options) {
 
 		let controls = new Controls(App.camera, App.renderer.domElement);
-
 		controls = Object3d.change(controls, options);
 
 		return controls;

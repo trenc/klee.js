@@ -93,9 +93,14 @@ var App = function() {
     scene: null,
     mouse: null,
     raycaster: null,
-    controls: {},
+    controls: {
+      OrbitControls: null
+    },
     draggables: [],
-    draggableObject: null
+    draggableObject: null,
+    actions: {
+      isDragging: false
+    }
   };
   async function preloadImages(imageArray = []) {
     if (!Array.isArray(imageArray) || imageArray.length <= 0) {
@@ -215,6 +220,9 @@ var App = function() {
     logMessage(message, "info");
   }
   return {
+    get canvas() {
+      return local.canvas;
+    },
     get options() {
       return options;
     },
@@ -236,17 +244,11 @@ var App = function() {
     get controls() {
       return local.controls;
     },
-    set controls(object) {
-      local.controls = object;
-    },
     get renderer() {
       return local.renderer;
     },
     get draggables() {
       return local.draggables;
-    },
-    set draggables(draggables) {
-      local.draggables = draggables;
     },
     get draggableObject() {
       return local.draggableObject;
@@ -265,6 +267,9 @@ var App = function() {
     },
     set raycaster(raycaster) {
       local.raycaster = raycaster;
+    },
+    get actions() {
+      return local.actions;
     },
     preloadImages,
     initSize,
@@ -396,7 +401,7 @@ var Controls = function() {
   function init(Controls2, options) {
     App.controls[Controls2.name] = initControls(Controls2, options);
   }
-  function initControls(Controls2, options, objects = null) {
+  function initControls(Controls2, options) {
     let controls = new Controls2(App.camera, App.renderer.domElement);
     controls = Object3d.change(controls, options);
     return controls;
@@ -567,8 +572,16 @@ var Item = function() {
 
 // src/modules/events.js
 var Events = function() {
+  let plane = null;
+  let planeNormal = null;
+  let pointIntersect = null;
+  let distance = null;
   function init() {
     const THREE = App.THREE;
+    plane = new THREE.Plane();
+    planeNormal = new THREE.Vector3(0, 1, 0);
+    pointIntersect = new THREE.Vector3();
+    distance = new THREE.Vector3();
     App.raycaster = App.raycaster ?? new THREE.Raycaster();
     App.mouse = App.mouse ?? {};
     document.addEventListener("mousemove", (event) => {
@@ -581,20 +594,33 @@ var Events = function() {
       onMouseUp(event);
     });
   }
-  function onMouseDown(event) {
+  function onMouseDown() {
     const intersects = App.raycaster.intersectObjects(App.draggables);
     if (intersects.length <= 0) {
       return;
     }
+    pointIntersect.copy(intersects[0].point);
+    plane.setFromNormalAndCoplanarPoint(planeNormal, pointIntersect);
+    distance.subVectors(intersects[0].object.position, intersects[0].point);
     App.controls.OrbitControls.enabled = false;
+    App.actions.isDragging = true;
+    App.draggableObject = intersects[0].object;
+    App.canvas.style.cursor = "grab";
   }
-  function onMouseUp(event) {
+  function onMouseUp() {
     App.controls.OrbitControls.enabled = true;
+    App.actions.isDragging = false;
+    App.draggableObject = null;
+    App.canvas.style.cursor = "auto";
   }
   function onMouseMove(event) {
     App.mouse.x = event.clientX / window.innerWidth * 2 - 1;
     App.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
     App.raycaster.setFromCamera(App.mouse, App.camera);
+    if (App.actions.isDragging) {
+      App.raycaster.ray.intersectPlane(plane, pointIntersect);
+      App.draggableObject.position.addVectors(pointIntersect, distance);
+    }
   }
   return {
     init

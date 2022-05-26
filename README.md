@@ -96,7 +96,7 @@ or run all tests in CLI mode:
 * collisions
 * constructive solid geometries
 * interactions
-* dragging
+* ~~dragging~~
 * gridsystem
 * userData
 * examples

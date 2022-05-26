@@ -25,8 +25,6 @@ describe('KLEE controls', function () {
 
 		});
 
-		it('add DragControls init');
-
 	});
 
 });

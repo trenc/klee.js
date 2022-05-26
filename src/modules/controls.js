@@ -9,7 +9,7 @@ const Controls = (function () {
 
 	}
 
-	function initControls (Controls, options, objects = null) {
+	function initControls (Controls, options) {
 
 		let controls = new Controls(App.camera, App.renderer.domElement);
 		controls = Object3d.change(controls, options);

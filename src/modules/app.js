@@ -15,9 +15,14 @@ const App = (function () {
 		scene: null,
 		mouse: null,
 		raycaster: null,
-		controls: {},
+		controls: {
+			OrbitControls: null
+		},
 		draggables: [],
-		draggableObject: null
+		draggableObject: null,
+		actions: {
+			isDragging: false
+		}
 
 	};
 
@@ -246,6 +251,12 @@ const App = (function () {
 
 	return {
 
+		get canvas () {
+
+			return local.canvas;
+
+		},
+
 		get options () {
 
 			return options;
@@ -288,12 +299,6 @@ const App = (function () {
 
 		},
 
-		set controls (object) {
-
-			local.controls = object;
-
-		},
-
 		get renderer () {
 
 			return local.renderer;
@@ -303,12 +308,6 @@ const App = (function () {
 		get draggables () {
 
 			return local.draggables;
-
-		},
-
-		set draggables (draggables) {
-
-			local.draggables = draggables;
 
 		},
 
@@ -345,6 +344,12 @@ const App = (function () {
 		set raycaster (raycaster) {
 
 			local.raycaster = raycaster;
+
+		},
+
+		get actions() {
+
+			return local.actions;
 
 		},
 

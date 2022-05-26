@@ -2,9 +2,19 @@ import { App } from './app';
 
 const Events = (function () {
 
+	let plane = null;
+	let planeNormal = null;
+	let pointIntersect = null;
+	let distance = null;
+
 	function init () {
 
 		const THREE = App.THREE;
+
+		plane = new THREE.Plane();
+		planeNormal = new THREE.Vector3(0, 1, 0);
+		pointIntersect = new THREE.Vector3();
+		distance = new THREE.Vector3();
 
 		App.raycaster = App.raycaster ?? new THREE.Raycaster();
 		App.mouse = App.mouse ?? {};
@@ -30,7 +40,7 @@ const Events = (function () {
 
 	}
 
-	function onMouseDown (event) {
+	function onMouseDown () {
 
 		const intersects = App.raycaster.intersectObjects(App.draggables);
 
@@ -40,23 +50,31 @@ const Events = (function () {
 
     }
 
+   	pointIntersect.copy(intersects[0].point);
+
+    plane.setFromNormalAndCoplanarPoint(planeNormal, pointIntersect);
+
+		distance.subVectors(intersects[0].object.position, intersects[0].point);
+
     App.controls.OrbitControls.enabled = false;
 
-    	// pIntersect.copy(intersects[0].point);
+		App.actions.isDragging = true;
 
-      // plane.setFromNormalAndCoplanarPoint(pNormal, pIntersect);
+		App.draggableObject = intersects[0].object;
 
-      // shift.subVectors(intersects[0].object.position, intersects[0].point);
-
-      // isDragging = true;
-
-      // dragObject = intersects[0].object;
+		App.canvas.style.cursor = 'grab';
 
 	}
 
-	function onMouseUp (event) {
+	function onMouseUp () {
 
     App.controls.OrbitControls.enabled = true;
+
+    App.actions.isDragging = false;
+
+		App.draggableObject = null;
+
+		App.canvas.style.cursor = 'auto';
 
 	}
 
@@ -67,6 +85,13 @@ const Events = (function () {
 
 		App.raycaster.setFromCamera(App.mouse, App.camera);
 
+		if (App.actions.isDragging) {
+
+			App.raycaster.ray.intersectPlane(plane, pointIntersect);
+
+      App.draggableObject.position.addVectors(pointIntersect, distance);
+
+    }
 	}
 
 	return {

@@ -97,7 +97,6 @@ var App = function() {
       OrbitControls: null
     },
     draggables: [],
-    draggableObject: null,
     actions: {
       isDragging: false
     }
@@ -249,12 +248,6 @@ var App = function() {
     },
     get draggables() {
       return local.draggables;
-    },
-    get draggableObject() {
-      return local.draggableObject;
-    },
-    set draggableObject(object) {
-      local.draggableObject = object;
     },
     get mouse() {
       return local.mouse;
@@ -570,20 +563,62 @@ var Item = function() {
   };
 }(App);
 
-// src/modules/events.js
-var Events = function() {
+// src/modules/dragging.js
+var Dragging = function() {
   let plane = null;
   let planeNormal = null;
   let pointIntersect = null;
   let distance = null;
-  function init() {
+  let draggableObject = null;
+  let draggables = [];
+  function init(draggablesArray) {
     const THREE = App.THREE;
     plane = new THREE.Plane();
     planeNormal = new THREE.Vector3(0, 1, 0);
     pointIntersect = new THREE.Vector3();
     distance = new THREE.Vector3();
+    draggables = draggablesArray;
+  }
+  function start() {
+    const intersects = App.raycaster.intersectObjects(draggables);
+    if (intersects.length <= 0) {
+      return;
+    }
+    pointIntersect.copy(intersects[0].point);
+    plane.setFromNormalAndCoplanarPoint(planeNormal, pointIntersect);
+    distance.subVectors(intersects[0].object.position, intersects[0].point);
+    draggableObject = intersects[0].object;
+    App.controls.OrbitControls.enabled = false;
+    App.actions.isDragging = true;
+    App.canvas.style.cursor = "grab";
+  }
+  function stop() {
+    draggableObject = null;
+    App.controls.OrbitControls.enabled = true;
+    App.actions.isDragging = false;
+    App.canvas.style.cursor = "auto";
+  }
+  function drag() {
+    if (App.actions.isDragging) {
+      draggableObject.position.addVectors(pointIntersect, distance);
+      App.raycaster.ray.intersectPlane(plane, pointIntersect);
+    }
+  }
+  return {
+    init,
+    start,
+    drag,
+    stop
+  };
+}();
+
+// src/modules/events.js
+var Events = function() {
+  function init() {
+    const THREE = App.THREE;
     App.raycaster = App.raycaster ?? new THREE.Raycaster();
     App.mouse = App.mouse ?? {};
+    Dragging.init(App.draggables);
     document.addEventListener("mousemove", (event) => {
       onMouseMove(event);
     });
@@ -595,32 +630,16 @@ var Events = function() {
     });
   }
   function onMouseDown() {
-    const intersects = App.raycaster.intersectObjects(App.draggables);
-    if (intersects.length <= 0) {
-      return;
-    }
-    pointIntersect.copy(intersects[0].point);
-    plane.setFromNormalAndCoplanarPoint(planeNormal, pointIntersect);
-    distance.subVectors(intersects[0].object.position, intersects[0].point);
-    App.controls.OrbitControls.enabled = false;
-    App.actions.isDragging = true;
-    App.draggableObject = intersects[0].object;
-    App.canvas.style.cursor = "grab";
+    Dragging.start();
   }
   function onMouseUp() {
-    App.controls.OrbitControls.enabled = true;
-    App.actions.isDragging = false;
-    App.draggableObject = null;
-    App.canvas.style.cursor = "auto";
+    Dragging.stop();
   }
   function onMouseMove(event) {
     App.mouse.x = event.clientX / window.innerWidth * 2 - 1;
     App.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
     App.raycaster.setFromCamera(App.mouse, App.camera);
-    if (App.actions.isDragging) {
-      App.raycaster.ray.intersectPlane(plane, pointIntersect);
-      App.draggableObject.position.addVectors(pointIntersect, distance);
-    }
+    Dragging.drag();
   }
   return {
     init
@@ -632,6 +651,7 @@ console.log("klee.js: " + KLEEVERSION);
 export {
   App,
   Controls,
+  Dragging,
   Events,
   Geometry,
   Item,

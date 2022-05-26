@@ -19,7 +19,6 @@ const App = (function () {
 			OrbitControls: null
 		},
 		draggables: [],
-		draggableObject: null,
 		actions: {
 			isDragging: false
 		}
@@ -308,18 +307,6 @@ const App = (function () {
 		get draggables () {
 
 			return local.draggables;
-
-		},
-
-		get draggableObject () {
-
-			return local.draggableObject;
-
-		},
-
-		set draggableObject (object) {
-
-			local.draggableObject = object;
 
 		},
 

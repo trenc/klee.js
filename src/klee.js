@@ -7,6 +7,7 @@ export { App } from './modules/app';
 export { Object3d } from './modules/object3d';
 export { Scene } from './modules/scene';
 export { Controls } from './modules/controls';
+export { Loaders } from './modules/loaders';
 export { Light } from './modules/light';
 export { Item } from './modules/item';
 export { Geometry } from './modules/geometry';

@@ -2,6 +2,7 @@ import { App } from './app';
 import { Object3d } from './object3d';
 import { Material } from './material';
 import { Geometry } from './geometry';
+import {Loaders} from './loaders';
 
 const Item = (function () {
 
@@ -21,9 +22,19 @@ const Item = (function () {
 
 	function add (options) {
 
-		if (typeof options === 'object' && options.geometry) {
+		if (typeof options === 'object') {
 
-			return addOne(options);
+			if (options.loader) {
+
+				return addFromLoader(options);
+
+			}
+
+			if (options.geometry) {
+
+				return addMesh(options);
+
+			}
 
 		}
 
@@ -33,7 +44,7 @@ const Item = (function () {
 
 			options.forEach(option => {
 
-				const item = addOne(option);
+				const item = add(option);
 
 				items.push(item);
 
@@ -45,7 +56,17 @@ const Item = (function () {
 
 	}
 
-	function addOne (options) {
+	function addFromLoader (option) {
+
+		const item = Loaders.load(option);
+
+		App.scene.add(item);
+
+		return item;
+
+	}
+
+	function addMesh (options) {
 
 		const mesh = create(options);
 

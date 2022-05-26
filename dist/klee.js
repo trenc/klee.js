@@ -404,6 +404,22 @@ var Controls = function() {
   };
 }(App);
 
+// src/modules/loaders.js
+var Loaders = function() {
+  const Loaders2 = {};
+  function init(LoaderClass) {
+    Loaders2[LoaderClass.name] = new LoaderClass();
+  }
+  function load(options) {
+    const item = Loaders2[options.loader].load(options.file);
+    return item;
+  }
+  return {
+    init,
+    load
+  };
+}(App);
+
 // src/modules/light.js
 var Light = function() {
   function create(options) {
@@ -532,19 +548,29 @@ var Item = function() {
     return mesh;
   }
   function add(options) {
-    if (typeof options === "object" && options.geometry) {
-      return addOne(options);
+    if (typeof options === "object") {
+      if (options.loader) {
+        return addFromLoader(options);
+      }
+      if (options.geometry) {
+        return addMesh(options);
+      }
     }
     const items = [];
     if (Array.isArray(options)) {
       options.forEach((option) => {
-        const item = addOne(option);
+        const item = add(option);
         items.push(item);
       });
     }
     return items;
   }
-  function addOne(options) {
+  function addFromLoader(option) {
+    const item = Loaders.load(option);
+    App.scene.add(item);
+    return item;
+  }
+  function addMesh(options) {
     const mesh = create(options);
     App.scene.add(mesh);
     return mesh;
@@ -657,6 +683,7 @@ export {
   Item,
   KLEEVERSION,
   Light,
+  Loaders,
   Material,
   Object3d,
   Scene

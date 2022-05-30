@@ -13,10 +13,9 @@ describe('KLEE Object3d', function () {
 				const testName = 'This-Is-Test-Grid';
 				const gridOptions = {
 					type: 'GridHelper',
-					args: [100, 100],
+					args: [100, 100, '#ff00ff'],
 					properties: {
-						name: testName,
-						color: '#72898f'
+						name: testName
 					}
 				};
 

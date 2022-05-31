@@ -191,7 +191,7 @@
 								},
 								textures: [
 									{
-										type: 'CubeTextureLoader',
+										loader: 'CubeTextureLoader',
 										properties: {
 										},
 										map: 'envMap',
@@ -223,35 +223,8 @@
 
 					};
 
-					// used for preloading
-					const textures = [];
-					Object.values(items).map(item => {
-
-						Object.values(item.material.textures).map(texture => {
-
-							if (Array.isArray(texture.url)) {
-
-								texture.url.forEach((arrayUrl) => {
-
-									textures.push(arrayUrl);
-
-								});
-
-							} else {
-
-								textures.push(texture.url);
-
-							}
-
-						});
-
-					});
-
 					// initalize app
 					KLEE.App.init(THREE, options);
-
-					// preload images
-					await KLEE.App.preloadImages(textures);
 
 					// initalize scene
 					KLEE.Scene.init();
@@ -269,7 +242,7 @@
 					KLEE.Object3d.add(gridHelper);
 
 					// run the app
-					KLEE.App.run();
+					KLEE.App.manager.onLoad = () => KLEE.App.run();
 
 					// inspect the scene in console
 					console.log(KLEE.App.scene);

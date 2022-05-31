@@ -562,10 +562,45 @@ var Item = function() {
     }
     return items;
   }
-  async function addFromLoader(option) {
-    const item = await Loaders.load(option);
-    App.scene.add(item.scene);
-    return item;
+  async function addFromLoader(options) {
+    let item = await Loaders.load(options);
+    if (item.scene) {
+      let parent = wrapGroupParent(item.scene, options);
+      parent = change(parent, options);
+      parent.receiveShadow = false;
+      parent.castShadow = false;
+      App.scene.add(parent);
+      return parent;
+    } else {
+      item = change(item, options);
+      App.scene.add(item);
+      return item;
+    }
+  }
+  function wrapGroupParent(item, options) {
+    const THREE = App.THREE;
+    const offset = 1e-3;
+    const box = new THREE.Box3().setFromObject(item);
+    const dim = {
+      "x": box.max.x - box.min.x + offset,
+      "y": box.max.y - box.min.y + offset,
+      "z": box.max.z - box.min.z + offset
+    };
+    const geo = new THREE.BoxGeometry(dim.x, dim.y, dim.z);
+    options.color = 16777215;
+    options.transparent = true;
+    options.opacity = 0;
+    const mat = new THREE.MeshBasicMaterial(options);
+    const mesh = new THREE.Mesh(geo, mat);
+    item.position.y = dim.y / -2;
+    mesh.position.y = dim.y;
+    mesh.renderOrder = 1;
+    item.children.map((child) => {
+      child.receiveShadow = options.properties.receiveShadow || false;
+      child.castShadow = options.properties.castShadow || false;
+    });
+    mesh.add(item);
+    return mesh;
   }
   function addMesh(options) {
     const mesh = create(options);

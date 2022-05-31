@@ -93,6 +93,7 @@ var App = function() {
     scene: null,
     mouse: null,
     raycaster: null,
+    manager: null,
     controls: {
       OrbitControls: null
     },
@@ -101,15 +102,6 @@ var App = function() {
       isDragging: false
     }
   };
-  async function preloadImages(imageArray = []) {
-    if (!Array.isArray(imageArray) || imageArray.length <= 0) {
-      warn("Images could not be preloaded. Wrong or no argument given.");
-      return;
-    }
-    THREE.Cache.enabled = true;
-    const loader = new THREE.ImageLoader();
-    return await Promise.all(imageArray.map(async (image) => await loader.loadAsync(image)));
-  }
   function init(three, initOptions = {}) {
     if (!three || !three.REVISION) {
       error("THREE is not inserted");
@@ -122,6 +114,7 @@ var App = function() {
     const mergedOptions = Utils.merge(getDefaultOptions(THREE), initOptions);
     options = {...mergedOptions};
     local.renderer = initRenderer(options.renderer);
+    local.manager = new THREE.LoadingManager();
   }
   function run(callback) {
     local.renderer.render(local.scene, local.camera);
@@ -246,6 +239,9 @@ var App = function() {
     get renderer() {
       return local.renderer;
     },
+    get manager() {
+      return local.manager;
+    },
     get draggables() {
       return local.draggables;
     },
@@ -264,7 +260,6 @@ var App = function() {
     get actions() {
       return local.actions;
     },
-    preloadImages,
     initSize,
     create: createObject,
     error,
@@ -406,12 +401,13 @@ var Controls = function() {
 
 // src/modules/loaders.js
 var Loaders = function() {
+  const THREE = App.THREE;
   const Loaders2 = {};
   function init(LoaderClass) {
-    Loaders2[LoaderClass.name] = new LoaderClass();
+    Loaders2[LoaderClass.name] = new LoaderClass(App.manager);
   }
-  function load(options) {
-    const item = Loaders2[options.loader].load(options.file);
+  async function load(options) {
+    const item = await Loaders2[options.loader].loadAsync(options.url);
     return item;
   }
   return {
@@ -470,6 +466,7 @@ var Material = function() {
     return material;
   }
   function change(object, options) {
+    const THREE = App.THREE;
     if (options.properties) {
       object = applyProperties(object, options.properties);
     }
@@ -477,11 +474,11 @@ var Material = function() {
       object = Utils.applyMethods(object, options.methods);
     }
     if (options.textures) {
-      options.textures.forEach((texture) => {
-        const loaderType = texture.type || "TextureLoader";
-        const loader = App.create({type: loaderType});
+      options.textures.forEach(async (texture) => {
+        const loaderType = texture.loader || "TextureLoader";
+        const loader = new THREE[loaderType](App.manager);
         const mapType = texture.map;
-        const mapTexture = loader.load(texture.url);
+        const mapTexture = await loader.loadAsync(texture.url);
         object[mapType] = mapTexture;
         if (texture.properties) {
           object[mapType] = applyProperties(object[mapType], texture.properties);
@@ -565,9 +562,9 @@ var Item = function() {
     }
     return items;
   }
-  function addFromLoader(option) {
-    const item = Loaders.load(option);
-    App.scene.add(item);
+  async function addFromLoader(option) {
+    const item = await Loaders.load(option);
+    App.scene.add(item.scene);
     return item;
   }
   function addMesh(options) {

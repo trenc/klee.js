@@ -31,6 +31,8 @@ class Utils {
 		const colorProperties = [
 
 			'color',
+			'colorCenterLine',
+			'colorGrid',
 			'specular',
 			'emissive',
 			'diffuse',

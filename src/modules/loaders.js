@@ -2,18 +2,19 @@ import { App } from './app';
 
 const Loaders = (function () {
 
+	const THREE = App.THREE;
+
 	const Loaders = {};
 
 	function init (LoaderClass) {
 
-		Loaders[LoaderClass.name] = new LoaderClass();
+		Loaders[LoaderClass.name] = new LoaderClass(App.manager);
 
 	}
 
-	function load (options) {
+	async function load (options) {
 
-		// ToDo: Preload all assets and file before
-		const item = Loaders[options.loader].load(options.file);
+		const item = await Loaders[options.loader].loadAsync(options.url);
 
 		return item;
 

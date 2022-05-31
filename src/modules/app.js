@@ -15,6 +15,7 @@ const App = (function () {
 		scene: null,
 		mouse: null,
 		raycaster: null,
+		manager: null,
 		controls: {
 			OrbitControls: null
 		},
@@ -24,27 +25,6 @@ const App = (function () {
 		}
 
 	};
-
-	async function preloadImages (imageArray = []) {
-
-		if (!Array.isArray(imageArray) || imageArray.length <= 0) {
-
-			warn('Images could not be preloaded. Wrong or no argument given.');
-			return;
-
-		}
-
-		THREE.Cache.enabled = true;
-
-		const loader = new THREE.ImageLoader();
-
-		return await Promise.all(
-
-			imageArray.map(async image => await loader.loadAsync(image))
-
-		);
-
-	}
 
 	function init (three, initOptions = {}) {
 
@@ -68,6 +48,8 @@ const App = (function () {
 		options = { ...mergedOptions };
 
 		local.renderer = initRenderer(options.renderer);
+
+		local.manager = new THREE.LoadingManager();
 
 	}
 
@@ -304,6 +286,12 @@ const App = (function () {
 
 		},
 
+		get manager () {
+
+			return local.manager;
+
+		},
+
 		get draggables () {
 
 			return local.draggables;
@@ -340,7 +328,6 @@ const App = (function () {
 
 		},
 
-		preloadImages: preloadImages,
 		initSize: initSize,
 		create: createObject,
 		error: error,

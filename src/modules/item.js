@@ -56,11 +56,11 @@ const Item = (function () {
 
 	}
 
-	function addFromLoader (option) {
+	async function addFromLoader (option) {
 
-		const item = Loaders.load(option);
+		const item = await Loaders.load(option);
 
-		App.scene.add(item);
+		App.scene.add(item.scene);
 
 		return item;
 

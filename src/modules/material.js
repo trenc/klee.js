@@ -1,4 +1,5 @@
 import { App } from './app';
+import { Loaders} from './loaders';
 import { Utils } from '../utils';
 
 const Material = (function () {
@@ -28,6 +29,8 @@ const Material = (function () {
 
 	function change (object, options) {
 
+		const THREE = App.THREE;
+
 		if (options.properties) {
 
 			object = applyProperties(object, options.properties);
@@ -42,12 +45,12 @@ const Material = (function () {
 
 		if (options.textures) {
 
-			options.textures.forEach(texture => {
+			options.textures.forEach(async texture => {
 
-				const loaderType = texture.type || 'TextureLoader';
-				const loader = App.create({ type: loaderType });
+				const loaderType = texture.loader || 'TextureLoader';
+				const loader = new THREE[loaderType](App.manager);
 				const mapType = texture.map;
-				const mapTexture = loader.load(texture.url);
+				const mapTexture = await loader.loadAsync(texture.url);
 
 				object[mapType] = mapTexture;
 

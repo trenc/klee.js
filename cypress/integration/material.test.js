@@ -53,7 +53,7 @@ describe('KLEE material', function () {
 					},
 					textures: [
 						{
-							type: 'TextureLoader',
+							loader: 'TextureLoader',
 							map: 'map',
 							url: '../../example/textures/Wood060_1K_Color.jpg',
 							properties: { flipY: false }

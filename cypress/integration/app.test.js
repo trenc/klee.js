@@ -154,36 +154,6 @@ describe('KLEE app', function () {
 
 	});
 
-	describe('preloadImages (images)', function () {
-
-		it('preload and cache an array with images ', () => {
-
-			cy.visit('/test.html?test=AppInit');
-
-			cy.window().then(async win => {
-
-				const KLEE = win.KLEE;
-				const THREE = win.THREE;
-				const images = [
-					'../../example/textures/Wood060_1K_Color.jpg',
-					'../../example/textures/Rock031_1K_Color.jpg'
-				];
-
-				await KLEE.App.preloadImages(images);
-
-				console.log(THREE.Cache.enabled);
-				expect(THREE.Cache.enabled).to.be.true;
-				expect(THREE.Cache.files).to.have.property(images[0]);
-				expect(THREE.Cache.files).to.have.property(images[1]);
-				expect(() => KLEE.App.preloadImages()).not.to.throw();
-				expect(() => KLEE.App.preloadImages('testString')).not.to.throw();
-
-			});
-
-		});
-
-	});
-
 	describe('show error(message), warn(message), info(message) an log(message) depending on debugLevels', function () {
 
 		beforeEach(() => {

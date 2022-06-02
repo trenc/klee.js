@@ -91,14 +91,14 @@ or run all tests in CLI mode:
 * selections
 * backup/restore
 * transactions
-* Collada-, GLTF-Import
+* Collada-, ~~GLTF-Import~~
 * physics
 * collisions
 * constructive solid geometries
 * interactions
 * ~~dragging~~
 * gridsystem
-* userData
+* ~~userData~~
 * examples
 * ...
 

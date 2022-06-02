@@ -95,8 +95,73 @@
 
 					const items = [ // aka meshs
 						{
+							geometry: {
+								type: 'PlaneGeometry',
+								args: [100, 100]
+							},
+							material: {
+								type: 'MeshStandardMaterial',
+								properties: {
+									color: '#103c48',
+									side: THREE.DoubleSide
+								},
+								textures: []
+							},
+							properties: {
+								receiveShadow: true,
+								rotation: { x: Math.PI / -2 },
+								name: 'Floor'
+							}
+						},
+						{
 							loader: 'GLTFLoader',
-							url: './models/treasure_chest_1k.gltf'
+							url: './models/treasure_chest_1k.gltf',
+							properties: {
+								scale: {x: 2, y: 2, z: 2 },
+								receiveShadow: true,
+								castShadow: true,
+								userData: {
+									draggable: true
+								}
+							}
+						},
+						{
+							geometry: {
+								type: 'TorusGeometry',
+								args: [0.5, 0.1, 64, 64]
+							},
+							material: {
+								type: 'MeshStandardMaterial',
+								properties: {
+									metalness: 1.0,
+									roughness: 0.0
+								},
+								textures: [
+									{
+										loader: 'CubeTextureLoader',
+										properties: { },
+										map: 'envMap',
+										url: [
+											'./textures/nx.png',
+											'./textures/ny.png',
+											'./textures/nz.png',
+											'./textures/px.png',
+											'./textures/py.png',
+											'./textures/pz.png'
+										]
+									}
+								]
+							},
+							properties: {
+								name: 'some torus',
+								position: { x: -1.5, y: 1.5, z: 1 },
+								rotation: { y: - Math.PI / 8 },
+								castShadow: true,
+								receiveShadow: true,
+								userData: {
+									draggable: true
+								}
+							}
 						}
 					];
 
@@ -119,6 +184,9 @@
 					// optional loaders
 					KLEE.Loaders.init(GLTFLoader);
 
+					// optional events
+					KLEE.Events.init();
+
 					// shed some light
 					KLEE.Light.add(lights);
 
@@ -133,6 +201,7 @@
 
 					// inspect the scene in console
 					console.log(KLEE.App.scene);
+					//console.log(KLEE.App.draggables);
 
 			})();
 

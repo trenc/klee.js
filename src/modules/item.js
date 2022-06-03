@@ -93,7 +93,7 @@ const Item = (function () {
 
 		const center = box.getCenter(new THREE.Vector3());
 
-		const offset = 0.000; // when clipping effects occur set this to 0.001
+		const offset = 0.001; // when clipping effects occur set this to 0.001
 
 		const dim = {
 			x: box.max.x - box.min.x + offset,

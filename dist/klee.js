@@ -1,5 +1,5 @@
 // src/modules/constants.js
-var KLEEVERSION = "0.3.2";
+var KLEEVERSION = "0.3.3";
 
 // src/default.options.js
 function getDefaultOptions(THREE) {
@@ -601,13 +601,13 @@ var Item = function() {
     item.position.y += item.position.y - center.y;
     item.position.z += item.position.z - center.z;
     mesh.renderOrder = 1;
-    for (const child of item.children) {
+    item.traverse((child) => {
       if (child.isMesh) {
         child.receiveShadow = options.properties.receiveShadow || false;
         child.castShadow = options.properties.castShadow || false;
         child.material.side = THREE.DoubleSide;
       }
-    }
+    });
     mesh.add(item);
     return mesh;
   }

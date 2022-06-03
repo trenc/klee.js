@@ -1,5 +1,5 @@
 // src/modules/constants.js
-var KLEEVERSION = "0.2.0";
+var KLEEVERSION = "0.3.1";
 
 // src/default.options.js
 function getDefaultOptions(THREE) {
@@ -401,7 +401,6 @@ var Controls = function() {
 
 // src/modules/loaders.js
 var Loaders = function() {
-  const THREE = App.THREE;
   const Loaders2 = {};
   function init(LoaderClass) {
     Loaders2[LoaderClass.name] = new LoaderClass(App.manager);
@@ -579,26 +578,36 @@ var Item = function() {
   }
   function wrapGroupParent(item, options) {
     const THREE = App.THREE;
-    const offset = 1e-3;
     const box = new THREE.Box3().setFromObject(item);
+    const center = box.getCenter(new THREE.Vector3());
+    const offset = 0;
     const dim = {
-      "x": box.max.x - box.min.x + offset,
-      "y": box.max.y - box.min.y + offset,
-      "z": box.max.z - box.min.z + offset
+      x: box.max.x - box.min.x + offset,
+      y: box.max.y - box.min.y + offset,
+      z: box.max.z - box.min.z + offset
     };
     const geo = new THREE.BoxGeometry(dim.x, dim.y, dim.z);
-    options.color = 16777215;
-    options.transparent = true;
-    options.opacity = 0;
-    const mat = new THREE.MeshBasicMaterial(options);
+    if (!options.material) {
+      options.material = {
+        color: 16777215,
+        transparent: true,
+        opacity: 0
+      };
+    }
+    const mat = new THREE.MeshBasicMaterial(options.material);
     const mesh = new THREE.Mesh(geo, mat);
-    item.position.y = dim.y / -2;
-    mesh.position.y = dim.y;
+    mesh.position.y = dim.y / 2;
+    item.position.x += item.position.x - center.x;
+    item.position.y += item.position.y - center.y;
+    item.position.z += item.position.z - center.z;
     mesh.renderOrder = 1;
-    item.children.map((child) => {
-      child.receiveShadow = options.properties.receiveShadow || false;
-      child.castShadow = options.properties.castShadow || false;
-    });
+    for (const child of item.children) {
+      if (child.isMesh) {
+        child.receiveShadow = options.properties.receiveShadow || false;
+        child.castShadow = options.properties.castShadow || false;
+        child.material.side = THREE.DoubleSide;
+      }
+    }
     mesh.add(item);
     return mesh;
   }

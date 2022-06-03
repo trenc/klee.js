@@ -580,7 +580,7 @@ var Item = function() {
     const THREE = App.THREE;
     const box = new THREE.Box3().setFromObject(item);
     const center = box.getCenter(new THREE.Vector3());
-    const offset = 0;
+    const offset = 1e-3;
     const dim = {
       x: box.max.x - box.min.x + offset,
       y: box.max.y - box.min.y + offset,

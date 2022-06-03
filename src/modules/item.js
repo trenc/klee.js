@@ -2,7 +2,7 @@ import { App } from './app';
 import { Object3d } from './object3d';
 import { Material } from './material';
 import { Geometry } from './geometry';
-import {Loaders} from './loaders';
+import { Loaders } from './loaders';
 
 const Item = (function () {
 
@@ -62,7 +62,7 @@ const Item = (function () {
 
 		if (item.scene) {
 
-			let parent = wrapGroupParent (item.scene, options);
+			let parent = wrapGroupParent(item.scene, options);
 
 			parent = change(parent, options);
 
@@ -72,7 +72,6 @@ const Item = (function () {
 			App.scene.add(parent);
 
 			return parent;
-
 
 		} else {
 
@@ -97,9 +96,9 @@ const Item = (function () {
 		const offset = 0.000; // when clipping effects occur set this to 0.001
 
 		const dim = {
-			'x': box.max.x - box.min.x + offset,
-			'y': box.max.y - box.min.y + offset,
-			'z': box.max.z - box.min.z + offset
+			x: box.max.x - box.min.x + offset,
+			y: box.max.y - box.min.y + offset,
+			z: box.max.z - box.min.z + offset
 		};
 
 		const geo = new THREE.BoxGeometry(dim.x, dim.y, dim.z);
@@ -112,7 +111,7 @@ const Item = (function () {
 				transparent: true,
 				opacity: 0
 
-			}
+			};
 
 		}
 
@@ -126,7 +125,7 @@ const Item = (function () {
 
 		mesh.renderOrder = 1;
 
-		item.children.map(child => {
+		for (const child of item.children) {
 
 			if (child.isMesh) {
 
@@ -136,7 +135,7 @@ const Item = (function () {
 
 			}
 
-		});
+		}
 
 		mesh.add(item);
 

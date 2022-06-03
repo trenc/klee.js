@@ -90,9 +90,11 @@ const Item = (function () {
 
 		const THREE = App.THREE;
 
-		const offset = 0.001;
-
 		const box = new THREE.Box3().setFromObject(item);
+
+		const center = box.getCenter(new THREE.Vector3());
+
+		const offset = 0.000; // when clipping effects occur set this to 0.001
 
 		const dim = {
 			'x': box.max.x - box.min.x + offset,
@@ -102,21 +104,37 @@ const Item = (function () {
 
 		const geo = new THREE.BoxGeometry(dim.x, dim.y, dim.z);
 
-		options.color = 0xffffff;
-		options.transparent = true;
-		options.opacity = 0;
+		if (!options.material) {
 
-		const mat = new THREE.MeshBasicMaterial(options);
+			options.material = {
+
+				color: 0xffffff,
+				transparent: true,
+				opacity: 0
+
+			}
+
+		}
+
+		const mat = new THREE.MeshBasicMaterial(options.material);
 		const mesh = new THREE.Mesh(geo, mat);
 
-		item.position.y = (dim.y / -2);
-		mesh.position.y = (dim.y);
+		mesh.position.y = (dim.y / 2);
+		item.position.x += (item.position.x - center.x);
+		item.position.y += (item.position.y - center.y);
+		item.position.z += (item.position.z - center.z);
+
 		mesh.renderOrder = 1;
 
 		item.children.map(child => {
 
-			child.receiveShadow = options.properties.receiveShadow || false;
-			child.castShadow = options.properties.castShadow || false;
+			if (child.isMesh) {
+
+				child.receiveShadow = options.properties.receiveShadow || false;
+				child.castShadow = options.properties.castShadow || false;
+				child.material.side = THREE.DoubleSide;
+
+			}
 
 		});
 

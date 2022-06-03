@@ -125,7 +125,7 @@ const Item = (function () {
 
 		mesh.renderOrder = 1;
 
-		for (const child of item.children) {
+		item.traverse(child => {
 
 			if (child.isMesh) {
 
@@ -135,7 +135,7 @@ const Item = (function () {
 
 			}
 
-		}
+		});
 
 		mesh.add(item);
 

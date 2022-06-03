@@ -2,8 +2,6 @@ import { App } from './app';
 
 const Loaders = (function () {
 
-	const THREE = App.THREE;
-
 	const Loaders = {};
 
 	function init (LoaderClass) {

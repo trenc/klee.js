@@ -116,8 +116,15 @@
 						{
 							loader: 'GLTFLoader',
 							url: './models/treasure_chest_1k.gltf',
+							material: {
+								wireframe: true,
+								color: '#ffffff',
+								transparent: true,
+								opacity: 0
+							},
 							properties: {
-								scale: {x: 2, y: 2, z: 2 },
+								position: { x: 2, z: 2 },
+								name: 'gltf',
 								receiveShadow: true,
 								castShadow: true,
 								userData: {

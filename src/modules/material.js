@@ -1,5 +1,4 @@
 import { App } from './app';
-import { Loaders} from './loaders';
 import { Utils } from '../utils';
 
 const Material = (function () {

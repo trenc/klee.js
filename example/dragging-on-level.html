@@ -68,31 +68,48 @@
 							type: 'AmbientLight',
 							properties: {
 								name: 'light-1',
-								color: '#404040'
+								color: '#103c48'
 							}
 						},
 						{
-							type: 'DirectionalLight',
+							type: 'SpotLight',
 							properties: {
 								name: 'light-2',
 								castShadow: true,
-								shadow: { mapSize: { x: 1024, y: 1024 } }, // INFO: x,y instead of width, height
+								shadow: { mapSize: { x: 2048, y: 2048 } }, // INFO: x,y instead of width, height
 								position: { x: 30, y: 30, z: 30 }
 							}
 						},
 						{
-							type: 'DirectionalLight',
+							type: 'SpotLight',
 							properties: {
 								name: 'light-3',
 								color: '#ffffff',
 								castShadow: true,
-								shadow: { mapSize: { x: 1024, y: 1024 } }, // INFO: x,y instead of width, height
-								position: { x: -30, y: 30, z: 30 }
+								shadow: { mapSize: { x: 2048, y: 2048 } }, // INFO: x,y instead of width, height
+								position: { x: 0, y: 30, z: 30 }
 							}
 						}
 					];
 
 					const items = [ // aka meshs
+					{
+						geometry: {
+							type: 'PlaneGeometry',
+							args: [50, 50]
+						},
+						material: {
+							type: 'MeshStandardMaterial',
+							properties: {
+								color: '#103c48'
+							},
+						},
+						properties: {
+							receiveShadow: true,
+							rotation: { x: Math.PI / -2 },
+							name: 'Floor'
+						}
+					},
 						{
 							geometry: {
 								type: 'BoxGeometry',
@@ -186,7 +203,7 @@
 					const gridHelper = {
 
 						type: 'GridHelper',
-						args: [100, 100, '#72898f', '#72898f']
+						args: [50, 50, '#72898f', '#72898f']
 
 					};
 

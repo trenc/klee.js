@@ -73,7 +73,7 @@
 							}
 						},
 						{
-							type: 'DirectionalLight',
+							type: 'SpotLight',
 							properties: {
 								name: 'light-2',
 								castShadow: true,
@@ -82,7 +82,7 @@
 							}
 						},
 						{
-							type: 'DirectionalLight',
+							type: 'SpotLight',
 							properties: {
 								name: 'light-3',
 								color: '#ffffff',
@@ -97,15 +97,13 @@
 						{
 							geometry: {
 								type: 'PlaneGeometry',
-								args: [100, 100]
+								args: [50, 50]
 							},
 							material: {
 								type: 'MeshStandardMaterial',
 								properties: {
-									color: '#103c48',
-									side: THREE.DoubleSide
-								},
-								textures: []
+									color: '#103c48'
+								}
 							},
 							properties: {
 								receiveShadow: true,
@@ -175,7 +173,7 @@
 					const gridHelper = {
 
 						type: 'GridHelper',
-						args: [100, 100, '#72898f', '#72898f']
+						args: [50, 50, '#72898f', '#72898f']
 
 					};
 

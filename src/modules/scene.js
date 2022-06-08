@@ -18,6 +18,14 @@ const Scene = (function () {
 
 		const scene = Object3d.create(options);
 
+		(async () => {
+
+			scene.background = await createSceneTextures(options.background);
+
+			scene.environment = await createSceneTextures(options.environment);
+
+		})();
+
 		return scene;
 
 	}
@@ -29,6 +37,24 @@ const Scene = (function () {
 		camera.updateProjectionMatrix();
 
 		return camera;
+
+	}
+
+	async function createSceneTextures (options) {
+
+		if (!options) {
+
+			return null;
+
+		}
+
+		const THREE = App.THREE;
+
+		const loaderType = options.loader || 'TextureLoader';
+		const loader = new THREE[loaderType](App.manager);
+		const texture = await loader.loadAsync(options.url);
+
+		return texture;
 
 	}
 

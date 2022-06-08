@@ -1,5 +1,5 @@
 // src/modules/constants.js
-var KLEEVERSION = "0.3.3";
+var KLEEVERSION = "0.3.4";
 
 // src/default.options.js
 function getDefaultOptions(THREE) {
@@ -50,7 +50,7 @@ var Utils = class {
       return target;
     }
     for (const key of Object.keys(source)) {
-      if (source[key] instanceof Object) {
+      if (source[key] instanceof Object && typeof target[key] !== "undefined") {
         Object.assign(source[key], this.merge(target[key], source[key]));
       }
     }
@@ -372,12 +372,26 @@ var Scene = function() {
   }
   function initScene(options) {
     const scene = Object3d.create(options);
+    (async () => {
+      scene.background = await createSceneTextures(options.background);
+      scene.environment = await createSceneTextures(options.environment);
+    })();
     return scene;
   }
   function initCamera(options) {
     const camera = Object3d.create(options);
     camera.updateProjectionMatrix();
     return camera;
+  }
+  async function createSceneTextures(options) {
+    if (!options) {
+      return null;
+    }
+    const THREE = App.THREE;
+    const loaderType = options.loader || "TextureLoader";
+    const loader = new THREE[loaderType](App.manager);
+    const texture = await loader.loadAsync(options.url);
+    return texture;
   }
   return {
     init

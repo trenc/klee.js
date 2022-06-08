@@ -12,7 +12,7 @@ class Utils {
 
 		for (const key of Object.keys(source)) {
 
-			if (source[key] instanceof Object) {
+			if (source[key] instanceof Object && typeof target[key] !== 'undefined' ) {
 
 				Object.assign(source[key], this.merge(target[key], source[key]));
 

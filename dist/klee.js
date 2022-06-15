@@ -1,5 +1,5 @@
 // src/modules/constants.js
-var KLEEVERSION = "0.3.4";
+var KLEEVERSION = "0.3.5";
 
 // src/default.options.js
 function getDefaultOptions(THREE) {
@@ -288,11 +288,6 @@ var UserData = function() {
   function addDraggables(object, action) {
     if (action) {
       App.draggables.push(object);
-    }
-  }
-  function setRaycasterPlane(object, action) {
-    if (action) {
-      App.raycasterPlane = object;
     }
   }
   return {

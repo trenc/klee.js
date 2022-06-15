@@ -3,6 +3,8 @@ import { Dragging } from './dragging';
 
 const Events = (function () {
 
+	let rect;
+
 	async function init () {
 
 		const THREE = App.THREE;
@@ -13,6 +15,8 @@ const Events = (function () {
 		Dragging.init(App.draggables);
 
 		const element = await App.renderer.domElement;
+
+		rect = element.getBoundingClientRect();
 
 		 element.addEventListener('mousemove', event => {
 
@@ -48,8 +52,8 @@ const Events = (function () {
 
 	function onMouseMove (event) {
 
-		App.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-		App.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+		App.mouse.x = ((event.clientX - rect.left) / (rect.right - rect.left)) * 2 - 1;
+		App.mouse.y = -((event.clientY - rect.top) / (rect.bottom - rect.top)) * 2 + 1;
 
 		App.raycaster.setFromCamera(App.mouse, App.camera);
 

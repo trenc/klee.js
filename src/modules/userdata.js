@@ -35,16 +35,6 @@ const UserData = (function () {
 
 	}
 
-	function setRaycasterPlane (object, action) {
-
-		if (action) {
-
-			App.raycasterPlane = object;
-
-		}
-
-	}
-
 	return {
 
 		handle: handle

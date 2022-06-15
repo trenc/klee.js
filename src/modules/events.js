@@ -3,7 +3,7 @@ import { Dragging } from './dragging';
 
 const Events = (function () {
 
-	function init () {
+	async function init () {
 
 		const THREE = App.THREE;
 
@@ -12,19 +12,21 @@ const Events = (function () {
 
 		Dragging.init(App.draggables);
 
-		document.addEventListener('mousemove', event => {
+		const element = await App.renderer.domElement;
+
+		 element.addEventListener('mousemove', event => {
 
 			onMouseMove(event);
 
 		});
 
-		document.addEventListener('mousedown', event => {
+		element.addEventListener('mousedown', event => {
 
 			onMouseDown(event);
 
 		});
 
-		document.addEventListener('mouseup', event => {
+		element.addEventListener('mouseup', event => {
 
 			onMouseUp(event);
 

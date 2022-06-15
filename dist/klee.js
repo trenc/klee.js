@@ -695,18 +695,21 @@ var Dragging = function() {
 
 // src/modules/events.js
 var Events = function() {
-  function init() {
+  let rect;
+  async function init() {
     const THREE = App.THREE;
     App.raycaster = App.raycaster ?? new THREE.Raycaster();
     App.mouse = App.mouse ?? {};
     Dragging.init(App.draggables);
-    document.addEventListener("mousemove", (event) => {
+    const element = await App.renderer.domElement;
+    rect = element.getBoundingClientRect();
+    element.addEventListener("mousemove", (event) => {
       onMouseMove(event);
     });
-    document.addEventListener("mousedown", (event) => {
+    element.addEventListener("mousedown", (event) => {
       onMouseDown(event);
     });
-    document.addEventListener("mouseup", (event) => {
+    element.addEventListener("mouseup", (event) => {
       onMouseUp(event);
     });
   }
@@ -717,8 +720,8 @@ var Events = function() {
     Dragging.stop();
   }
   function onMouseMove(event) {
-    App.mouse.x = event.clientX / window.innerWidth * 2 - 1;
-    App.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+    App.mouse.x = (event.clientX - rect.left) / (rect.right - rect.left) * 2 - 1;
+    App.mouse.y = -((event.clientY - rect.top) / (rect.bottom - rect.top)) * 2 + 1;
     App.raycaster.setFromCamera(App.mouse, App.camera);
     Dragging.drag();
   }

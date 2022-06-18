@@ -32,7 +32,7 @@ const UserData = (function () {
 
 	function createDragMaterial (object, action) {
 
-
+		return;
 
 	}
 

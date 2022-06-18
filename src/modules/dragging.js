@@ -65,7 +65,7 @@ const Dragging = (function () {
 
 		App.canvas.style.cursor = 'auto';
 
-		if (draggableObject.userData.dragMaterial) {
+		if (draggableObject && draggableObject.userData.dragMaterial) {
 
 			draggableObject.material = tmpMaterial;
 

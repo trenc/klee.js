@@ -271,19 +271,88 @@ var App = function() {
   };
 }();
 
+// src/modules/material.js
+var Material = function() {
+  function create(options) {
+    if (!options) {
+      options = {
+        type: "MeshPhongMaterial",
+        args: [{color: 16777215}]
+      };
+      App.info("No options for material given, using default MeshPhongMaterial in white");
+    }
+    let material = App.create(options);
+    material = change(material, options);
+    return material;
+  }
+  function change(object, options) {
+    const THREE = App.THREE;
+    if (options.properties) {
+      object = applyProperties(object, options.properties);
+    }
+    if (options.methods) {
+      object = Utils.applyMethods(object, options.methods);
+    }
+    if (options.textures) {
+      options.textures.forEach(async (texture) => {
+        const loaderType = texture.loader || "TextureLoader";
+        const loader = new THREE[loaderType](App.manager);
+        const mapType = texture.map;
+        const mapTexture = await loader.loadAsync(texture.url);
+        object[mapType] = mapTexture;
+        if (texture.properties) {
+          object[mapType] = applyProperties(object[mapType], texture.properties);
+        }
+        if (texture.methods) {
+          object[mapType] = Utils.applyMethods(object, texture.methods);
+        }
+      });
+      object.needsUpdate = true;
+    }
+    return object;
+  }
+  function applyProperties(object, options) {
+    const THREE = App.THREE;
+    if (!options || typeof options !== "object") {
+      return object;
+    }
+    for (const prop in options) {
+      if (options[prop] instanceof Object) {
+        object[prop] = {...options[prop]};
+      } else {
+        if (Utils.isThreeColorValue(prop)) {
+          object[prop] = new THREE.Color(options[prop]);
+        } else {
+          object[prop] = options[prop];
+        }
+      }
+    }
+    return object;
+  }
+  return {
+    create,
+    change
+  };
+}(App);
+
 // src/modules/userdata.js
 var UserData = function() {
   function handle(object, userData) {
     const f = {
       draggable: (action) => addDraggables(object, action),
-      raycasterPlane: (action) => setRaycasterPlane(object, action)
+      dragMaterial: (action) => createDragMaterial(object, action)
     };
     for (const action in userData) {
       if (!f[action]) {
-        App.warn("The userData \xBB" + action + "\xAB can not be handled by app.");
+        App.info("The userData \xBB" + action + "\xAB can not be handled by app.");
+        return;
       }
       f[action](action);
     }
+    object.userData = {...userData};
+  }
+  function createDragMaterial(object, action) {
+    return;
   }
   function addDraggables(object, action) {
     if (action) {
@@ -325,7 +394,7 @@ var Object3d = function() {
     }
     for (const prop in options) {
       if (options[prop] instanceof Object) {
-        if ("copy" in object[prop]) {
+        if (typeof object[prop] !== "undefined" && "copy" in object[prop]) {
           if ("toVector3" in object[prop] && "setFromVector3" in object[prop]) {
             const toVector3 = new THREE.Vector3();
             toVector3.setFromEuler(object[prop]);
@@ -337,8 +406,9 @@ var Object3d = function() {
         } else {
           if (prop === "userData") {
             UserData.handle(object, options[prop]);
+          } else {
+            object[prop] = applyProperties(object[prop], options[prop]);
           }
-          object[prop] = applyProperties(object[prop], options[prop]);
         }
       } else {
         if (Utils.isThreeColorValue(prop)) {
@@ -454,70 +524,6 @@ var Light = function() {
   }
   return {
     add,
-    create,
-    change
-  };
-}(App);
-
-// src/modules/material.js
-var Material = function() {
-  function create(options) {
-    if (!options) {
-      options = {
-        type: "MeshPhongMaterial",
-        args: [{color: 16777215}]
-      };
-      App.info("No options for material given, using default MeshPhongMaterial in white");
-    }
-    let material = App.create(options);
-    material = change(material, options);
-    return material;
-  }
-  function change(object, options) {
-    const THREE = App.THREE;
-    if (options.properties) {
-      object = applyProperties(object, options.properties);
-    }
-    if (options.methods) {
-      object = Utils.applyMethods(object, options.methods);
-    }
-    if (options.textures) {
-      options.textures.forEach(async (texture) => {
-        const loaderType = texture.loader || "TextureLoader";
-        const loader = new THREE[loaderType](App.manager);
-        const mapType = texture.map;
-        const mapTexture = await loader.loadAsync(texture.url);
-        object[mapType] = mapTexture;
-        if (texture.properties) {
-          object[mapType] = applyProperties(object[mapType], texture.properties);
-        }
-        if (texture.methods) {
-          object[mapType] = Utils.applyMethods(object, texture.methods);
-        }
-      });
-      object.needsUpdate = true;
-    }
-    return object;
-  }
-  function applyProperties(object, options) {
-    const THREE = App.THREE;
-    if (!options || typeof options !== "object") {
-      return object;
-    }
-    for (const prop in options) {
-      if (options[prop] instanceof Object) {
-        object[prop] = {...options[prop]};
-      } else {
-        if (Utils.isThreeColorValue(prop)) {
-          object[prop] = new THREE.Color(options[prop]);
-        } else {
-          object[prop] = options[prop];
-        }
-      }
-    }
-    return object;
-  }
-  return {
     create,
     change
   };
@@ -641,6 +647,7 @@ var Item = function() {
 
 // src/modules/dragging.js
 var Dragging = function() {
+  let tmpMaterial = null;
   let plane = null;
   let planeNormal = null;
   let pointIntersect = null;
@@ -667,12 +674,20 @@ var Dragging = function() {
     App.controls.OrbitControls.enabled = false;
     App.actions.isDragging = true;
     App.canvas.style.cursor = "grab";
+    if (draggableObject.userData.dragMaterial) {
+      tmpMaterial = draggableObject.material;
+      draggableObject.material = Material.create(draggableObject.userData.dragMaterial);
+    }
   }
   function stop() {
-    draggableObject = null;
     App.controls.OrbitControls.enabled = true;
     App.actions.isDragging = false;
     App.canvas.style.cursor = "auto";
+    if (draggableObject && draggableObject.userData.dragMaterial) {
+      draggableObject.material = tmpMaterial;
+      tmpMaterial = null;
+    }
+    draggableObject = null;
   }
   function drag() {
     if (App.actions.isDragging) {

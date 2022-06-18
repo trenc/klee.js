@@ -1,7 +1,9 @@
 import { App } from './app';
+import { Material } from './material';
 
 const Dragging = (function () {
 
+	let tmpMaterial = null;
 	let plane = null;
 	let planeNormal = null;
 	let pointIntersect = null;
@@ -45,17 +47,33 @@ const Dragging = (function () {
 
 		App.canvas.style.cursor = 'grab';
 
+		if (draggableObject.userData.dragMaterial) {
+
+			tmpMaterial = draggableObject.material;
+
+			draggableObject.material = Material.create(draggableObject.userData.dragMaterial);
+
+		}
+
 	}
 
 	function stop () {
-
-		draggableObject = null;
 
 		App.controls.OrbitControls.enabled = true;
 
 		App.actions.isDragging = false;
 
 		App.canvas.style.cursor = 'auto';
+
+		if (draggableObject && draggableObject.userData.dragMaterial) {
+
+			draggableObject.material = tmpMaterial;
+
+			tmpMaterial = null;
+
+		}
+
+		draggableObject = null;
 
 	}
 

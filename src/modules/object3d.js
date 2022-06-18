@@ -61,7 +61,7 @@ const Object3d = (function () {
 
 				// prefer prototype »copy» property before direct assignment
 				// this handles non-writable object like Vectors, Euler, Quaternions etc.
-				if ('copy' in object[prop]) {
+				if (typeof object[prop] !== 'undefined' && 'copy' in object[prop]) {
 
 					// a workaround for THREE.Euler which does use uderscored properties
 					// in »copy« method
@@ -85,9 +85,11 @@ const Object3d = (function () {
 
 						UserData.handle(object, options[prop]);
 
-					}
+					} else {
 
-					object[prop] = applyProperties(object[prop], options[prop]);
+						object[prop] = applyProperties(object[prop], options[prop]);
+
+					}
 
 				}
 

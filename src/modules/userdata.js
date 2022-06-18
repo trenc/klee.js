@@ -5,8 +5,6 @@ const UserData = (function () {
 
 	function handle (object, userData) {
 
-		object.userData = { ...userData };
-
 		const f = {
 
 			draggable: (action) => addDraggables(object, action),
@@ -27,6 +25,8 @@ const UserData = (function () {
 			f[action](action);
 
 		}
+
+		object.userData = { ...userData };
 
 	}
 

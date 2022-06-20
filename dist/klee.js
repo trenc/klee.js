@@ -1,5 +1,5 @@
 // src/modules/constants.js
-var KLEEVERSION = "0.3.5";
+var KLEEVERSION = "0.3.7";
 
 // src/default.options.js
 function getDefaultOptions(THREE) {
@@ -723,7 +723,10 @@ var Events = function() {
       onMouseUp(event);
     });
   }
-  function onMouseDown() {
+  function onMouseDown(event) {
+    if (event.button !== 0) {
+      return false;
+    }
     Dragging.start();
   }
   function onMouseUp() {
@@ -733,6 +736,9 @@ var Events = function() {
     App.mouse.x = (event.clientX - rect.left) / (rect.right - rect.left) * 2 - 1;
     App.mouse.y = -((event.clientY - rect.top) / (rect.bottom - rect.top)) * 2 + 1;
     App.raycaster.setFromCamera(App.mouse, App.camera);
+    if (event.button !== 0) {
+      return false;
+    }
     Dragging.drag();
   }
   return {

@@ -38,7 +38,13 @@ const Events = (function () {
 
 	}
 
-	function onMouseDown () {
+	function onMouseDown (event) {
+
+		if (event.button !== 0) {
+
+			return false;
+
+		}
 
 		Dragging.start();
 
@@ -56,6 +62,12 @@ const Events = (function () {
 		App.mouse.y = -((event.clientY - rect.top) / (rect.bottom - rect.top)) * 2 + 1;
 
 		App.raycaster.setFromCamera(App.mouse, App.camera);
+
+		if (event.button !== 0) {
+
+			return false;
+
+		}
 
 		Dragging.drag();
 

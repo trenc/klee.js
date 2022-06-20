@@ -10,6 +10,7 @@ const App = (function () {
 	const local = {
 
 		canvas: null,
+		canvasRect: null,
 		camera: null,
 		renderer: null,
 		scene: null,
@@ -89,6 +90,7 @@ const App = (function () {
 		local.renderer.setSize(width, height);
 		local.camera.aspect = width / height;
 		local.camera.updateProjectionMatrix();
+		local.canvasRect = local.canvas.getBoundingClientRect();
 
 		if (isResponsive === false) {
 
@@ -111,6 +113,7 @@ const App = (function () {
 				local.camera.aspect = wWidth / height;
 				local.camera.fov = initialFov * initialWidth / wWidth;
 				local.camera.updateProjectionMatrix();
+				local.canvasRect = local.canvas.getBoundingClientRect();
 
 			}
 
@@ -235,6 +238,12 @@ const App = (function () {
 		get canvas () {
 
 			return local.canvas;
+
+		},
+
+		get canvasRect () {
+
+			return local.canvasRect;
 
 		},
 

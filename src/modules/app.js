@@ -299,6 +299,12 @@ const App = (function () {
 
 		},
 
+		set draggables (draggables) {
+
+			local.draggables = draggables;
+
+		},
+
 		get mouse () {
 
 			return local.mouse;

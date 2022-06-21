@@ -1,5 +1,5 @@
 // src/modules/constants.js
-var KLEEVERSION = "0.3.10";
+var KLEEVERSION = "0.3.11";
 
 // src/default.options.js
 function getDefaultOptions(THREE) {
@@ -245,6 +245,9 @@ var App = function() {
     },
     get draggables() {
       return local.draggables;
+    },
+    set draggables(draggables) {
+      local.draggables = draggables;
     },
     get mouse() {
       return local.mouse;

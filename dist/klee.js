@@ -1,5 +1,5 @@
 // src/modules/constants.js
-var KLEEVERSION = "0.3.9";
+var KLEEVERSION = "0.3.10";
 
 // src/default.options.js
 function getDefaultOptions(THREE) {
@@ -344,13 +344,11 @@ var UserData = function() {
       dragMaterial: (action) => createDragMaterial(object, action)
     };
     for (const action in userData) {
-      if (!f[action]) {
-        App.info("The userData \xBB" + action + "\xAB can not be handled by app.");
-        return;
+      if (f[action]) {
+        f[action](action);
       }
-      f[action](action);
     }
-    object.userData = {...userData};
+    object.userData = {...object.userData, ...userData};
   }
   function createDragMaterial(object, action) {
     return;

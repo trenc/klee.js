@@ -10,7 +10,6 @@ const App = (function () {
 	const local = {
 
 		canvas: null,
-		canvasRect: null,
 		camera: null,
 		renderer: null,
 		scene: null,
@@ -90,7 +89,6 @@ const App = (function () {
 		local.renderer.setSize(width, height);
 		local.camera.aspect = width / height;
 		local.camera.updateProjectionMatrix();
-		local.canvasRect = local.canvas.getBoundingClientRect();
 
 		if (isResponsive === false) {
 
@@ -98,8 +96,7 @@ const App = (function () {
 
 		}
 
-		// TODO: refactor to resize observer
-		window.addEventListener('resize', () => {
+		const resizeObserver = new ResizeObserver((entry) => {
 
 			const wWidth = window.innerWidth;
 
@@ -113,22 +110,23 @@ const App = (function () {
 				local.camera.aspect = wWidth / height;
 				local.camera.fov = initialFov * initialWidth / wWidth;
 				local.camera.updateProjectionMatrix();
-				local.canvasRect = local.canvas.getBoundingClientRect();
 
 			}
 
 		});
 
+		resizeObserver.observe(document.querySelector('body'));
+
 	}
 
 	function initRenderer (o) {
 
-		const domElement = document.querySelector(o.domElement);
+		local.domElement = document.querySelector(o.domElement);
 
-		if (domElement instanceof HTMLCanvasElement) {
+		if (local.domElement instanceof HTMLCanvasElement) {
 
-			o.args.canvas = domElement;
-			local.canvas = domElement;
+			o.args.canvas = local.domElement;
+			local.canvas = local.domElement;
 
 		}
 
@@ -141,7 +139,7 @@ const App = (function () {
 
 		if (!local.canvas) {
 
-			domElement.appendChild(renderer.domElement);
+			local.domElement.appendChild(renderer.domElement);
 			local.canvas = renderer.domElement;
 
 		}
@@ -238,12 +236,6 @@ const App = (function () {
 		get canvas () {
 
 			return local.canvas;
-
-		},
-
-		get canvasRect () {
-
-			return local.canvasRect;
 
 		},
 

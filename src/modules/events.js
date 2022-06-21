@@ -48,7 +48,7 @@ const Events = (function () {
 
 	function onMouseMove (event) {
 
-		const rect = App.canvasRect;
+		const rect = App.canvas.getBoundingClientRect();
 
 		App.mouse.x = ((event.clientX - rect.left) / (rect.right - rect.left)) * 2 - 1;
 		App.mouse.y = -((event.clientY - rect.top) / (rect.bottom - rect.top)) * 2 + 1;

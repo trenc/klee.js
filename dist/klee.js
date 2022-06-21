@@ -1,5 +1,5 @@
 // src/modules/constants.js
-var KLEEVERSION = "0.3.8";
+var KLEEVERSION = "0.3.9";
 
 // src/default.options.js
 function getDefaultOptions(THREE) {
@@ -88,7 +88,6 @@ var App = function() {
   let THREE;
   const local = {
     canvas: null,
-    canvasRect: null,
     camera: null,
     renderer: null,
     scene: null,
@@ -138,11 +137,10 @@ var App = function() {
     local.renderer.setSize(width, height);
     local.camera.aspect = width / height;
     local.camera.updateProjectionMatrix();
-    local.canvasRect = local.canvas.getBoundingClientRect();
     if (isResponsive === false) {
       return;
     }
-    window.addEventListener("resize", () => {
+    const resizeObserver = new ResizeObserver((entry) => {
       const wWidth = window.innerWidth;
       width = local.canvas.clientWidth;
       height = local.canvas.clientHeight;
@@ -151,22 +149,22 @@ var App = function() {
         local.camera.aspect = wWidth / height;
         local.camera.fov = initialFov * initialWidth / wWidth;
         local.camera.updateProjectionMatrix();
-        local.canvasRect = local.canvas.getBoundingClientRect();
       }
     });
+    resizeObserver.observe(document.querySelector("body"));
   }
   function initRenderer(o) {
-    const domElement = document.querySelector(o.domElement);
-    if (domElement instanceof HTMLCanvasElement) {
-      o.args.canvas = domElement;
-      local.canvas = domElement;
+    local.domElement = document.querySelector(o.domElement);
+    if (local.domElement instanceof HTMLCanvasElement) {
+      o.args.canvas = local.domElement;
+      local.canvas = local.domElement;
     }
     let renderer = createObject(o);
     renderer = applyRendererOptions(renderer, o.properties);
     renderer.setClearColor(new THREE.Color(o.clearColor), o.opacity);
     renderer.setPixelRatio(window.devicePixelRatio);
     if (!local.canvas) {
-      domElement.appendChild(renderer.domElement);
+      local.domElement.appendChild(renderer.domElement);
       local.canvas = renderer.domElement;
     }
     renderer.setSize(local.canvas.clientWidth, local.canvas.clientHeight);
@@ -217,9 +215,6 @@ var App = function() {
   return {
     get canvas() {
       return local.canvas;
-    },
-    get canvasRect() {
-      return local.canvasRect;
     },
     get options() {
       return options;
@@ -734,7 +729,7 @@ var Events = function() {
     Dragging.stop();
   }
   function onMouseMove(event) {
-    const rect = App.canvasRect;
+    const rect = App.canvas.getBoundingClientRect();
     App.mouse.x = (event.clientX - rect.left) / (rect.right - rect.left) * 2 - 1;
     App.mouse.y = -((event.clientY - rect.top) / (rect.bottom - rect.top)) * 2 + 1;
     App.raycaster.setFromCamera(App.mouse, App.camera);

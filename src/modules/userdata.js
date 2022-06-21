@@ -1,5 +1,6 @@
 import { App } from './app';
 import { Material } from './material';
+import { Utils } from '../utils';
 
 const UserData = (function () {
 
@@ -14,19 +15,15 @@ const UserData = (function () {
 
 		for (const action in userData) {
 
-			if (!f[action]) {
+			if (f[action]) {
 
-				App.info('The userData »' + action + '« can not be handled by app.');
-
-				return;
+				f[action](action);
 
 			}
 
-			f[action](action);
-
 		}
 
-		object.userData = { ...userData };
+		object.userData = { ...object.userData, ...userData };
 
 	}
 

@@ -48,13 +48,10 @@ const Events = (function () {
 
 	function onMouseMove (event) {
 
-		const rect = App.canvasRect;
-		const offsetX = App.canvas.offsetLeft;
-		const offsetY = App.canvas.offsetTop;
+		const rect = App.canvas.getBoundingClientRect();
 
-		console.log(event.clientX);
-		App.mouse.x = ((event.clientX - offsetX - rect.left) / (rect.right - rect.left + offsetX)) * 2 - 1;
-		App.mouse.y = -((event.clientY - offsetY - rect.top) / (rect.bottom - rect.top + offsetY)) * 2 + 1;
+		App.mouse.x = ((event.clientX - rect.left) / (rect.right - rect.left)) * 2 - 1;
+		App.mouse.y = -((event.clientY - rect.top) / (rect.bottom - rect.top)) * 2 + 1;
 
 		App.raycaster.setFromCamera(App.mouse, App.camera);
 

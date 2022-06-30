@@ -9,9 +9,8 @@ const Dragging = (function () {
 	let pointIntersect = null;
 	let distance = null;
 	let draggableObject = null;
-	let draggables = [];
 
-	function init (draggablesArray) {
+	function init () {
 
 		const THREE = App.THREE;
 
@@ -19,13 +18,12 @@ const Dragging = (function () {
 		planeNormal = new THREE.Vector3(0, 1, 0);
 		pointIntersect = new THREE.Vector3();
 		distance = new THREE.Vector3();
-		draggables = draggablesArray;
 
 	}
 
 	function start () {
 
-		const intersects = App.raycaster.intersectObjects(draggables);
+		const intersects = App.raycaster.intersectObjects(App.draggables);
 
 		if (intersects.length <= 0) {
 

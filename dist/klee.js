@@ -1,5 +1,5 @@
 // src/modules/constants.js
-var KLEEVERSION = "0.3.11";
+var KLEEVERSION = "0.3.12";
 
 // src/default.options.js
 function getDefaultOptions(THREE) {
@@ -655,17 +655,15 @@ var Dragging = function() {
   let pointIntersect = null;
   let distance = null;
   let draggableObject = null;
-  let draggables = [];
-  function init(draggablesArray) {
+  function init() {
     const THREE = App.THREE;
     plane = new THREE.Plane();
     planeNormal = new THREE.Vector3(0, 1, 0);
     pointIntersect = new THREE.Vector3();
     distance = new THREE.Vector3();
-    draggables = draggablesArray;
   }
   function start() {
-    const intersects = App.raycaster.intersectObjects(draggables);
+    const intersects = App.raycaster.intersectObjects(App.draggables);
     if (intersects.length <= 0) {
       return;
     }

@@ -9,7 +9,8 @@ const UserData = (function () {
 		const f = {
 
 			draggable: (action) => addDraggables(object, action),
-			dragMaterial: (action) => createDragMaterial(object, action)
+			dragMaterial: (action) => createDragMaterial(object, action),
+			movingLimiter: (action) => setMovingLimits(object, action)
 
 		};
 
@@ -24,6 +25,19 @@ const UserData = (function () {
 		}
 
 		object.userData = { ...object.userData, ...userData };
+
+	}
+
+	function setMovingLimits(object, action) {
+
+		const THREE = App.THREE;
+		const boundingBox = new THREE.Box3();
+		boundingBox.setFromObject(object);
+
+		App.movingLimits = {
+			min: boundingBox.min,
+			max: boundingBox.max
+		};
 
 	}
 

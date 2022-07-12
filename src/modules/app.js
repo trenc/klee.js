@@ -19,6 +19,7 @@ const App = (function () {
 		controls: {
 			OrbitControls: null
 		},
+		movingLimits: null,
 		draggables: [],
 		actions: {
 			isDragging: false
@@ -314,6 +315,18 @@ const App = (function () {
 		set mouse (mouseVector2) {
 
 			local.mouse = mouseVector2;
+
+		},
+
+		get movingLimits () {
+
+			return local.movingLimits;
+
+		},
+
+		set movingLimits (minMaxLimits) {
+
+			local.movingLimits = minMaxLimits;
 
 		},
 

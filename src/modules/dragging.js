@@ -81,6 +81,14 @@ const Dragging = (function () {
 
 			draggableObject.position.addVectors(pointIntersect, distance);
 
+			if (App.movingLimits !== null) {
+
+				App.movingLimits.min.y = draggableObject.position.y;
+				App.movingLimits.max.y = draggableObject.position.y;
+				draggableObject.position.clamp(App.movingLimits.min, App.movingLimits.max);
+
+			}
+
 			App.raycaster.ray.intersectPlane(plane, pointIntersect);
 
 		}

@@ -1,5 +1,5 @@
 // src/modules/constants.js
-var KLEEVERSION = "0.3.12";
+var KLEEVERSION = "0.4.0";
 
 // src/default.options.js
 function getDefaultOptions(THREE) {
@@ -97,6 +97,7 @@ var App = function() {
     controls: {
       OrbitControls: null
     },
+    movingLimits: null,
     draggables: [],
     actions: {
       isDragging: false
@@ -255,6 +256,12 @@ var App = function() {
     set mouse(mouseVector2) {
       local.mouse = mouseVector2;
     },
+    get movingLimits() {
+      return local.movingLimits;
+    },
+    set movingLimits(minMaxLimits) {
+      local.movingLimits = minMaxLimits;
+    },
     get raycaster() {
       return local.raycaster;
     },
@@ -344,7 +351,8 @@ var UserData = function() {
   function handle(object, userData) {
     const f = {
       draggable: (action) => addDraggables(object, action),
-      dragMaterial: (action) => createDragMaterial(object, action)
+      dragMaterial: (action) => createDragMaterial(object, action),
+      movingLimiter: (action) => setMovingLimits(object, action)
     };
     for (const action in userData) {
       if (f[action]) {
@@ -352,6 +360,15 @@ var UserData = function() {
       }
     }
     object.userData = {...object.userData, ...userData};
+  }
+  function setMovingLimits(object, action) {
+    const THREE = App.THREE;
+    const boundingBox = new THREE.Box3();
+    boundingBox.setFromObject(object);
+    App.movingLimits = {
+      min: boundingBox.min,
+      max: boundingBox.max
+    };
   }
   function createDragMaterial(object, action) {
     return;
@@ -692,6 +709,11 @@ var Dragging = function() {
   function drag() {
     if (App.actions.isDragging) {
       draggableObject.position.addVectors(pointIntersect, distance);
+      if (App.movingLimits !== null) {
+        App.movingLimits.min.y = draggableObject.position.y;
+        App.movingLimits.max.y = draggableObject.position.y;
+        draggableObject.position.clamp(App.movingLimits.min, App.movingLimits.max);
+      }
       App.raycaster.ray.intersectPlane(plane, pointIntersect);
     }
   }

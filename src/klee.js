@@ -14,3 +14,4 @@ export { Geometry } from './modules/geometry';
 export { Material } from './modules/material';
 export { Events } from './modules/events';
 export { Dragging } from './modules/dragging';
+export { Collision } from './modules/collisions';

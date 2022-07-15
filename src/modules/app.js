@@ -21,6 +21,7 @@ const App = (function () {
 		},
 		movingLimits: null,
 		draggables: [],
+		collidables: [],
 		actions: {
 			isDragging: false
 		}
@@ -291,6 +292,18 @@ const App = (function () {
 		get manager () {
 
 			return local.manager;
+
+		},
+
+		get collidables () {
+
+			return local.collidables;
+
+		},
+
+		set collidables (collidables) {
+
+			local.collidables = collidables;
 
 		},
 

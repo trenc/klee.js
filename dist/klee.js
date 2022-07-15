@@ -1,5 +1,5 @@
 // src/modules/constants.js
-var KLEEVERSION = "0.4.0";
+var KLEEVERSION = "0.5.0";
 
 // src/default.options.js
 function getDefaultOptions(THREE) {
@@ -99,6 +99,7 @@ var App = function() {
     },
     movingLimits: null,
     draggables: [],
+    collidables: [],
     actions: {
       isDragging: false
     }
@@ -244,6 +245,12 @@ var App = function() {
     get manager() {
       return local.manager;
     },
+    get collidables() {
+      return local.collidables;
+    },
+    set collidables(collidables) {
+      local.collidables = collidables;
+    },
     get draggables() {
       return local.draggables;
     },
@@ -350,6 +357,7 @@ var Material = function() {
 var UserData = function() {
   function handle(object, userData) {
     const f = {
+      collidable: (action) => addCollidables(object, action),
       draggable: (action) => addDraggables(object, action),
       dragMaterial: (action) => createDragMaterial(object, action),
       movingLimiter: (action) => setMovingLimits(object, action)
@@ -376,6 +384,11 @@ var UserData = function() {
   function addDraggables(object, action) {
     if (action) {
       App.draggables.push(object);
+    }
+  }
+  function addCollidables(object, action) {
+    if (action) {
+      App.collidables.push(object);
     }
   }
   return {
@@ -761,10 +774,33 @@ var Events = function() {
   };
 }();
 
+// src/modules/collisions.js
+var Collision = function() {
+  function check(object) {
+    const THREE = App.THREE;
+    let collision = false;
+    const objectBox = new THREE.Box3().setFromObject(object);
+    App.collidables.forEach((collidable) => {
+      if (collidable === object) {
+        return;
+      }
+      const collidableBox = new THREE.Box3().setFromObject(collidable);
+      if (objectBox.intersectsBox(collidableBox)) {
+        collision = true;
+      }
+    });
+    return collision;
+  }
+  return {
+    check
+  };
+}(App);
+
 // src/klee.js
 console.log("klee.js: " + KLEEVERSION);
 export {
   App,
+  Collision,
   Controls,
   Dragging,
   Events,

@@ -203,7 +203,7 @@
 						properties: {
 							name: 'some box 2',
 							rotation: { y: Math.PI / 3 },
-							position: { x: 0.75, y: 1.0, z: -0.5 },
+							position: { x: 0.75, y: 1.25, z: -0.5 },
 							castShadow: true,
 							receiveShadow: true,
 							userData: {
@@ -255,6 +255,15 @@
 
 					// inspect the scene in console
 					console.log(KLEE.App.scene);
+
+					const box1 = KLEE.App.scene.getObjectByName('some box 1');
+					const hasCollided = KLEE.Collision.check(box1);
+
+					if (hasCollided) {
+
+						console.log('BoxCollision detected.');
+
+					}
 
 			})();
 

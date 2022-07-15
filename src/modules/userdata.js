@@ -8,6 +8,7 @@ const UserData = (function () {
 
 		const f = {
 
+			collidable: (action) => addCollidables(object, action),
 			draggable: (action) => addDraggables(object, action),
 			dragMaterial: (action) => createDragMaterial(object, action),
 			movingLimiter: (action) => setMovingLimits(object, action)
@@ -52,6 +53,16 @@ const UserData = (function () {
 		if (action) {
 
 			App.draggables.push(object);
+
+		}
+
+	}
+
+	function addCollidables (object, action) {
+
+		if (action) {
+
+			App.collidables.push(object);
 
 		}
 

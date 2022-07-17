@@ -21,6 +21,7 @@ const App = (function () {
 		},
 		movingLimits: null,
 		draggables: [],
+		draggableObject: null,
 		collidables: [],
 		actions: {
 			isDragging: false
@@ -304,6 +305,18 @@ const App = (function () {
 		set collidables (collidables) {
 
 			local.collidables = collidables;
+
+		},
+
+		get draggableObject () {
+
+			return local.draggableObject;
+
+		},
+
+		set draggableObject (object) {
+
+			local.draggableObject = object;
 
 		},
 

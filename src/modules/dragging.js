@@ -8,7 +8,6 @@ const Dragging = (function () {
 	let planeNormal = null;
 	let pointIntersect = null;
 	let distance = null;
-	let draggableObject = null;
 
 	function init () {
 
@@ -37,7 +36,7 @@ const Dragging = (function () {
 
 		distance.subVectors(intersects[0].object.position, intersects[0].point);
 
-		draggableObject = intersects[0].object;
+		App.draggableObject = intersects[0].object;
 
 		App.controls.OrbitControls.enabled = false;
 
@@ -45,11 +44,22 @@ const Dragging = (function () {
 
 		App.canvas.style.cursor = 'grab';
 
-		if (draggableObject.userData.dragMaterial) {
+		// onDragStart callback
+		try {
 
-			tmpMaterial = draggableObject.material;
+			App.draggableObject.userData.callbacks.onDragStart(App.draggableObject);
 
-			draggableObject.material = Material.create(draggableObject.userData.dragMaterial);
+		} catch (e) {
+
+			App.info('Could not run onDragStart callback');
+
+		}
+
+		if (App.draggableObject.userData.dragMaterial) {
+
+			tmpMaterial = App.draggableObject.material;
+
+			App.draggableObject.material = Material.create(App.draggableObject.userData.dragMaterial);
 
 		}
 
@@ -63,15 +73,30 @@ const Dragging = (function () {
 
 		App.canvas.style.cursor = 'auto';
 
-		if (draggableObject && draggableObject.userData.dragMaterial) {
+		if (App.draggableObject) {
 
-			draggableObject.material = tmpMaterial;
+			// onDragStop callback
+			try {
+
+				App.draggableObject.userData.callbacks.onDragStop(App.draggableObject);
+
+			} catch (e) {
+
+				App.info('Could not run onDragStop callback');
+
+			}
+
+		}
+
+		if (App.draggableObject && App.draggableObject.userData.dragMaterial) {
+
+			App.draggableObject.material = tmpMaterial;
 
 			tmpMaterial = null;
 
 		}
 
-		draggableObject = null;
+		App.draggableObject = null;
 
 	}
 
@@ -79,13 +104,13 @@ const Dragging = (function () {
 
 		if (App.actions.isDragging) {
 
-			draggableObject.position.addVectors(pointIntersect, distance);
+			App.draggableObject.position.addVectors(pointIntersect, distance);
 
 			if (App.movingLimits !== null) {
 
-				App.movingLimits.min.y = draggableObject.position.y;
-				App.movingLimits.max.y = draggableObject.position.y;
-				draggableObject.position.clamp(App.movingLimits.min, App.movingLimits.max);
+				App.movingLimits.min.y = App.draggableObject.position.y;
+				App.movingLimits.max.y = App.draggableObject.position.y;
+				App.draggableObject.position.clamp(App.movingLimits.min, App.movingLimits.max);
 
 			}
 

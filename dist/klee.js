@@ -1,5 +1,5 @@
 // src/modules/constants.js
-var KLEEVERSION = "0.5.0";
+var KLEEVERSION = "0.5.2";
 
 // src/default.options.js
 function getDefaultOptions(THREE) {
@@ -99,6 +99,7 @@ var App = function() {
     },
     movingLimits: null,
     draggables: [],
+    draggableObject: null,
     collidables: [],
     actions: {
       isDragging: false
@@ -250,6 +251,12 @@ var App = function() {
     },
     set collidables(collidables) {
       local.collidables = collidables;
+    },
+    get draggableObject() {
+      return local.draggableObject;
+    },
+    set draggableObject(object) {
+      local.draggableObject = object;
     },
     get draggables() {
       return local.draggables;
@@ -684,7 +691,6 @@ var Dragging = function() {
   let planeNormal = null;
   let pointIntersect = null;
   let distance = null;
-  let draggableObject = null;
   function init() {
     const THREE = App.THREE;
     plane = new THREE.Plane();
@@ -700,32 +706,44 @@ var Dragging = function() {
     pointIntersect.copy(intersects[0].point);
     plane.setFromNormalAndCoplanarPoint(planeNormal, pointIntersect);
     distance.subVectors(intersects[0].object.position, intersects[0].point);
-    draggableObject = intersects[0].object;
+    App.draggableObject = intersects[0].object;
     App.controls.OrbitControls.enabled = false;
     App.actions.isDragging = true;
     App.canvas.style.cursor = "grab";
-    if (draggableObject.userData.dragMaterial) {
-      tmpMaterial = draggableObject.material;
-      draggableObject.material = Material.create(draggableObject.userData.dragMaterial);
+    try {
+      App.draggableObject.userData.callbacks.onDragStart(App.draggableObject);
+    } catch (e) {
+      App.info("Could not run onDragStart callback");
+    }
+    if (App.draggableObject.userData.dragMaterial) {
+      tmpMaterial = App.draggableObject.material;
+      App.draggableObject.material = Material.create(App.draggableObject.userData.dragMaterial);
     }
   }
   function stop() {
     App.controls.OrbitControls.enabled = true;
     App.actions.isDragging = false;
     App.canvas.style.cursor = "auto";
-    if (draggableObject && draggableObject.userData.dragMaterial) {
-      draggableObject.material = tmpMaterial;
+    if (App.draggableObject) {
+      try {
+        App.draggableObject.userData.callbacks.onDragStop(App.draggableObject);
+      } catch (e) {
+        App.info("Could not run onDragStop callback");
+      }
+    }
+    if (App.draggableObject && App.draggableObject.userData.dragMaterial) {
+      App.draggableObject.material = tmpMaterial;
       tmpMaterial = null;
     }
-    draggableObject = null;
+    App.draggableObject = null;
   }
   function drag() {
     if (App.actions.isDragging) {
-      draggableObject.position.addVectors(pointIntersect, distance);
+      App.draggableObject.position.addVectors(pointIntersect, distance);
       if (App.movingLimits !== null) {
-        App.movingLimits.min.y = draggableObject.position.y;
-        App.movingLimits.max.y = draggableObject.position.y;
-        draggableObject.position.clamp(App.movingLimits.min, App.movingLimits.max);
+        App.movingLimits.min.y = App.draggableObject.position.y;
+        App.movingLimits.max.y = App.draggableObject.position.y;
+        App.draggableObject.position.clamp(App.movingLimits.min, App.movingLimits.max);
       }
       App.raycaster.ray.intersectPlane(plane, pointIntersect);
     }

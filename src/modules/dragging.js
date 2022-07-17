@@ -47,11 +47,11 @@ const Dragging = (function () {
 		// onDragStart callback
 		try {
 
-			App.draggableObject.userData.callbacks.onDragStart(App.draggableObject, App.scene);
+			App.draggableObject.userData.callbacks.onDragStart(App.draggableObject);
 
 		} catch (e) {
 
-			App.info('Could not run onDragStop callback');
+			App.info('Could not run onDragStart callback');
 
 		}
 
@@ -73,14 +73,18 @@ const Dragging = (function () {
 
 		App.canvas.style.cursor = 'auto';
 
-		// onDragStop callback
-		try {
+		if (App.draggableObject) {
 
-			App.draggableObject.userData.callbacks.onDragStop(App.draggableObject, App.scene);
+			// onDragStop callback
+			try {
 
-		} catch (e) {
+				App.draggableObject.userData.callbacks.onDragStop(App.draggableObject);
 
-			App.info('Could not run onDragStop callback');
+			} catch (e) {
+
+				App.info('Could not run onDragStop callback');
+
+			}
 
 		}
 

@@ -206,8 +206,8 @@
 							receiveShadow: true,
 							userData: {
 								callbacks: {
-									onDragStart: (object) => doSomethingOnDragStart(object),
-									onDragStop: (object) => doSomethingOnDragStop(object)
+									onDragStart: (App) => doSomethingOnDragStart(App),
+									onDragStop: (App) => doSomethingOnDragStop(App)
 								},
 								draggable: true,
 								dragMaterial: {
@@ -259,15 +259,15 @@
 			})();
 
 
-			function doSomethingOnDragStart (object) {
+			function doSomethingOnDragStart (App) {
 
-				console.log('onDragStart', object);
+				console.log('onDragStart', App);
 
 			};
 
-			function doSomethingOnDragStop (object) {
+			function doSomethingOnDragStop (App) {
 
-				console.log('onDragStop', object);
+				console.log('onDragStop', App);
 
 			};
 

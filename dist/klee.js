@@ -1,5 +1,5 @@
 // src/modules/constants.js
-var KLEEVERSION = "0.5.2";
+var KLEEVERSION = "0.5.3";
 
 // src/default.options.js
 function getDefaultOptions(THREE) {
@@ -710,10 +710,9 @@ var Dragging = function() {
     App.controls.OrbitControls.enabled = false;
     App.actions.isDragging = true;
     App.canvas.style.cursor = "grab";
-    try {
-      App.draggableObject.userData.callbacks.onDragStart(App.draggableObject);
-    } catch (e) {
-      App.info("Could not run onDragStart callback");
+    const callbacks = App.draggableObject.userData?.callbacks;
+    if (callbacks) {
+      callbacks.onDragStart(App.draggableObject);
     }
     if (App.draggableObject.userData.dragMaterial) {
       tmpMaterial = App.draggableObject.material;
@@ -725,10 +724,9 @@ var Dragging = function() {
     App.actions.isDragging = false;
     App.canvas.style.cursor = "auto";
     if (App.draggableObject) {
-      try {
-        App.draggableObject.userData.callbacks.onDragStop(App.draggableObject);
-      } catch (e) {
-        App.info("Could not run onDragStop callback");
+      const callbacks = App.draggableObject.userData?.callbacks;
+      if (callbacks) {
+        callbacks.onDragStop(App.draggableObject);
       }
     }
     if (App.draggableObject && App.draggableObject.userData.dragMaterial) {

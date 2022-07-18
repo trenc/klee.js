@@ -45,13 +45,9 @@ const Dragging = (function () {
 		App.canvas.style.cursor = 'grab';
 
 		// onDragStart callback
-		const callbacks = App.draggableObject.userData?.callbacks;
+		const onDragStartCallback = App.draggableObject.userData?.callbacks?.onDragStart ?? (() => {});
 
-		if (callbacks) {
-
-				callbacks.onDragStart(App.draggableObject);
-
-		}
+		onDragStartCallback(App.draggableObject);
 
 		if (App.draggableObject.userData.dragMaterial) {
 
@@ -74,13 +70,9 @@ const Dragging = (function () {
 		if (App.draggableObject) {
 
 			// onDragStop callback
-			const callbacks = App.draggableObject.userData?.callbacks;
+			const onDragStopCallback = App.draggableObject.userData?.callbacks?.onDragStop ?? (() => {});
 
-			if (callbacks) {
-
-					callbacks.onDragStop(App.draggableObject);
-
-			}
+			onDragStopCallback(App.draggableObject);
 
 		}
 

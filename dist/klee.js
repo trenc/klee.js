@@ -1,5 +1,5 @@
 // src/modules/constants.js
-var KLEEVERSION = "0.5.4";
+var KLEEVERSION = "0.5.5";
 
 // src/default.options.js
 function getDefaultOptions(THREE) {
@@ -712,7 +712,7 @@ var Dragging = function() {
     App.canvas.style.cursor = "grab";
     const onDragStartCallback = App.draggableObject.userData?.callbacks?.onDragStart ?? (() => {
     });
-    onDragStartCallback(App.draggableObject);
+    onDragStartCallback(App);
     if (App.draggableObject.userData.dragMaterial) {
       tmpMaterial = App.draggableObject.material;
       App.draggableObject.material = Material.create(App.draggableObject.userData.dragMaterial);
@@ -725,7 +725,7 @@ var Dragging = function() {
     if (App.draggableObject) {
       const onDragStopCallback = App.draggableObject.userData?.callbacks?.onDragStop ?? (() => {
       });
-      onDragStopCallback(App.draggableObject);
+      onDragStopCallback(App);
     }
     if (App.draggableObject && App.draggableObject.userData.dragMaterial) {
       App.draggableObject.material = tmpMaterial;

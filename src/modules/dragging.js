@@ -47,7 +47,7 @@ const Dragging = (function () {
 		// onDragStart callback
 		const onDragStartCallback = App.draggableObject.userData?.callbacks?.onDragStart ?? (() => {});
 
-		onDragStartCallback(App.draggableObject);
+		onDragStartCallback(App);
 
 		if (App.draggableObject.userData.dragMaterial) {
 
@@ -72,7 +72,7 @@ const Dragging = (function () {
 			// onDragStop callback
 			const onDragStopCallback = App.draggableObject.userData?.callbacks?.onDragStop ?? (() => {});
 
-			onDragStopCallback(App.draggableObject);
+			onDragStopCallback(App);
 
 		}
 

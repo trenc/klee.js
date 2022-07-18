@@ -45,13 +45,11 @@ const Dragging = (function () {
 		App.canvas.style.cursor = 'grab';
 
 		// onDragStart callback
-		try {
+		const callbacks = App.draggableObject.userData?.callbacks;
 
-			App.draggableObject.userData.callbacks.onDragStart(App.draggableObject);
+		if (callbacks) {
 
-		} catch (e) {
-
-			App.info('Could not run onDragStart callback');
+				callbacks.onDragStart(App.draggableObject);
 
 		}
 
@@ -76,13 +74,11 @@ const Dragging = (function () {
 		if (App.draggableObject) {
 
 			// onDragStop callback
-			try {
+			const callbacks = App.draggableObject.userData?.callbacks;
 
-				App.draggableObject.userData.callbacks.onDragStop(App.draggableObject);
+			if (callbacks) {
 
-			} catch (e) {
-
-				App.info('Could not run onDragStop callback');
+					callbacks.onDragStop(App.draggableObject);
 
 			}
 

@@ -1,5 +1,5 @@
 // src/modules/constants.js
-var KLEEVERSION = "0.5.7";
+var KLEEVERSION = "0.5.8";
 
 // src/default.options.js
 function getDefaultOptions(THREE) {
@@ -716,12 +716,10 @@ var Dragging = function() {
     App.controls.OrbitControls.enabled = false;
     App.actions.isDragging = true;
     App.canvas.style.cursor = "grab";
-    let onDragStartCallback = () => {
-    };
+    let onDragStartCallback = App.draggableObject.userData?.callbacks?.onDragStart ?? (() => {
+    });
     if (typeof App.draggableObject.userData?.callbacks?.onDragStart === "string") {
       onDragStartCallback = eval(App.draggableObject.userData.callbacks.onDragStart);
-    } else {
-      onDragStartCallback = App.draggableObject.userData.callbacks.onDragStart;
     }
     onDragStartCallback(App);
     if (App.draggableObject.userData.dragMaterial) {
@@ -734,12 +732,10 @@ var Dragging = function() {
     App.actions.isDragging = false;
     App.canvas.style.cursor = "auto";
     if (App.draggableObject) {
-      let onDragStopCallback = () => {
-      };
+      let onDragStopCallback = App.draggableObject.userData?.callbacks?.onDragStop ?? (() => {
+      });
       if (typeof App.draggableObject.userData?.callbacks?.onDragStop === "string") {
         onDragStopCallback = eval(App.draggableObject.userData.callbacks.onDragStop);
-      } else {
-        onDragStopCallback = App.draggableObject.userData.callbacks.onDragStop;
       }
       onDragStopCallback(App);
     }

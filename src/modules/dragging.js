@@ -45,16 +45,12 @@ const Dragging = (function () {
 		App.canvas.style.cursor = 'grab';
 
 		// onDragStart callback
-    let onDragStartCallback = (() => {});
+    let  onDragStartCallback = App.draggableObject.userData?.callbacks?.onDragStart ?? (() => {});
 
 		// run eval if it is a string
     if (typeof App.draggableObject.userData?.callbacks?.onDragStart === 'string') {
 
       onDragStartCallback = eval(App.draggableObject.userData.callbacks.onDragStart);
-
-    } else {
-
-      onDragStartCallback = App.draggableObject.userData.callbacks.onDragStart;
 
     }
 
@@ -81,16 +77,12 @@ const Dragging = (function () {
 		if (App.draggableObject) {
 
 			// onDragStop callback
-      let onDragStopCallback = (() => {});
+      let onDragStopCallback = App.draggableObject.userData?.callbacks?.onDragStop ?? (( => {}));
 
 			// run eval if it is a cenverted function string
       if (typeof App.draggableObject.userData?.callbacks?.onDragStop === 'string') {
 
         onDragStopCallback = eval(App.draggableObject.userData.callbacks.onDragStop);
-
-      } else {
-
-        onDragStopCallback = App.draggableObject.userData.callbacks.onDragStop;
 
       }
 

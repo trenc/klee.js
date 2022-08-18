@@ -77,7 +77,7 @@ const Dragging = (function () {
 		if (App.draggableObject) {
 
 			// onDragStop callback
-      let onDragStopCallback = App.draggableObject.userData?.callbacks?.onDragStop ?? (( => {}));
+      let onDragStopCallback = App.draggableObject.userData?.callbacks?.onDragStop ?? (() => {});
 
 			// run eval if it is a cenverted function string
       if (typeof App.draggableObject.userData?.callbacks?.onDragStop === 'string') {

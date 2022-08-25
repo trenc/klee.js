@@ -1,5 +1,5 @@
 // src/modules/constants.js
-var KLEEVERSION = "0.5.8";
+var KLEEVERSION = "0.5.9";
 
 // src/default.options.js
 function getDefaultOptions(THREE) {
@@ -837,5 +837,6 @@ export {
   Loaders,
   Material,
   Object3d,
-  Scene
+  Scene,
+  UserData
 };

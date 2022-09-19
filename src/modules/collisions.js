@@ -12,7 +12,7 @@ const Collision = (function () {
 
 		App.collidables.forEach(collidable => {
 
-			if (collidable === object) {
+			if (collidable === object && collidable.visible === false) {
 
 				return;
 
@@ -22,7 +22,7 @@ const Collision = (function () {
 
 			if (objectBox.intersectsBox(collidableBox)) {
 
-				collision = collidableBox;
+				collision = collidable;
 
 			}
 

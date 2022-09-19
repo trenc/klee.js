@@ -207,7 +207,8 @@
 							userData: {
 								callbacks: {
 									onDragStart: (App) => doSomethingOnDragStart(App),
-									onDragStop: (App) => doSomethingOnDragStop(App)
+									onDragStop: (App) => doSomethingOnDragStop(App),
+									onDrag: (App) => doSomethingOnDrag(App)
 								},
 								draggable: true,
 								dragMaterial: {
@@ -268,6 +269,12 @@
 			function doSomethingOnDragStop (App) {
 
 				console.log('onDragStop', App);
+
+			};
+
+			function doSomethingOnDrag (App) {
+
+				console.log('onDrag', App);
 
 			};
 

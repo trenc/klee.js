@@ -1,5 +1,5 @@
 // src/modules/constants.js
-var KLEEVERSION = "0.6.0";
+var KLEEVERSION = "0.6.1";
 
 // src/default.options.js
 function getDefaultOptions(THREE) {
@@ -811,7 +811,7 @@ var Events = function() {
 var Collision = function() {
   function check(object) {
     const THREE = App.THREE;
-    let collision = false;
+    let collision = null;
     const objectBox = new THREE.Box3().setFromObject(object);
     App.collidables.forEach((collidable) => {
       if (collidable === object) {
@@ -819,7 +819,7 @@ var Collision = function() {
       }
       const collidableBox = new THREE.Box3().setFromObject(collidable);
       if (objectBox.intersectsBox(collidableBox)) {
-        collision = true;
+        collision = collidableBox;
       }
     });
     return collision;

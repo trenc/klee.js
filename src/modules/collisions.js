@@ -6,7 +6,7 @@ const Collision = (function () {
 
 		const THREE = App.THREE;
 
-		let collision = false;
+		let collision = null;
 
 		const objectBox = new THREE.Box3().setFromObject(object);
 
@@ -22,7 +22,7 @@ const Collision = (function () {
 
 			if (objectBox.intersectsBox(collidableBox)) {
 
-				collision = true;
+				collision = collidableBox;
 
 			}
 

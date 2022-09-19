@@ -79,7 +79,7 @@ const Dragging = (function () {
 			// onDragStop callback
       let onDragStopCallback = App.draggableObject.userData?.callbacks?.onDragStop ?? (() => {});
 
-			// run eval if it is a cenverted function string
+			// run eval if it is a converted function string
       if (typeof App.draggableObject.userData?.callbacks?.onDragStop === 'string') {
 
         onDragStopCallback = eval(App.draggableObject.userData.callbacks.onDragStop);
@@ -104,21 +104,35 @@ const Dragging = (function () {
 
 	function drag () {
 
-		if (App.actions.isDragging) {
+		if (!App.actions.isDragging) {
 
-			App.draggableObject.position.addVectors(pointIntersect, distance);
-
-			if (App.movingLimits !== null) {
-
-				App.movingLimits.min.y = App.draggableObject.position.y;
-				App.movingLimits.max.y = App.draggableObject.position.y;
-				App.draggableObject.position.clamp(App.movingLimits.min, App.movingLimits.max);
-
-			}
-
-			App.raycaster.ray.intersectPlane(plane, pointIntersect);
+			return;
 
 		}
+
+		App.draggableObject.position.addVectors(pointIntersect, distance);
+
+		if (App.movingLimits !== null) {
+
+			App.movingLimits.min.y = App.draggableObject.position.y;
+			App.movingLimits.max.y = App.draggableObject.position.y;
+			App.draggableObject.position.clamp(App.movingLimits.min, App.movingLimits.max);
+
+		}
+
+		// onDrag callback
+    let onDragCallback = App.draggableObject.userData?.callbacks?.onDrag ?? (() => {});
+
+		// run eval if it is a converted function string
+    if (typeof App.draggableObject.userData?.callbacks?.onDragStop === 'string') {
+
+      onDragCallback = eval(App.draggableObject.userData.callbacks.onDrag);
+
+    }
+
+		onDragCallback(App);
+
+		App.raycaster.ray.intersectPlane(plane, pointIntersect);
 
 	}
 

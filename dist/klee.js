@@ -1,5 +1,5 @@
 // src/modules/constants.js
-var KLEEVERSION = "0.5.9";
+var KLEEVERSION = "0.6.0";
 
 // src/default.options.js
 function getDefaultOptions(THREE) {
@@ -746,15 +746,22 @@ var Dragging = function() {
     App.draggableObject = null;
   }
   function drag() {
-    if (App.actions.isDragging) {
-      App.draggableObject.position.addVectors(pointIntersect, distance);
-      if (App.movingLimits !== null) {
-        App.movingLimits.min.y = App.draggableObject.position.y;
-        App.movingLimits.max.y = App.draggableObject.position.y;
-        App.draggableObject.position.clamp(App.movingLimits.min, App.movingLimits.max);
-      }
-      App.raycaster.ray.intersectPlane(plane, pointIntersect);
+    if (!App.actions.isDragging) {
+      return;
     }
+    App.draggableObject.position.addVectors(pointIntersect, distance);
+    if (App.movingLimits !== null) {
+      App.movingLimits.min.y = App.draggableObject.position.y;
+      App.movingLimits.max.y = App.draggableObject.position.y;
+      App.draggableObject.position.clamp(App.movingLimits.min, App.movingLimits.max);
+    }
+    let onDragCallback = App.draggableObject.userData?.callbacks?.onDrag ?? (() => {
+    });
+    if (typeof App.draggableObject.userData?.callbacks?.onDragStop === "string") {
+      onDragCallback = eval(App.draggableObject.userData.callbacks.onDrag);
+    }
+    onDragCallback(App);
+    App.raycaster.ray.intersectPlane(plane, pointIntersect);
   }
   return {
     init,

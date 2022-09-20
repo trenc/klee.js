@@ -2,13 +2,17 @@ import { App } from './app';
 
 const Collision = (function () {
 
+	const currentCollisions = [];
+
 	function check (object) {
 
 		const THREE = App.THREE;
 
-		let collision = null;
+		const collision = false;
 
 		const objectBox = new THREE.Box3().setFromObject(object);
+
+		currentCollisions.length = 0;
 
 		App.collidables.forEach(collidable => {
 
@@ -22,13 +26,20 @@ const Collision = (function () {
 
 			if (objectBox.intersectsBox(collidableBox)) {
 
-				collision = collidable;
+				currentCollisions.push(collidable);
+				collision = true;
 
 			}
 
 		});
 
 		return collision;
+
+	}
+
+	function getCurrentCollisions () {
+
+		return currentCollisions;
 
 	}
 

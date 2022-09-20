@@ -16,7 +16,7 @@ const Collision = (function () {
 
 		App.collidables.forEach(collidable => {
 
-			if (collidable === object && collidable.visible === false) {
+			if (collidable === object) {
 
 				return;
 

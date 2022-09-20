@@ -1,3 +1,3 @@
-const KLEEVERSION = '0.6.2';
+const KLEEVERSION = '0.6.3';
 
 export { KLEEVERSION };

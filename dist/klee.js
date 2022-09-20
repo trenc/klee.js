@@ -1,5 +1,5 @@
 // src/modules/constants.js
-var KLEEVERSION = "0.6.2";
+var KLEEVERSION = "0.6.3";
 
 // src/default.options.js
 function getDefaultOptions(THREE) {
@@ -809,20 +809,26 @@ var Events = function() {
 
 // src/modules/collisions.js
 var Collision = function() {
+  const currentCollisions = [];
   function check(object) {
     const THREE = App.THREE;
-    let collision = null;
+    let collision = false;
     const objectBox = new THREE.Box3().setFromObject(object);
+    currentCollisions.length = 0;
     App.collidables.forEach((collidable) => {
       if (collidable === object && collidable.visible === false) {
         return;
       }
       const collidableBox = new THREE.Box3().setFromObject(collidable);
       if (objectBox.intersectsBox(collidableBox)) {
-        collision = collidable;
+        currentCollisions.push(collidable);
+        collision = true;
       }
     });
     return collision;
+  }
+  function getCurrentCollisions() {
+    return currentCollisions;
   }
   return {
     check

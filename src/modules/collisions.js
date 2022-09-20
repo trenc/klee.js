@@ -45,7 +45,8 @@ const Collision = (function () {
 
 	return {
 
-		check: check
+		check: check,
+		getCurrentCollisions: getCurrentCollisions
 
 	};
 

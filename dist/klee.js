@@ -816,7 +816,7 @@ var Collision = function() {
     const objectBox = new THREE.Box3().setFromObject(object);
     currentCollisions.length = 0;
     App.collidables.forEach((collidable) => {
-      if (collidable === object && collidable.visible === false) {
+      if (collidable === object) {
         return;
       }
       const collidableBox = new THREE.Box3().setFromObject(collidable);
@@ -831,7 +831,8 @@ var Collision = function() {
     return currentCollisions;
   }
   return {
-    check
+    check,
+    getCurrentCollisions
   };
 }(App);
 

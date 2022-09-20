@@ -8,7 +8,7 @@ const Collision = (function () {
 
 		const THREE = App.THREE;
 
-		const collision = false;
+		let collision = false;
 
 		const objectBox = new THREE.Box3().setFromObject(object);
 

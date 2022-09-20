@@ -87,19 +87,19 @@ or run all tests in CLI mode:
 * ~~OrbitControls~~
 * ~~textures~~
 * groups
-* raycaster
+* ~~raycaster~~
 * selections
 * backup/restore
 * transactions
 * Collada-, ~~GLTF-Import~~
 * physics
-* collisions
+* ~~collisions~~
 * constructive solid geometries
 * interactions
 * ~~dragging~~
 * gridsystem
 * ~~userData~~
-* examples
+* ~~examples~~
 * ...
 
 ## credits

@@ -47,10 +47,10 @@ const Dragging = (function () {
 		// onDragStart callback
     let  onDragStartCallback = App.draggableObject.userData?.callbacks?.onDragStart ?? (() => {});
 
-		// run eval if it is a string
+		// create a function if it is a string
     if (typeof App.draggableObject.userData?.callbacks?.onDragStart === 'string') {
 
-      onDragStartCallback = eval(App.draggableObject.userData.callbacks.onDragStart);
+      onDragStartCallback = new Function(App.draggableObject.userData.callbacks.onDragStart);
 
     }
 
@@ -79,10 +79,10 @@ const Dragging = (function () {
 			// onDragStop callback
       let onDragStopCallback = App.draggableObject.userData?.callbacks?.onDragStop ?? (() => {});
 
-			// run eval if it is a converted function string
+			// create function if it is a converted function string
       if (typeof App.draggableObject.userData?.callbacks?.onDragStop === 'string') {
 
-        onDragStopCallback = eval(App.draggableObject.userData.callbacks.onDragStop);
+        onDragStopCallback = new Funtion(App.draggableObject.userData.callbacks.onDragStop);
 
       }
 
@@ -123,10 +123,10 @@ const Dragging = (function () {
 		// onDrag callback
     let onDragCallback = App.draggableObject.userData?.callbacks?.onDrag ?? (() => {});
 
-		// run eval if it is a converted function string
+		// create function if it is a converted function string
     if (typeof App.draggableObject.userData?.callbacks?.onDragStop === 'string') {
 
-      onDragCallback = eval(App.draggableObject.userData.callbacks.onDrag);
+      onDragCallback = new Function(App.draggableObject.userData.callbacks.onDrag);
 
     }
 

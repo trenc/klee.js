@@ -82,7 +82,7 @@ const Dragging = (function () {
 			// create function if it is a converted function string
       if (typeof App.draggableObject.userData?.callbacks?.onDragStop === 'string') {
 
-        onDragStopCallback = new Funtion(App.draggableObject.userData.callbacks.onDragStop);
+        onDragStopCallback = new Function(App.draggableObject.userData.callbacks.onDragStop);
 
       }
 

@@ -124,7 +124,7 @@ const Dragging = (function () {
     let onDragCallback = App.draggableObject.userData?.callbacks?.onDrag ?? (() => {});
 
 		// create function if it is a converted function string
-    if (typeof App.draggableObject.userData?.callbacks?.onDragStop === 'string') {
+    if (typeof App.draggableObject.userData?.callbacks?.onDrag === 'string') {
 
       onDragCallback = eval(App.draggableObject.userData.callbacks.onDrag);
 

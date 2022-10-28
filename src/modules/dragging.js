@@ -50,7 +50,7 @@ const Dragging = (function () {
 		// create a function if it is a string
     if (typeof App.draggableObject.userData?.callbacks?.onDragStart === 'string') {
 
-      onDragStartCallback = new Function(App.draggableObject.userData.callbacks.onDragStart);
+      onDragStartCallback = eval(App.draggableObject.userData.callbacks.onDragStart);
 
     }
 
@@ -82,7 +82,7 @@ const Dragging = (function () {
 			// create function if it is a converted function string
       if (typeof App.draggableObject.userData?.callbacks?.onDragStop === 'string') {
 
-        onDragStopCallback = new Function(App.draggableObject.userData.callbacks.onDragStop);
+        onDragStopCallback = eval(App.draggableObject.userData.callbacks.onDragStop);
 
       }
 
@@ -126,7 +126,7 @@ const Dragging = (function () {
 		// create function if it is a converted function string
     if (typeof App.draggableObject.userData?.callbacks?.onDragStop === 'string') {
 
-      onDragCallback = new Function(App.draggableObject.userData.callbacks.onDrag);
+      onDragCallback = eval(App.draggableObject.userData.callbacks.onDrag);
 
     }
 

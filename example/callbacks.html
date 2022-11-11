@@ -19,6 +19,28 @@
 			}
 		</script>
 
+		<script>
+
+			function doSomethingOnDragStart (App) {
+
+				console.log('onDragStart', App);
+
+			};
+
+			function doSomethingOnDragStop (App) {
+
+				console.log('onDragStop', App);
+
+			};
+
+			function doSomethingOnDrag (App) {
+
+				console.log('onDrag', App);
+
+			};
+
+		</script>
+
 		<script type="module">
 
 			import * as THREE from 'three';
@@ -206,7 +228,7 @@
 							receiveShadow: true,
 							userData: {
 								callbacks: {
-									onDragStart: (App) => doSomethingOnDragStart(App),
+									onDragStart: '(App) => doSomethingOnDragStart(App)',
 									onDragStop: (App) => doSomethingOnDragStop(App),
 									onDrag: (App) => doSomethingOnDrag(App)
 								},
@@ -258,25 +280,6 @@
 					console.log(KLEE.App.scene);
 
 			})();
-
-
-			function doSomethingOnDragStart (App) {
-
-				console.log('onDragStart', App);
-
-			};
-
-			function doSomethingOnDragStop (App) {
-
-				console.log('onDragStop', App);
-
-			};
-
-			function doSomethingOnDrag (App) {
-
-				console.log('onDrag', App);
-
-			};
 
 		</script>
 

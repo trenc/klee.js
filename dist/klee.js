@@ -1,5 +1,5 @@
 // src/modules/constants.js
-var KLEEVERSION = "0.7.2";
+var KLEEVERSION = "0.7.3";
 
 // src/default.options.js
 function getDefaultOptions(THREE) {
@@ -705,6 +705,7 @@ var Dragging = function() {
     distance = new THREE.Vector3();
   }
   function start() {
+    "use strict";
     const intersects = App.raycaster.intersectObjects(App.draggables);
     if (intersects.length <= 0) {
       return;
@@ -719,7 +720,7 @@ var Dragging = function() {
     let onDragStartCallback = App.draggableObject.userData?.callbacks?.onDragStart ?? (() => {
     });
     if (typeof App.draggableObject.userData?.callbacks?.onDragStart === "string") {
-      onDragStartCallback = eval(App.draggableObject.userData.callbacks.onDragStart);
+      onDragStartCallback = new Function("return " + App.draggableObject.userData.callbacks.onDragStart)();
     }
     onDragStartCallback(App);
     if (App.draggableObject.userData.dragMaterial) {
@@ -735,7 +736,7 @@ var Dragging = function() {
       let onDragStopCallback = App.draggableObject.userData?.callbacks?.onDragStop ?? (() => {
       });
       if (typeof App.draggableObject.userData?.callbacks?.onDragStop === "string") {
-        onDragStopCallback = eval(App.draggableObject.userData.callbacks.onDragStop);
+        onDragStopCallback = new Function("return " + App.draggableObject.userData.callbacks.onDragStop)();
       }
       onDragStopCallback(App);
     }
@@ -758,7 +759,7 @@ var Dragging = function() {
     let onDragCallback = App.draggableObject.userData?.callbacks?.onDrag ?? (() => {
     });
     if (typeof App.draggableObject.userData?.callbacks?.onDrag === "string") {
-      onDragCallback = eval(App.draggableObject.userData.callbacks.onDrag);
+      onDragCallback = new Function("return " + App.draggableObject.userData.callbacks.onDrag)();
     }
     onDragCallback(App);
     App.raycaster.ray.intersectPlane(plane, pointIntersect);

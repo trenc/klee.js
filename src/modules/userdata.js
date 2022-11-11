@@ -17,7 +17,7 @@ const UserData = (function () {
 
 		for (const action in userData) {
 
-			if (f[action]) {
+			if (userData[action] && f[action]) {
 
 				f[action](action);
 

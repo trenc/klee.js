@@ -22,8 +22,6 @@ const Dragging = (function () {
 
 	function start () {
 
-		'use strict';
-
 		const intersects = App.raycaster.intersectObjects(App.draggables);
 
 		if (intersects.length <= 0) {

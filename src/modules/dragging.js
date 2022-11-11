@@ -22,6 +22,8 @@ const Dragging = (function () {
 
 	function start () {
 
+		'use strict';
+
 		const intersects = App.raycaster.intersectObjects(App.draggables);
 
 		if (intersects.length <= 0) {
@@ -50,7 +52,7 @@ const Dragging = (function () {
 		// create a function if it is a string
     if (typeof App.draggableObject.userData?.callbacks?.onDragStart === 'string') {
 
-      onDragStartCallback = eval(App.draggableObject.userData.callbacks.onDragStart);
+      onDragStartCallback = new Function('return ' + App.draggableObject.userData.callbacks.onDragStart)();
 
     }
 
@@ -82,7 +84,7 @@ const Dragging = (function () {
 			// create function if it is a converted function string
       if (typeof App.draggableObject.userData?.callbacks?.onDragStop === 'string') {
 
-        onDragStopCallback = eval(App.draggableObject.userData.callbacks.onDragStop);
+        onDragStopCallback = new Function('return ' + App.draggableObject.userData.callbacks.onDragStop)();
 
       }
 
@@ -126,7 +128,7 @@ const Dragging = (function () {
 		// create function if it is a converted function string
     if (typeof App.draggableObject.userData?.callbacks?.onDrag === 'string') {
 
-      onDragCallback = eval(App.draggableObject.userData.callbacks.onDrag);
+      onDragCallback = new Function('return ' + App.draggableObject.userData.callbacks.onDrag)();
 
     }
 

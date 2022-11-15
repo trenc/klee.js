@@ -370,7 +370,7 @@ var UserData = function() {
       movingLimiter: (action) => setMovingLimits(object, action)
     };
     for (const action in userData) {
-      if (f[action]) {
+      if (userData[action] && f[action]) {
         f[action](action);
       }
     }
@@ -705,7 +705,6 @@ var Dragging = function() {
     distance = new THREE.Vector3();
   }
   function start() {
-    "use strict";
     const intersects = App.raycaster.intersectObjects(App.draggables);
     if (intersects.length <= 0) {
       return;

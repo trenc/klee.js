@@ -1,5 +1,5 @@
 // src/modules/constants.js
-var KLEEVERSION = "0.7.3";
+var KLEEVERSION = "0.7.4";
 
 // src/default.options.js
 function getDefaultOptions(THREE) {

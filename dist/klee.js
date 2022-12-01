@@ -1,5 +1,5 @@
 // src/modules/constants.js
-var KLEEVERSION = "0.7.4";
+var KLEEVERSION = "0.8.1";
 
 // src/default.options.js
 function getDefaultOptions(THREE) {
@@ -705,6 +705,7 @@ var Dragging = function() {
     distance = new THREE.Vector3();
   }
   function start() {
+    const THREE = App.THREE;
     const intersects = App.raycaster.intersectObjects(App.draggables);
     if (intersects.length <= 0) {
       return;
@@ -713,6 +714,13 @@ var Dragging = function() {
     plane.setFromNormalAndCoplanarPoint(planeNormal, pointIntersect);
     distance.subVectors(intersects[0].object.position, intersects[0].point);
     App.draggableObject = intersects[0].object;
+    const bBox = new THREE.Box3().setFromObject(App.draggableObject);
+    const size = new THREE.Vector3();
+    bBox.getSize(size);
+    App.draggableObject.userData.tmp = {
+      bbox: bBox,
+      size
+    };
     App.controls.OrbitControls.enabled = false;
     App.actions.isDragging = true;
     App.canvas.style.cursor = "grab";
@@ -746,14 +754,24 @@ var Dragging = function() {
     App.draggableObject = null;
   }
   function drag() {
+    const THREE = App.THREE;
     if (!App.actions.isDragging) {
       return;
     }
     App.draggableObject.position.addVectors(pointIntersect, distance);
     if (App.movingLimits !== null) {
-      App.movingLimits.min.y = App.draggableObject.position.y;
-      App.movingLimits.max.y = App.draggableObject.position.y;
-      App.draggableObject.position.clamp(App.movingLimits.min, App.movingLimits.max);
+      const limits = {
+        min: new THREE.Vector3(),
+        max: new THREE.Vector3()
+      };
+      limits.min.y = App.draggableObject.position.y;
+      limits.max.y = App.draggableObject.position.y;
+      const size = App.draggableObject.userData.tmp.size;
+      limits.min.x = App.movingLimits.min.x + size.x / 2;
+      limits.max.x = App.movingLimits.max.x - size.x / 2;
+      limits.min.z = App.movingLimits.min.z + size.z / 2;
+      limits.max.z = App.movingLimits.max.z - size.z / 2;
+      App.draggableObject.position.clamp(limits.min, limits.max);
     }
     let onDragCallback = App.draggableObject.userData?.callbacks?.onDrag ?? (() => {
     });
@@ -810,13 +828,16 @@ var Events = function() {
 // src/modules/collisions.js
 var Collision = function() {
   const currentCollisions = [];
-  function check(object) {
+  function check(object, onlyVisible = true) {
     const THREE = App.THREE;
     let collision = false;
     const objectBox = new THREE.Box3().setFromObject(object);
     currentCollisions.length = 0;
     App.collidables.forEach((collidable) => {
       if (collidable === object) {
+        return;
+      }
+      if (onlyVisible && !collidable.visible) {
         return;
       }
       const collidableBox = new THREE.Box3().setFromObject(collidable);

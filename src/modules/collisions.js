@@ -4,7 +4,7 @@ const Collision = (function () {
 
 	const currentCollisions = [];
 
-	function check (object) {
+	function check (object, onlyVisible = true) {
 
 		const THREE = App.THREE;
 
@@ -17,6 +17,12 @@ const Collision = (function () {
 		App.collidables.forEach(collidable => {
 
 			if (collidable === object) {
+
+				return;
+
+			}
+
+			if (onlyVisible && !collidable.visible) {
 
 				return;
 

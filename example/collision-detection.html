@@ -153,16 +153,7 @@
 							castShadow: true,
 							receiveShadow: true,
 							userData: {
-								collidable: true,
-								draggable: true,
-								dragMaterial: {
-									type: 'MeshStandardMaterial',
-									properties: {
-										color: 0xfa5750,
-										transparent: true,
-										opacity: 0.6
-									}
-								}
+								collidable: true
 							}
 						}
 					},
@@ -206,16 +197,91 @@
 							castShadow: true,
 							receiveShadow: true,
 							userData: {
-								collidable: true,
-								draggable: true,
-								dragMaterial: {
-									type: 'MeshStandardMaterial',
-									properties: {
-										color: 0x75b938,
-										wireframe: true
-									}
-								}
+								collidable: true
 							}
+						}
+					},
+					{
+						geometry: {
+							type: 'BoxGeometry',
+							args: [1, 1, 1]
+						},
+						material: {
+							type: 'MeshStandardMaterial',
+							textures: [
+								{
+									map: 'map',
+									url: './textures/Wood060_1K_Color.jpg'
+								},
+								{
+									map: 'normalMap',
+									url: './textures/Wood060_1K_Normal.jpg',
+									properties: {
+										flipY: false
+									}
+								},
+								{
+									map: 'roughnessMap',
+									url: './textures/Wood060_1K_Roughness.jpg'
+								},
+								{
+									map: 'aoMap',
+									url: './textures/Wood060_1K_AmbientOcclusion.jpg'
+								},
+								{
+									map: 'bumpMap',
+									url: './textures/Wood060_1K_Displacement.jpg'
+								}
+							]
+						},
+						properties: {
+							name: 'some box 3',
+							rotation: { y: Math.PI / 3 },
+							position: { x: 0.75, y: 1.25, z: 1.5 },
+							castShadow: true,
+							receiveShadow: true,
+							userData: {
+								collidable: true
+							}
+						}
+					},
+					{
+						geometry: {
+							type: 'BoxGeometry',
+							args: [1, 1, 1]
+						},
+						material: {
+							type: 'MeshStandardMaterial',
+							properties: {
+								color: 0xfa5750
+							}
+						},
+						properties: {
+							visible: false,
+							name: 'invisible box',
+							rotation: { y: Math.PI / 8 },
+							position: { x: -0.5, y: 0.5, z: 1.5 },
+							userData: {
+								collidable: true
+							}
+						}
+					},
+					{
+						geometry: {
+							type: 'BoxGeometry',
+							args: [1, 1, 1]
+						},
+						material: {
+							type: 'MeshStandardMaterial',
+							properties: {
+								color: 0x75b938,
+								wireframe: true
+							}
+						},
+						properties: {
+							name: 'invisible box helper',
+							rotation: { y: Math.PI / 8 },
+							position: { x: -0.5, y: 0.5, z: 1.5 }
 						}
 					}
 				];
@@ -242,7 +308,7 @@
 					// shed some light
 					KLEE.Light.add(lights);
 
-					// add a box anda sphere
+					// add the objects
 					KLEE.Item.add(items);
 
 					// add a grid
@@ -255,11 +321,36 @@
 					console.log(KLEE.App.scene);
 
 					const box1 = KLEE.App.scene.getObjectByName('some box 1');
-					const hasCollided = KLEE.Collision.check(box1);
+					const hasCollided1 = KLEE.Collision.check(box1, true);
 
-					if (hasCollided) {
+					if (hasCollided1) {
 
-						console.log('BoxCollision detected.');
+						console.log('»some box 1« has a collision');
+
+					}
+
+					const box3 = KLEE.App.scene.getObjectByName('some box 3');
+					const hasCollided3a = KLEE.Collision.check(box3, true);
+
+					if (hasCollided3a) {
+
+						console.log('»some box 3« has a collision');
+
+					} else {
+
+						console.log('»some box 3« has no collision or is ignored');
+
+					}
+
+					const hasCollided3b = KLEE.Collision.check(box3, false);
+
+					if (hasCollided3b) {
+
+						console.log('»some box 3« has a collision');
+
+					} else {
+
+						console.log('»some box 3« has no collision or is ignored');
 
 					}
 

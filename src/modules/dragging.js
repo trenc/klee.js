@@ -22,6 +22,8 @@ const Dragging = (function () {
 
 	function start () {
 
+		const THREE = App.THREE;
+
 		const intersects = App.raycaster.intersectObjects(App.draggables);
 
 		if (intersects.length <= 0) {
@@ -37,6 +39,16 @@ const Dragging = (function () {
 		distance.subVectors(intersects[0].object.position, intersects[0].point);
 
 		App.draggableObject = intersects[0].object;
+
+		// create boundingBox and size for later use
+		const bBox = new THREE.Box3().setFromObject(App.draggableObject);
+		const size = new THREE.Vector3();
+		bBox.getSize(size);
+
+		App.draggableObject.userData.tmp = {
+			bbox: bBox,
+			size: size
+		};
 
 		App.controls.OrbitControls.enabled = false;
 
@@ -104,6 +116,8 @@ const Dragging = (function () {
 
 	function drag () {
 
+		const THREE = App.THREE;
+
 		if (!App.actions.isDragging) {
 
 			return;
@@ -114,9 +128,23 @@ const Dragging = (function () {
 
 		if (App.movingLimits !== null) {
 
-			App.movingLimits.min.y = App.draggableObject.position.y;
-			App.movingLimits.max.y = App.draggableObject.position.y;
-			App.draggableObject.position.clamp(App.movingLimits.min, App.movingLimits.max);
+			const limits = {
+				min: new THREE.Vector3(),
+				max: new THREE.Vector3()
+			};
+
+			// fix on y to move on floor
+			limits.min.y = App.draggableObject.position.y;
+			limits.max.y = App.draggableObject.position.y;
+
+			// substract half width volume to move on edges not center
+			const size = App.draggableObject.userData.tmp.size;
+			limits.min.x = App.movingLimits.min.x + size.x / 2;
+			limits.max.x = App.movingLimits.max.x - size.x / 2;
+			limits.min.z = App.movingLimits.min.z + size.z / 2;
+			limits.max.z = App.movingLimits.max.z - size.z / 2;
+
+			App.draggableObject.position.clamp(limits.min, limits.max);
 
 		}
 

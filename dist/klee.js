@@ -1,5 +1,5 @@
 // src/modules/constants.js
-var KLEEVERSION = "0.8.1";
+var KLEEVERSION = "0.8.2";
 
 // src/default.options.js
 function getDefaultOptions(THREE) {
@@ -434,7 +434,7 @@ var Object3d = function() {
     for (const prop in options) {
       if (options[prop] instanceof Object) {
         if (typeof object[prop] !== "undefined" && "copy" in object[prop]) {
-          if ("toVector3" in object[prop] && "setFromVector3" in object[prop]) {
+          if ("setFromVector3" in object[prop]) {
             const toVector3 = new THREE.Vector3();
             toVector3.setFromEuler(object[prop]);
             const mergedVector3 = {...toVector3, ...options[prop]};

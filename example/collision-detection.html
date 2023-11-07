@@ -8,12 +8,10 @@
 	</head>
 	<body>
 
-		<script async src="https://unpkg.com/es-module-shims@1.5.5/dist/es-module-shims.js"></script>
-
 		<script type="importmap">
 			{
 				"imports": {
-					"three": "./libs/three.module.js",
+					"three": "./libs/three.module.min.js",
 					"klee": "./../dist/klee.js"
 				}
 			}
@@ -68,26 +66,28 @@
 							type: 'AmbientLight',
 							properties: {
 								name: 'light-1',
-								color: '#103c48'
+								intensity: 2,
+								color: '#404040'
 							}
 						},
 						{
-							type: 'SpotLight',
+							type: 'DirectionalLight',
 							properties: {
 								name: 'light-2',
+								color: '#ffffff',
+								intensity: 3,
 								castShadow: true,
 								shadow: { mapSize: { x: 2048, y: 2048 } }, // INFO: x,y instead of width, height
 								position: { x: 30, y: 30, z: 30 }
 							}
 						},
 						{
-							type: 'SpotLight',
+							type: 'DirectionalLight',
 							properties: {
 								name: 'light-3',
 								color: '#ffffff',
-								castShadow: true,
-								shadow: { mapSize: { x: 2048, y: 2048 } }, // INFO: x,y instead of width, height
-								position: { x: 0, y: 30, z: 30 }
+								intensity: 1,
+								position: { x: -30, y: 30, z: -30 }
 							}
 						}
 					];

@@ -63,9 +63,9 @@ const Object3d = (function () {
 				// this handles non-writable object like Vectors, Euler, Quaternions etc.
 				if (typeof object[prop] !== 'undefined' && 'copy' in object[prop]) {
 
-					// a workaround for THREE.Euler which does use uderscored properties
+					// a workaround for THREE.Euler which does use underscored properties
 					// in »copy« method
-					if ('toVector3' in object[prop] && 'setFromVector3' in object[prop]) {
+					if ('setFromVector3' in object[prop]) {
 
 						const toVector3 = new THREE.Vector3();
 						toVector3.setFromEuler(object[prop]);

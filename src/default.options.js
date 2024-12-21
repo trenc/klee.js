@@ -1,11 +1,7 @@
 function getDefaultOptions (THREE) {
-
 	return {
-
 		debugLevel: 0, // 0,1,2,3
-
 		responsive: true,
-
 		renderer: {
 			type: 'WebGLRenderer',
 			args: [{ antialias: true, preserveDrawingBuffer: true, alpha: true }],
@@ -20,7 +16,6 @@ function getDefaultOptions (THREE) {
 				}
 			}
 		},
-
 		camera: {
 			type: 'PerspectiveCamera',
 			methods: {
@@ -35,7 +30,6 @@ function getDefaultOptions (THREE) {
 				far: 300
 			}
 		},
-
 		scene: {
 			type: 'Scene',
 			properties: {
@@ -43,9 +37,7 @@ function getDefaultOptions (THREE) {
 				position: { x: 0, y: 0, z: 0 }
 			}
 		}
-
 	};
-
 }
 
 export { getDefaultOptions };

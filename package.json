@@ -1,6 +1,6 @@
 {
   "name": "klee.js",
-  "version": "0.8.1",
+  "version": "0.8.3",
   "main": "src/klee.js",
   "private": true,
   "type": "module",
@@ -15,7 +15,8 @@
     "start": "npm run clean && npm run bundle:watch & npm run serve",
     "test:cy:open": "npx cypress open",
     "test:cy:run": "npx cypress run",
-    "test:lint": "eslint src/*.js src/modules/*.js",
+    "lint": "eslint src/*.js src/modules/*.js",
+    "lint:fix": "eslint --fix src/*.js src/modules/*.js",
     "test": "npm run test:lint & npm run test:cy:run"
   },
   "author": "Tommy Schmucker",
@@ -30,8 +31,7 @@
       "cy": true
     },
     "extends": [
-      "standard",
-      "plugin:cypress/recommended"
+      "standard"
     ],
     "parserOptions": {
       "ecmaVersion": 12,
@@ -54,10 +54,6 @@
         {
           "allowIndentationTabs": true
         }
-      ],
-      "padded-blocks": [
-        "error",
-        "always"
       ]
     },
     "overrides": [

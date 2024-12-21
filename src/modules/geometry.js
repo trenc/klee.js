@@ -2,11 +2,8 @@ import { App } from './app';
 import { Utils } from '../utils';
 
 const Geometry = (function () {
-
 	function create (options) {
-
 		if (!options) {
-
 			options = {
 
 				type: 'BoxGeometry',
@@ -15,7 +12,6 @@ const Geometry = (function () {
 			};
 
 			App.info('No options for geometry given, using default BoxGeometry 1x1x1');
-
 		}
 
 		let geometry = App.create(options);
@@ -23,15 +19,13 @@ const Geometry = (function () {
 		geometry = Utils.merge(geometry, options.properties);
 
 		return geometry;
-
 	}
 
 	return {
 
-		create: create
+		create
 
 	};
-
 })(App);
 
 export { Geometry };

@@ -1,18 +1,20 @@
 // src/modules/constants.js
-var KLEEVERSION = "0.8.2";
+var KLEEVERSION = "0.8.3";
 
 // src/default.options.js
 function getDefaultOptions(THREE) {
   return {
     debugLevel: 0,
+    // 0,1,2,3
     responsive: true,
     renderer: {
       type: "WebGLRenderer",
-      args: [{antialias: true, preserveDrawingBuffer: true, alpha: true}],
+      args: [{ antialias: true, preserveDrawingBuffer: true, alpha: true }],
       domElement: "body",
       clearColor: "#000000",
       opacity: 1,
       properties: {
+        // outputEncoding: THREE.sRGBEncoding,
         shadowMap: {
           enabled: true,
           type: THREE.PCFSoftShadowMap
@@ -25,7 +27,7 @@ function getDefaultOptions(THREE) {
         lookAt: [0, 0, 0]
       },
       properties: {
-        position: {x: -1, y: 2, z: 5},
+        position: { x: -1, y: 2, z: 5 },
         name: "camera-1",
         fov: 35,
         aspect: window.innerWidth / window.innerHeight,
@@ -37,7 +39,7 @@ function getDefaultOptions(THREE) {
       type: "Scene",
       properties: {
         name: "scene-1",
-        position: {x: 0, y: 0, z: 0}
+        position: { x: 0, y: 0, z: 0 }
       }
     }
   };
@@ -45,6 +47,8 @@ function getDefaultOptions(THREE) {
 
 // src/utils.js
 var Utils = class {
+  // https://gist.github.com/ahtcx/0cd94e62691f539160b32ecda18af3d6
+  // mutates target for read-only properties
   static merge(target, source) {
     if (!source || typeof source !== "object") {
       return target;
@@ -83,7 +87,7 @@ var Utils = class {
 };
 
 // src/modules/app.js
-var App = function() {
+var App = /* @__PURE__ */ function() {
   let options = {};
   let THREE;
   const local = {
@@ -109,13 +113,13 @@ var App = function() {
     if (!three || !three.REVISION) {
       error("THREE is not inserted");
     }
-    THREE = {...three};
+    THREE = { ...three };
     if (!initOptions || typeof initOptions !== "object") {
       initOptions = {};
       warn("Options are set to default values");
     }
     const mergedOptions = Utils.merge(getDefaultOptions(THREE), initOptions);
-    options = {...mergedOptions};
+    options = { ...mergedOptions };
     local.renderer = initRenderer(options.renderer);
     local.manager = new THREE.LoadingManager();
   }
@@ -296,13 +300,218 @@ var App = function() {
   };
 }();
 
+// src/modules/userdata.js
+var UserData = /* @__PURE__ */ function() {
+  function handle(object, userData) {
+    const f = {
+      collidable: (action) => addCollidables(object, action),
+      draggable: (action) => addDraggables(object, action),
+      // dragMaterial: (action) => createDragMaterial(object, action),
+      movingLimiter: (action) => setMovingLimits(object, action)
+    };
+    for (const action in userData) {
+      if (userData[action] && f[action]) {
+        f[action](action);
+      }
+    }
+    object.userData = { ...object.userData, ...userData };
+  }
+  function setMovingLimits(object, action) {
+    const THREE = App.THREE;
+    const boundingBox = new THREE.Box3();
+    boundingBox.setFromObject(object);
+    App.movingLimits = {
+      min: boundingBox.min,
+      max: boundingBox.max
+    };
+  }
+  function addDraggables(object, action) {
+    if (action) {
+      App.draggables.push(object);
+    }
+  }
+  function addCollidables(object, action) {
+    if (action) {
+      App.collidables.push(object);
+    }
+  }
+  return {
+    handle
+  };
+}(App);
+
+// src/modules/object3d.js
+var Object3d = /* @__PURE__ */ function() {
+  function add(options) {
+    const object3d = create(options);
+    App.scene.add(object3d);
+    return object3d;
+  }
+  function create(options) {
+    const THREE = App.THREE;
+    const args = Array.isArray(options.args) ? options.args : [];
+    let object = new THREE[options.type](...args);
+    object = change(object, options);
+    return object;
+  }
+  function change(object, options) {
+    if (options.properties) {
+      object = applyProperties(object, options.properties);
+    }
+    if (options.methods) {
+      object = Utils.applyMethods(object, options.methods);
+    }
+    return object;
+  }
+  function applyProperties(object, options) {
+    const THREE = App.THREE;
+    if (!options || typeof options !== "object") {
+      return object;
+    }
+    for (const prop in options) {
+      if (options[prop] instanceof Object) {
+        if (typeof object[prop] !== "undefined" && "copy" in object[prop]) {
+          if ("setFromVector3" in object[prop]) {
+            const toVector3 = new THREE.Vector3();
+            toVector3.setFromEuler(object[prop]);
+            const mergedVector3 = { ...toVector3, ...options[prop] };
+            object[prop].setFromVector3(mergedVector3);
+          }
+          const v = { ...object[prop], ...options[prop] };
+          object[prop].copy(v);
+        } else {
+          if (prop === "userData") {
+            UserData.handle(object, options[prop]);
+          } else {
+            object[prop] = applyProperties(object[prop], options[prop]);
+          }
+        }
+      } else {
+        if (Utils.isThreeColorValue(prop)) {
+          object[prop] = new THREE.Color(options[prop]);
+        } else {
+          object[prop] = options[prop];
+        }
+      }
+    }
+    return object;
+  }
+  return {
+    add,
+    create,
+    change
+  };
+}(App);
+
+// src/modules/scene.js
+var Scene = /* @__PURE__ */ function() {
+  function init() {
+    const options = App.options;
+    App.camera = initCamera(options.camera);
+    App.scene = initScene(options.scene);
+    App.initSize();
+  }
+  function initScene(options) {
+    const scene = Object3d.create(options);
+    (async () => {
+      scene.background = await createSceneTextures(options.background);
+      scene.environment = await createSceneTextures(options.environment);
+    })();
+    return scene;
+  }
+  function initCamera(options) {
+    const camera = Object3d.create(options);
+    camera.updateProjectionMatrix();
+    return camera;
+  }
+  async function createSceneTextures(options) {
+    if (!options) {
+      return null;
+    }
+    const THREE = App.THREE;
+    const loaderType = options.loader || "TextureLoader";
+    const loader = new THREE[loaderType](App.manager);
+    const texture = await loader.loadAsync(options.url);
+    return texture;
+  }
+  return {
+    init
+  };
+}(App);
+
+// src/modules/controls.js
+var Controls = /* @__PURE__ */ function() {
+  function init(Controls2, options) {
+    App.controls[Controls2.name] = initControls(Controls2, options);
+  }
+  function initControls(Controls2, options) {
+    let controls = new Controls2(App.camera, App.renderer.domElement);
+    controls = Object3d.change(controls, options);
+    return controls;
+  }
+  return {
+    init
+  };
+}(App);
+
+// src/modules/loaders.js
+var Loaders = /* @__PURE__ */ function() {
+  const Loaders2 = {};
+  function init(LoaderClass) {
+    Loaders2[LoaderClass.name] = new LoaderClass(App.manager);
+  }
+  async function load(options) {
+    const item = await Loaders2[options.loader].loadAsync(options.url);
+    return item;
+  }
+  return {
+    init,
+    load
+  };
+}(App);
+
+// src/modules/light.js
+var Light = /* @__PURE__ */ function() {
+  function create(options) {
+    const light = Object3d.create(options);
+    return light;
+  }
+  function change(light, options) {
+    light = Object3d.change(light, options);
+    return light;
+  }
+  function add(options) {
+    if (typeof options === "object" && options.type) {
+      return addOne(options);
+    }
+    const lights = [];
+    if (Array.isArray(options)) {
+      options.forEach((option) => {
+        const light = addOne(option);
+        lights.push(light);
+      });
+    }
+    return lights;
+  }
+  function addOne(options) {
+    const light = create(options);
+    App.scene.add(light);
+    return light;
+  }
+  return {
+    add,
+    create,
+    change
+  };
+}(App);
+
 // src/modules/material.js
-var Material = function() {
+var Material = /* @__PURE__ */ function() {
   function create(options) {
     if (!options) {
       options = {
         type: "MeshPhongMaterial",
-        args: [{color: 16777215}]
+        args: [{ color: 16777215 }]
       };
       App.info("No options for material given, using default MeshPhongMaterial in white");
     }
@@ -343,7 +552,7 @@ var Material = function() {
     }
     for (const prop in options) {
       if (options[prop] instanceof Object) {
-        object[prop] = {...options[prop]};
+        object[prop] = { ...options[prop] };
       } else {
         if (Utils.isThreeColorValue(prop)) {
           object[prop] = new THREE.Color(options[prop]);
@@ -355,221 +564,13 @@ var Material = function() {
     return object;
   }
   return {
-    create,
-    change
-  };
-}(App);
-
-// src/modules/userdata.js
-var UserData = function() {
-  function handle(object, userData) {
-    const f = {
-      collidable: (action) => addCollidables(object, action),
-      draggable: (action) => addDraggables(object, action),
-      dragMaterial: (action) => createDragMaterial(object, action),
-      movingLimiter: (action) => setMovingLimits(object, action)
-    };
-    for (const action in userData) {
-      if (userData[action] && f[action]) {
-        f[action](action);
-      }
-    }
-    object.userData = {...object.userData, ...userData};
-  }
-  function setMovingLimits(object, action) {
-    const THREE = App.THREE;
-    const boundingBox = new THREE.Box3();
-    boundingBox.setFromObject(object);
-    App.movingLimits = {
-      min: boundingBox.min,
-      max: boundingBox.max
-    };
-  }
-  function createDragMaterial(object, action) {
-    return;
-  }
-  function addDraggables(object, action) {
-    if (action) {
-      App.draggables.push(object);
-    }
-  }
-  function addCollidables(object, action) {
-    if (action) {
-      App.collidables.push(object);
-    }
-  }
-  return {
-    handle
-  };
-}(App);
-
-// src/modules/object3d.js
-var Object3d = function() {
-  function add(options) {
-    const object3d = create(options);
-    App.scene.add(object3d);
-    return object3d;
-  }
-  function create(options) {
-    const THREE = App.THREE;
-    const args = Array.isArray(options.args) ? options.args : [];
-    let object = new THREE[options.type](...args);
-    object = change(object, options);
-    return object;
-  }
-  function change(object, options) {
-    if (options.properties) {
-      object = applyProperties(object, options.properties);
-    }
-    if (options.methods) {
-      object = Utils.applyMethods(object, options.methods);
-    }
-    return object;
-  }
-  function applyProperties(object, options) {
-    const THREE = App.THREE;
-    if (!options || typeof options !== "object") {
-      return object;
-    }
-    for (const prop in options) {
-      if (options[prop] instanceof Object) {
-        if (typeof object[prop] !== "undefined" && "copy" in object[prop]) {
-          if ("setFromVector3" in object[prop]) {
-            const toVector3 = new THREE.Vector3();
-            toVector3.setFromEuler(object[prop]);
-            const mergedVector3 = {...toVector3, ...options[prop]};
-            object[prop].setFromVector3(mergedVector3);
-          }
-          const v = {...object[prop], ...options[prop]};
-          object[prop].copy(v);
-        } else {
-          if (prop === "userData") {
-            UserData.handle(object, options[prop]);
-          } else {
-            object[prop] = applyProperties(object[prop], options[prop]);
-          }
-        }
-      } else {
-        if (Utils.isThreeColorValue(prop)) {
-          object[prop] = new THREE.Color(options[prop]);
-        } else {
-          object[prop] = options[prop];
-        }
-      }
-    }
-    return object;
-  }
-  return {
-    add,
-    create,
-    change
-  };
-}(App);
-
-// src/modules/scene.js
-var Scene = function() {
-  function init() {
-    const options = App.options;
-    App.camera = initCamera(options.camera);
-    App.scene = initScene(options.scene);
-    App.initSize();
-  }
-  function initScene(options) {
-    const scene = Object3d.create(options);
-    (async () => {
-      scene.background = await createSceneTextures(options.background);
-      scene.environment = await createSceneTextures(options.environment);
-    })();
-    return scene;
-  }
-  function initCamera(options) {
-    const camera = Object3d.create(options);
-    camera.updateProjectionMatrix();
-    return camera;
-  }
-  async function createSceneTextures(options) {
-    if (!options) {
-      return null;
-    }
-    const THREE = App.THREE;
-    const loaderType = options.loader || "TextureLoader";
-    const loader = new THREE[loaderType](App.manager);
-    const texture = await loader.loadAsync(options.url);
-    return texture;
-  }
-  return {
-    init
-  };
-}(App);
-
-// src/modules/controls.js
-var Controls = function() {
-  function init(Controls2, options) {
-    App.controls[Controls2.name] = initControls(Controls2, options);
-  }
-  function initControls(Controls2, options) {
-    let controls = new Controls2(App.camera, App.renderer.domElement);
-    controls = Object3d.change(controls, options);
-    return controls;
-  }
-  return {
-    init
-  };
-}(App);
-
-// src/modules/loaders.js
-var Loaders = function() {
-  const Loaders2 = {};
-  function init(LoaderClass) {
-    Loaders2[LoaderClass.name] = new LoaderClass(App.manager);
-  }
-  async function load(options) {
-    const item = await Loaders2[options.loader].loadAsync(options.url);
-    return item;
-  }
-  return {
-    init,
-    load
-  };
-}(App);
-
-// src/modules/light.js
-var Light = function() {
-  function create(options) {
-    const light = Object3d.create(options);
-    return light;
-  }
-  function change(light, options) {
-    light = Object3d.change(light, options);
-    return light;
-  }
-  function add(options) {
-    if (typeof options === "object" && options.type) {
-      return addOne(options);
-    }
-    const lights = [];
-    if (Array.isArray(options)) {
-      options.forEach((option) => {
-        const light = addOne(option);
-        lights.push(light);
-      });
-    }
-    return lights;
-  }
-  function addOne(options) {
-    const light = create(options);
-    App.scene.add(light);
-    return light;
-  }
-  return {
-    add,
     create,
     change
   };
 }(App);
 
 // src/modules/geometry.js
-var Geometry = function() {
+var Geometry = /* @__PURE__ */ function() {
   function create(options) {
     if (!options) {
       options = {
@@ -588,7 +589,7 @@ var Geometry = function() {
 }(App);
 
 // src/modules/item.js
-var Item = function() {
+var Item = /* @__PURE__ */ function() {
   function create(options) {
     const THREE = App.THREE;
     const material = Material.create(options.material);
@@ -691,7 +692,7 @@ var Item = function() {
 }(App);
 
 // src/modules/dragging.js
-var Dragging = function() {
+var Dragging = /* @__PURE__ */ function() {
   let tmpMaterial = null;
   let plane = null;
   let planeNormal = null;
@@ -790,7 +791,7 @@ var Dragging = function() {
 }();
 
 // src/modules/events.js
-var Events = function() {
+var Events = /* @__PURE__ */ function() {
   async function init() {
     const THREE = App.THREE;
     App.raycaster = App.raycaster ?? new THREE.Raycaster();
@@ -826,7 +827,7 @@ var Events = function() {
 }();
 
 // src/modules/collisions.js
-var Collision = function() {
+var Collision = /* @__PURE__ */ function() {
   const currentCollisions = [];
   function check(object, onlyVisible = true) {
     const THREE = App.THREE;

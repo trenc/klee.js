@@ -105,6 +105,7 @@ var App = /* @__PURE__ */ function() {
     draggables: [],
     draggableObject: null,
     collidables: [],
+    faceables: [],
     actions: {
       isDragging: false
     }
@@ -268,6 +269,12 @@ var App = /* @__PURE__ */ function() {
     set draggables(draggables) {
       local.draggables = draggables;
     },
+    get faceables() {
+      return local.faceables;
+    },
+    set faceables(faceables) {
+      local.faceables = faceables;
+    },
     get mouse() {
       return local.mouse;
     },
@@ -306,7 +313,7 @@ var UserData = /* @__PURE__ */ function() {
     const f = {
       collidable: (action) => addCollidables(object, action),
       draggable: (action) => addDraggables(object, action),
-      // dragMaterial: (action) => createDragMaterial(object, action),
+      faceable: (action) => addFaceable(object, action),
       movingLimiter: (action) => setMovingLimits(object, action)
     };
     for (const action in userData) {
@@ -333,6 +340,11 @@ var UserData = /* @__PURE__ */ function() {
   function addCollidables(object, action) {
     if (action) {
       App.collidables.push(object);
+    }
+  }
+  function addFaceable(object, action) {
+    if (action) {
+      App.faceables.push(object);
     }
   }
   return {

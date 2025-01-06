@@ -1,13 +1,11 @@
 import { App } from './app';
-// import { Material } from './material';
-// import { Utils } from '../utils';
 
 const UserData = (function () {
 	function handle (object, userData) {
 		const f = {
 			collidable: (action) => addCollidables(object, action),
 			draggable: (action) => addDraggables(object, action),
-			// dragMaterial: (action) => createDragMaterial(object, action),
+			faceable: (action) => addFaceable(object, action),
 			movingLimiter: (action) => setMovingLimits(object, action)
 		};
 
@@ -31,10 +29,6 @@ const UserData = (function () {
 		};
 	}
 
-	// function createDragMaterial (object, action) {
-	//
-	// }
-
 	function addDraggables (object, action) {
 		if (action) {
 			App.draggables.push(object);
@@ -44,6 +38,12 @@ const UserData = (function () {
 	function addCollidables (object, action) {
 		if (action) {
 			App.collidables.push(object);
+		}
+	}
+
+	function addFaceable (object, action) {
+		if (action) {
+			App.faceables.push(object);
 		}
 	}
 

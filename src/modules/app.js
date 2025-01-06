@@ -22,6 +22,7 @@ const App = (function () {
 		draggables: [],
 		draggableObject: null,
 		collidables: [],
+		faceables: [],
 		actions: {
 			isDragging: false
 		}
@@ -247,6 +248,14 @@ const App = (function () {
 
 		set draggables (draggables) {
 			local.draggables = draggables;
+		},
+
+		get faceables () {
+			return local.faceables;
+		},
+
+		set faceables (faceables) {
+			local.faceables = faceables;
 		},
 
 		get mouse () {

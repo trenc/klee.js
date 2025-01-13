@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<title>klee.js - cube</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link rel="stylesheet" href="css/styles.css" />
+	</head>
+	<body>
+
+		<script type="importmap">
+			{
+				"imports": {
+					"three": "./libs/three.module.min.js",
+					"klee": "./../dist/klee.js"
+				}
+			}
+		</script>
+
+		<script type="module">
+
+			import * as THREE from 'three';
+			import { OrbitControls } from './libs/jsm/controls/OrbitControls.js';
+			// import { DecalGeometry } from './libs/jsm/geometries/DecalGeometry.js';
+			import * as KLEE from 'klee';
+
+			// some opinionated default options declared in /src/default.options.js
+			// you can overwrite these here or add additional options
+			const options = {
+
+				debugLevel: 3,
+
+				renderer: {
+					clearColor: '#103c48',
+					properties: {
+						localClippingEnabled: true
+					},
+				},
+
+				camera: {
+					properties: {
+						position: { x: -2, z: 10 }
+					}
+				}
+
+			};
+
+			const controls = {
+				// no type and args here, we need the object direct
+				// and args (camera, renderElement are given)
+				properties: {
+					//autoRotate: true,
+					enableDampling: true,
+					enablePan: true,
+					dampingFactor: 0.25,
+					enableZoom: true,
+					minDistance: 5,
+					maxDistance: 30,
+					minPolarAngle: 0.1,
+					maxPolarAngle: 1.5
+				}
+
+			};
+
+			const lights = [
+				{
+					type: 'AmbientLight',
+					properties: {
+						name: 'light-1',
+						intensity: 2,
+						color: '#404040'
+					}
+				},
+				{
+					type: 'DirectionalLight',
+					properties: {
+						name: 'light-2',
+						color: '#ffffff',
+						intensity: 3,
+						castShadow: true,
+						shadow: { mapSize: { x: 2048, y: 2048 } }, // INFO: x,y instead of width, height
+						position: { x: 30, y: 30, z: 30 }
+					}
+				},
+				{
+					type: 'DirectionalLight',
+					properties: {
+						name: 'light-3',
+						color: '#ffffff',
+						intensity: 1,
+						position: { x: -30, y: 30, z: -30 }
+					}
+				}
+			];
+
+			const items = [ // aka meshs
+					{
+						geometry: {
+							type: 'PlaneGeometry',
+							args: [16, 16]
+						},
+						material: {
+							type: 'MeshStandardMaterial',
+							properties: {
+								color: '#103c48'
+							},
+						},
+						properties: {
+							receiveShadow: true,
+							rotation: { x: Math.PI / -2 },
+							name: 'Floor',
+							userData: {
+								movingPlane: true
+							}
+						}
+					},
+				{
+					geometry: {
+						type: 'BoxGeometry',
+						args: [1, 2, 0.25]
+					},
+					material: {
+						type: 'MeshStandardMaterial',
+						properties: {
+							color: '#dbb32d'
+						}
+					},
+					properties: {
+						name: 'some box',
+						// rotation: { y: Math.PI / 8 },
+						position: { x: -0.5, y: 1, z: -0.5 },
+						castShadow: true,
+						receiveShadow: true,
+						userData: {
+							faceable: true
+						}
+					}
+				},
+				{
+					geometry: {
+						type: 'BoxGeometry',
+						args: [1, 2, 0.25]
+					},
+					material: {
+						type: 'MeshStandardMaterial',
+						properties: {
+							color: '#dbb32d'
+						}
+					},
+					properties: {
+						name: 'some box 2',
+						rotation: { y: Math.PI / 8 },
+						position: { x: -2.5, y: 1, z: -0.5 },
+						castShadow: true,
+						receiveShadow: true,
+						userData: {
+							faceable: true
+						}
+					}
+				}
+			];
+
+			const gridHelper = {
+
+				type: 'GridHelper',
+				args: [100, 100, '#72898f', '#72898f']
+
+			};
+
+			// initalize app and scene
+			KLEE.App.init(THREE, options);
+			KLEE.Scene.init();
+
+			// optional controls
+			KLEE.Controls.init(OrbitControls, controls);
+
+			// shed some light
+			KLEE.Light.add(lights);
+
+			// add a box and sphere
+			KLEE.Item.add(items);
+
+			// add a grid
+			KLEE.Object3d.add(gridHelper);
+
+			// add raycaster and events
+			KLEE.Events.init();
+
+			// run the app
+			KLEE.App.run();
+
+			const canvas = KLEE.App.renderer.domElement;
+
+			// inspect the scene in console
+			// console.log(KLEE.App.scene);
+
+			const convertBase64 = (file) => {
+				return new Promise((resolve, reject) => {
+					const fileReader = new FileReader();
+					fileReader.readAsDataURL(file);
+
+					fileReader.onload = () => resolve(fileReader.result);
+					fileReader.onerror = (error) => reject(error);
+				});
+			};
+
+
+			const calculateFaceSize = (mesh, face) => {
+				const positions = mesh.geometry.attributes.position.array;
+				const matrixWorld = mesh.matrixWorld;
+
+				const v1 = new THREE.Vector3().fromArray(positions, face.a * 3).applyMatrix4(matrixWorld);
+				const v2 = new THREE.Vector3().fromArray(positions, face.b * 3).applyMatrix4(matrixWorld);
+				const v3 = new THREE.Vector3().fromArray(positions, face.c * 3).applyMatrix4(matrixWorld);
+
+				const d13 = v1.distanceTo(v3);
+				const d12 = v1.distanceTo(v2);
+				const d23 = v2.distanceTo(v3);
+
+				const distances = [d13, d12, d23].sort((a,b) => a - b);
+
+				return { a: distances[0], b: distances[1], diagonal: distances[2] };
+			};
+
+			document.getElementById('imageInput').addEventListener('change', async (event) => {
+				const [file] = event.target.files;
+
+				if (!file) {
+					return;
+				}
+
+				const base64Image = await convertBase64(file);
+				const decalTexture = new THREE.TextureLoader().load(base64Image);
+				decalTexture.colorSpace = THREE.SRGBColorSpace;
+
+				const decalMaterial= new THREE.MeshBasicMaterial({
+					map: decalTexture,
+					transparent: true,
+					depthTest: true,
+					depthWrite: false,
+					polygonOffset: true,
+					polygonOffsetFactor: -4,
+					side: THREE.DoubleSide,
+					clippingPlanes: [],
+				});
+
+				canvas.addEventListener('mouseup', event => {
+					const intersects = KLEE.App.raycaster.intersectObjects(KLEE.App.faceables);
+
+					if (intersects.length <= 0) {
+						return;
+					}
+
+					const mesh = intersects[0].object;
+					const face = intersects[0].face;
+					const normal = face.normal.clone();
+					const point = intersects[0].point.clone();
+					const faceSize = calculateFaceSize(mesh, face);
+					const maxLength = faceSize.a;
+
+					normal.transformDirection(mesh.matrixWorld);
+
+					const decalPlane = new THREE.Mesh(
+						new THREE.PlaneGeometry(maxLength, maxLength),
+						decalMaterial
+					);
+
+					decalPlane.receiveShadow = true;
+					decalPlane.position.copy(point);
+					decalPlane.lookAt(new THREE.Vector3().addVectors(point, normal));
+					// mesh.attach(decalPlane);
+					KLEE.App.scene.add(decalPlane);
+
+				});
+
+			});
+
+		</script>
+
+		<input type="file" id="imageInput" accept="image/*"">
+
+	</body>
+</html>

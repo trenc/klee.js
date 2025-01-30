@@ -268,8 +268,28 @@
 					decalPlane.receiveShadow = true;
 					decalPlane.position.copy(point);
 					decalPlane.lookAt(new THREE.Vector3().addVectors(point, normal));
-					// mesh.attach(decalPlane);
-					KLEE.App.scene.add(decalPlane);
+					decalPlane.name = 'some plane';
+					mesh.attach(decalPlane);
+
+				});
+
+				document.addEventListener('keydown', (event) => {
+					const mesh = KLEE.App.scene.getObjectByName('some plane');
+
+					switch (event.code) {
+						case 'NumpadAdd':
+							mesh.scale.set(mesh.scale.x * 1.05, mesh.scale.y * 1.05, 1);
+							break;
+						case 'NumpadSubtract':
+							mesh.scale.set(mesh.scale.x * 0.95, mesh.scale.y * 0.95, 1);
+							break;
+						case 'Period':
+							mesh.rotateOnAxis(new THREE.Vector3(0,0,1), 0.05);
+							break;
+						case 'Comma':
+							mesh.rotateOnAxis(new THREE.Vector3(0,0,1), -0.05);
+							break;
+					}
 
 				});
 

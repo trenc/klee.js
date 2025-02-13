@@ -1,5 +1,5 @@
 // src/modules/constants.js
-var KLEEVERSION = "0.8.3";
+var KLEEVERSION = "0.9.0";
 
 // src/default.options.js
 function getDefaultOptions(THREE) {
@@ -606,6 +606,9 @@ var Item = /* @__PURE__ */ function() {
       if (options.geometry) {
         return addMesh(options);
       }
+      if (options.cloneOf) {
+        return addClone(options);
+      }
     }
     const items = [];
     if (Array.isArray(options)) {
@@ -616,6 +619,16 @@ var Item = /* @__PURE__ */ function() {
     }
     return items;
   }
+  function addClone(options) {
+    const source = App.scene.getObjectByName(options.cloneOf);
+    if (!source || !source.isObject3D) {
+      return null;
+    }
+    let clone = source.clone(true);
+    clone = change(clone, options);
+    addToScene(clone, options);
+    return clone;
+  }
   async function addFromLoader(options) {
     let item = await Loaders.load(options);
     if (item.scene) {
@@ -623,13 +636,29 @@ var Item = /* @__PURE__ */ function() {
       parent = change(parent, options);
       parent.receiveShadow = false;
       parent.castShadow = false;
-      App.scene.add(parent);
+      addToScene(parent, options);
       return parent;
     } else {
       item = change(item, options);
-      App.scene.add(item);
+      addToScene(item, options);
       return item;
     }
+  }
+  function addToScene(item, options) {
+    const THREE = App.THREE;
+    if (!options.group) {
+      App.scene.add(item);
+      return;
+    }
+    let group = App.scene.getObjectByName(options.group);
+    if (group) {
+      group.add(item);
+      return;
+    }
+    group = new THREE.Group();
+    group.name = options.group;
+    group.add(item);
+    App.scene.add(group);
   }
   function wrapGroupParent(item, options) {
     const THREE = App.THREE;
@@ -668,7 +697,7 @@ var Item = /* @__PURE__ */ function() {
   }
   function addMesh(options) {
     const mesh = create(options);
-    App.scene.add(mesh);
+    addToScene(mesh, options);
     return mesh;
   }
   function change(object, options) {

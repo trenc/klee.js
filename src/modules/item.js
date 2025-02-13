@@ -55,7 +55,7 @@ const Item = (function () {
 		let clone = source.clone(true);
 		clone = change(clone, options);
 
-		App.scene.add(clone);
+		addToScene(clone, options);
 
 		return clone;
 	}
@@ -71,16 +71,37 @@ const Item = (function () {
 			parent.receiveShadow = false;
 			parent.castShadow = false;
 
-			App.scene.add(parent);
+			addToScene(parent, options);
 
 			return parent;
 		} else {
 			item = change(item, options);
 
-			App.scene.add(item);
+			addToScene(item, options);
 
 			return item;
 		}
+	}
+
+	function addToScene(item, options) {
+		const THREE = App.THREE;
+
+		if (!options.group) {
+			App.scene.add(item);
+			return;
+		}
+
+		let group = App.scene.getObjectByName(options.group);
+
+		if (group) {
+			group.add(item);
+			return;
+		}
+
+		group = new THREE.Group();
+		group.name = options.group;
+		group.add(item);
+		App.scene.add(group);
 	}
 
 	function wrapGroupParent(item, options) {
@@ -133,7 +154,7 @@ const Item = (function () {
 	function addMesh(options) {
 		const mesh = create(options);
 
-		App.scene.add(mesh);
+		addToScene(mesh, options);
 
 		return mesh;
 	}

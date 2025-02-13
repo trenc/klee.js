@@ -26,6 +26,10 @@ const Item = (function () {
 			if (options.geometry) {
 				return addMesh(options);
 			}
+
+			if (options.cloneOf) {
+				return addClone(options);
+			}
 		}
 
 		const items = [];
@@ -39,6 +43,21 @@ const Item = (function () {
 		}
 
 		return items;
+	}
+
+	function addClone(options) {
+		const source = App.scene.getObjectByName(options.cloneOf);
+
+		if (!source || !source.isObject3D) {
+			return null;
+		}
+
+		let clone = source.clone(true);
+		clone = change(clone, options);
+
+		App.scene.add(clone);
+
+		return clone;
 	}
 
 	async function addFromLoader (options) {
@@ -66,11 +85,8 @@ const Item = (function () {
 
 	function wrapGroupParent (item, options) {
 		const THREE = App.THREE;
-
 		const box = new THREE.Box3().setFromObject(item);
-
 		const center = box.getCenter(new THREE.Vector3());
-
 		const offset = 0.001; // when clipping effects occur set this to 0.001
 
 		const dim = {

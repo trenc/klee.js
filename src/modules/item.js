@@ -5,7 +5,7 @@ import { Geometry } from './geometry';
 import { Loaders } from './loaders';
 
 const Item = (function () {
-	function create (options) {
+	function create(options) {
 		const THREE = App.THREE;
 
 		const material = Material.create(options.material);
@@ -17,7 +17,7 @@ const Item = (function () {
 		return mesh;
 	}
 
-	function add (options) {
+	function add(options) {
 		if (typeof options === 'object') {
 			if (options.loader) {
 				return addFromLoader(options);
@@ -60,7 +60,7 @@ const Item = (function () {
 		return clone;
 	}
 
-	async function addFromLoader (options) {
+	async function addFromLoader(options) {
 		let item = await Loaders.load(options);
 
 		if (item.scene) {
@@ -83,7 +83,7 @@ const Item = (function () {
 		}
 	}
 
-	function wrapGroupParent (item, options) {
+	function wrapGroupParent(item, options) {
 		const THREE = App.THREE;
 		const box = new THREE.Box3().setFromObject(item);
 		const center = box.getCenter(new THREE.Vector3());
@@ -130,7 +130,7 @@ const Item = (function () {
 		return mesh;
 	}
 
-	function addMesh (options) {
+	function addMesh(options) {
 		const mesh = create(options);
 
 		App.scene.add(mesh);
@@ -138,7 +138,7 @@ const Item = (function () {
 		return mesh;
 	}
 
-	function change (object, options) {
+	function change(object, options) {
 		object = Object3d.change(object, options);
 
 		if (options.material) {
@@ -148,7 +148,7 @@ const Item = (function () {
 		return object;
 	}
 
-	function remove (object) {
+	function remove(object) {
 		App.collidables = App.collidables.filter(item => item !== object);
 		App.draggables = App.draggables.filter(item => item !== object);
 
@@ -156,12 +156,10 @@ const Item = (function () {
 	}
 
 	return {
-
 		add,
 		create,
 		change,
 		remove
-
 	};
 })(App);
 

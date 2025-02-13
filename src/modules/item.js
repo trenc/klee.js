@@ -5,7 +5,7 @@ import { Geometry } from './geometry';
 import { Loaders } from './loaders';
 
 const Item = (function () {
-	function create (options) {
+	function create(options) {
 		const THREE = App.THREE;
 
 		const material = Material.create(options.material);
@@ -17,7 +17,7 @@ const Item = (function () {
 		return mesh;
 	}
 
-	function add (options) {
+	function add(options) {
 		if (typeof options === 'object') {
 			if (options.loader) {
 				return addFromLoader(options);
@@ -25,6 +25,10 @@ const Item = (function () {
 
 			if (options.geometry) {
 				return addMesh(options);
+			}
+
+			if (options.cloneOf) {
+				return addClone(options);
 			}
 		}
 
@@ -41,7 +45,22 @@ const Item = (function () {
 		return items;
 	}
 
-	async function addFromLoader (options) {
+	function addClone(options) {
+		const source = App.scene.getObjectByName(options.cloneOf);
+
+		if (!source || !source.isObject3D) {
+			return null;
+		}
+
+		let clone = source.clone(true);
+		clone = change(clone, options);
+
+		addToScene(clone, options);
+
+		return clone;
+	}
+
+	async function addFromLoader(options) {
 		let item = await Loaders.load(options);
 
 		if (item.scene) {
@@ -52,25 +71,43 @@ const Item = (function () {
 			parent.receiveShadow = false;
 			parent.castShadow = false;
 
-			App.scene.add(parent);
+			addToScene(parent, options);
 
 			return parent;
 		} else {
 			item = change(item, options);
 
-			App.scene.add(item);
+			addToScene(item, options);
 
 			return item;
 		}
 	}
 
-	function wrapGroupParent (item, options) {
+	function addToScene(item, options) {
 		const THREE = App.THREE;
 
+		if (!options.group) {
+			App.scene.add(item);
+			return;
+		}
+
+		let group = App.scene.getObjectByName(options.group);
+
+		if (group) {
+			group.add(item);
+			return;
+		}
+
+		group = new THREE.Group();
+		group.name = options.group;
+		group.add(item);
+		App.scene.add(group);
+	}
+
+	function wrapGroupParent(item, options) {
+		const THREE = App.THREE;
 		const box = new THREE.Box3().setFromObject(item);
-
 		const center = box.getCenter(new THREE.Vector3());
-
 		const offset = 0.001; // when clipping effects occur set this to 0.001
 
 		const dim = {
@@ -114,15 +151,15 @@ const Item = (function () {
 		return mesh;
 	}
 
-	function addMesh (options) {
+	function addMesh(options) {
 		const mesh = create(options);
 
-		App.scene.add(mesh);
+		addToScene(mesh, options);
 
 		return mesh;
 	}
 
-	function change (object, options) {
+	function change(object, options) {
 		object = Object3d.change(object, options);
 
 		if (options.material) {
@@ -132,7 +169,7 @@ const Item = (function () {
 		return object;
 	}
 
-	function remove (object) {
+	function remove(object) {
 		App.collidables = App.collidables.filter(item => item !== object);
 		App.draggables = App.draggables.filter(item => item !== object);
 
@@ -140,12 +177,10 @@ const Item = (function () {
 	}
 
 	return {
-
 		add,
 		create,
 		change,
 		remove
-
 	};
 })(App);
 

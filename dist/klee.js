@@ -1,5 +1,5 @@
 // src/modules/constants.js
-var KLEEVERSION = "0.10.0";
+var KLEEVERSION = "0.10.1";
 
 // src/default.options.js
 function getDefaultOptions(THREE) {
@@ -710,7 +710,7 @@ var Item = /* @__PURE__ */ function() {
   function remove(object) {
     App.collidables = App.collidables.filter((item) => item !== object);
     App.draggables = App.draggables.filter((item) => item !== object);
-    App.scene.remove(object);
+    object.removeFromParent();
   }
   return {
     add,

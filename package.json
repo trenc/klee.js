@@ -1,6 +1,6 @@
 {
   "name": "klee.js",
-  "version": "0.9.1",
+  "version": "0.10.0",
   "main": "src/klee.js",
   "private": true,
   "type": "module",

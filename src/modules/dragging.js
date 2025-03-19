@@ -16,22 +16,22 @@ const Dragging = (function () {
 		distance = new THREE.Vector3();
 	}
 
-	function start () {
+	function start (object = null, intersects = null) {
 		const THREE = App.THREE;
 
-		const intersects = App.raycaster.intersectObjects(App.draggables);
+		intersects = intersects ?? (object
+			? App.raycaster.intersectObject(object)
+			: App.raycaster.intersectObjects(App.draggables));
 
-		if (intersects.length <= 0) {
-			return;
-		}
+		if (intersects.length <= 0) return;
+
+		App.draggableObject = object ?? intersects[0].object;
 
 		pointIntersect.copy(intersects[0].point);
 
 		plane.setFromNormalAndCoplanarPoint(planeNormal, pointIntersect);
 
-		distance.subVectors(intersects[0].object.position, intersects[0].point);
-
-		App.draggableObject = intersects[0].object;
+		distance.subVectors(App.draggableObject.position, intersects[0].point);
 
 		// create boundingBox and size for later use
 		const bBox = new THREE.Box3().setFromObject(App.draggableObject);

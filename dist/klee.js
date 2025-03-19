@@ -1,5 +1,5 @@
 // src/modules/constants.js
-var KLEEVERSION = "0.9.1";
+var KLEEVERSION = "0.10.0";
 
 // src/default.options.js
 function getDefaultOptions(THREE) {
@@ -734,16 +734,14 @@ var Dragging = /* @__PURE__ */ function() {
     pointIntersect = new THREE.Vector3();
     distance = new THREE.Vector3();
   }
-  function start() {
+  function start(object = null, intersects = null) {
     const THREE = App.THREE;
-    const intersects = App.raycaster.intersectObjects(App.draggables);
-    if (intersects.length <= 0) {
-      return;
-    }
+    intersects = intersects ?? (object ? App.raycaster.intersectObject(object) : App.raycaster.intersectObjects(App.draggables));
+    if (intersects.length <= 0) return;
+    App.draggableObject = object ?? intersects[0].object;
     pointIntersect.copy(intersects[0].point);
     plane.setFromNormalAndCoplanarPoint(planeNormal, pointIntersect);
-    distance.subVectors(intersects[0].object.position, intersects[0].point);
-    App.draggableObject = intersects[0].object;
+    distance.subVectors(App.draggableObject.position, intersects[0].point);
     const bBox = new THREE.Box3().setFromObject(App.draggableObject);
     const size = new THREE.Vector3();
     bBox.getSize(size);

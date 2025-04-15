@@ -16,22 +16,22 @@ const Dragging = (function () {
 		distance = new THREE.Vector3();
 	}
 
-	function start () {
+	function start (object = null, intersects = null) {
 		const THREE = App.THREE;
 
-		const intersects = App.raycaster.intersectObjects(App.draggables);
+		intersects = intersects ?? (object
+			? App.raycaster.intersectObject(object)
+			: App.raycaster.intersectObjects(App.draggables));
 
-		if (intersects.length <= 0) {
-			return;
-		}
+		if (intersects.length <= 0) return;
+
+		App.draggableObject = object ?? intersects[0].object;
 
 		pointIntersect.copy(intersects[0].point);
 
 		plane.setFromNormalAndCoplanarPoint(planeNormal, pointIntersect);
 
-		distance.subVectors(intersects[0].object.position, intersects[0].point);
-
-		App.draggableObject = intersects[0].object;
+		distance.subVectors(App.draggableObject.position, intersects[0].point);
 
 		// create boundingBox and size for later use
 		const bBox = new THREE.Box3().setFromObject(App.draggableObject);
@@ -94,39 +94,58 @@ const Dragging = (function () {
 		App.draggableObject = null;
 	}
 
-	function drag () {
+	function drag() {
 		const THREE = App.THREE;
-
 		if (!App.actions.isDragging) {
 			return;
 		}
 
-		App.draggableObject.position.addVectors(pointIntersect, distance);
+		// Update the intersection point
+		App.raycaster.ray.intersectPlane(plane, pointIntersect);
+
+		// Calculate the intended new position
+		const newPosition = new THREE.Vector3().addVectors(pointIntersect, distance);
+		App.draggableObject.position.copy(newPosition);
+
+		// Update the world matrix to reflect the new position
+		App.draggableObject.updateMatrixWorld(true);
 
 		if (App.movingLimits !== null) {
-			const limits = {
-				min: new THREE.Vector3(),
-				max: new THREE.Vector3()
-			};
-
-			// fix on y to move on floor
-			limits.min.y = App.draggableObject.position.y;
-			limits.max.y = App.draggableObject.position.y;
-
-			// substract half width volume to move on edges not center
 			const size = App.draggableObject.userData.tmp.size;
-			limits.min.x = App.movingLimits.min.x + size.x / 2;
-			limits.max.x = App.movingLimits.max.x - size.x / 2;
-			limits.min.z = App.movingLimits.min.z + size.z / 2;
-			limits.max.z = App.movingLimits.max.z - size.z / 2;
 
-			App.draggableObject.position.clamp(limits.min, limits.max);
+			// Get the current world position after the initial move
+			const worldPosition = new THREE.Vector3();
+			App.draggableObject.getWorldPosition(worldPosition);
+
+			// Apply limits in world space
+			const isOutOfBounds =
+				worldPosition.x < (App.movingLimits.min.x + size.x / 2) ||
+				worldPosition.x > (App.movingLimits.max.x - size.x / 2) ||
+				worldPosition.z < (App.movingLimits.min.z + size.z / 2) ||
+				worldPosition.z > (App.movingLimits.max.z - size.z / 2);
+
+			if (isOutOfBounds) {
+				// Clamp the world position
+				worldPosition.x = Math.max(
+					App.movingLimits.min.x + size.x / 2,
+					Math.min(App.movingLimits.max.x - size.x / 2, worldPosition.x),
+				);
+				worldPosition.z = Math.max(
+					App.movingLimits.min.z + size.z / 2,
+					Math.min(App.movingLimits.max.z - size.z / 2, worldPosition.z)
+				);
+
+				// Convert world position to local position
+				// This automatically handles any nested groups
+				const localPosition = App.draggableObject.parent.worldToLocal(worldPosition.clone());
+
+				// Apply the corrected position
+				App.draggableObject.position.copy(localPosition);
+			}
 		}
 
 		// onDrag callback
 		let onDragCallback = App.draggableObject.userData?.callbacks?.onDrag ?? (() => {});
-
-		// create function if it is a converted function string
 		if (typeof App.draggableObject.userData?.callbacks?.onDrag === 'string') {
 			/* eslint-disable no-new-func */
 			onDragCallback = new Function('return ' + App.draggableObject.userData.callbacks.onDrag)();
@@ -134,9 +153,7 @@ const Dragging = (function () {
 		}
 
 		onDragCallback(App);
-
-		App.raycaster.ray.intersectPlane(plane, pointIntersect);
-	}
+	};
 
 	return {
 		init,

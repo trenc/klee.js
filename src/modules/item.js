@@ -135,8 +135,9 @@ const Item = (function () {
 	function remove (object) {
 		App.collidables = App.collidables.filter(item => item !== object);
 		App.draggables = App.draggables.filter(item => item !== object);
+		App.faceables = App.faceables.filter(item => item !== object);
 
-		App.scene.remove(object);
+    object.removeFromParent();
 	}
 
 	return {

@@ -1,5 +1,5 @@
 // src/modules/constants.js
-var KLEEVERSION = "0.8.3";
+var KLEEVERSION = "0.11.0";
 
 // src/default.options.js
 function getDefaultOptions(THREE) {
@@ -717,16 +717,14 @@ var Dragging = /* @__PURE__ */ function() {
     pointIntersect = new THREE.Vector3();
     distance = new THREE.Vector3();
   }
-  function start() {
+  function start(object = null, intersects = null) {
     const THREE = App.THREE;
-    const intersects = App.raycaster.intersectObjects(App.draggables);
-    if (intersects.length <= 0) {
-      return;
-    }
+    intersects = intersects ?? (object ? App.raycaster.intersectObject(object) : App.raycaster.intersectObjects(App.draggables));
+    if (intersects.length <= 0) return;
+    App.draggableObject = object ?? intersects[0].object;
     pointIntersect.copy(intersects[0].point);
     plane.setFromNormalAndCoplanarPoint(planeNormal, pointIntersect);
-    distance.subVectors(intersects[0].object.position, intersects[0].point);
-    App.draggableObject = intersects[0].object;
+    distance.subVectors(App.draggableObject.position, intersects[0].point);
     const bBox = new THREE.Box3().setFromObject(App.draggableObject);
     const size = new THREE.Vector3();
     bBox.getSize(size);
@@ -771,20 +769,27 @@ var Dragging = /* @__PURE__ */ function() {
     if (!App.actions.isDragging) {
       return;
     }
-    App.draggableObject.position.addVectors(pointIntersect, distance);
+    App.raycaster.ray.intersectPlane(plane, pointIntersect);
+    const newPosition = new THREE.Vector3().addVectors(pointIntersect, distance);
+    App.draggableObject.position.copy(newPosition);
+    App.draggableObject.updateMatrixWorld(true);
     if (App.movingLimits !== null) {
-      const limits = {
-        min: new THREE.Vector3(),
-        max: new THREE.Vector3()
-      };
-      limits.min.y = App.draggableObject.position.y;
-      limits.max.y = App.draggableObject.position.y;
       const size = App.draggableObject.userData.tmp.size;
-      limits.min.x = App.movingLimits.min.x + size.x / 2;
-      limits.max.x = App.movingLimits.max.x - size.x / 2;
-      limits.min.z = App.movingLimits.min.z + size.z / 2;
-      limits.max.z = App.movingLimits.max.z - size.z / 2;
-      App.draggableObject.position.clamp(limits.min, limits.max);
+      const worldPosition = new THREE.Vector3();
+      App.draggableObject.getWorldPosition(worldPosition);
+      const isOutOfBounds = worldPosition.x < App.movingLimits.min.x + size.x / 2 || worldPosition.x > App.movingLimits.max.x - size.x / 2 || worldPosition.z < App.movingLimits.min.z + size.z / 2 || worldPosition.z > App.movingLimits.max.z - size.z / 2;
+      if (isOutOfBounds) {
+        worldPosition.x = Math.max(
+          App.movingLimits.min.x + size.x / 2,
+          Math.min(App.movingLimits.max.x - size.x / 2, worldPosition.x)
+        );
+        worldPosition.z = Math.max(
+          App.movingLimits.min.z + size.z / 2,
+          Math.min(App.movingLimits.max.z - size.z / 2, worldPosition.z)
+        );
+        const localPosition = App.draggableObject.parent.worldToLocal(worldPosition.clone());
+        App.draggableObject.position.copy(localPosition);
+      }
     }
     let onDragCallback = App.draggableObject.userData?.callbacks?.onDrag ?? (() => {
     });
@@ -792,8 +797,8 @@ var Dragging = /* @__PURE__ */ function() {
       onDragCallback = new Function("return " + App.draggableObject.userData.callbacks.onDrag)();
     }
     onDragCallback(App);
-    App.raycaster.ray.intersectPlane(plane, pointIntersect);
   }
+  ;
   return {
     init,
     start,

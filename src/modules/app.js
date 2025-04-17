@@ -136,35 +136,23 @@ const App = (function () {
 		return Utils.merge(renderer, o);
 	}
 
-	function logMessage (message, type) {
-		// be chatty if no proper options are set
-		const level = options.debugLevel !== undefined ? options.debugLevel : 3;
+	function logMessage(message, type = 'log') {
+		const level = options.debugLevel ?? 3;
+
+		const err = new Error();
+		const stackLines = err.stack?.split('\n');
+		const callerLine = stackLines?.[3] || stackLines?.[2] || '';
+
+		const locationMatch = callerLine.match(/\(?([^\s()]+:\d+:\d+)\)?$/);
+		const location = locationMatch ? locationMatch[1].split('/').pop() : 'unknown';
+
+		const formattedMessage = `[${type.toUpperCase()}] ${message} (${location})`;
 
 		switch (type) {
-			case 'error':
-
-				throw message;
-
-			case 'warn':
-
-				if (level > 0) {
-					console.warn(message);
-				}
-				break;
-
-			case 'info':
-
-				if (level > 2) {
-					console.info(message);
-				}
-				break;
-
-			default:
-
-				if (level > 1) {
-					console.log(message);
-				}
-				break;
+			case 'error': console.error(formattedMessage); break;
+			case 'warn':  if (level > 0) console.warn(formattedMessage); break;
+			case 'info':  if (level > 2) console.info(formattedMessage); break;
+			default:      if (level > 1) console.log(formattedMessage); break;
 		}
 	}
 

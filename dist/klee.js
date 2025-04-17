@@ -1,5 +1,5 @@
 // src/modules/constants.js
-var KLEEVERSION = "0.11.1";
+var KLEEVERSION = "0.11.2";
 
 // src/default.options.js
 function getDefaultOptions(THREE) {
@@ -186,25 +186,26 @@ var App = /* @__PURE__ */ function() {
   function applyRendererOptions(renderer, o) {
     return Utils.merge(renderer, o);
   }
-  function logMessage(message, type) {
-    const level = options.debugLevel !== void 0 ? options.debugLevel : 3;
+  function logMessage(message, type = "log") {
+    const level = options.debugLevel ?? 3;
+    const err = new Error();
+    const stackLines = err.stack?.split("\n");
+    const callerLine = stackLines?.[3] || stackLines?.[2] || "";
+    const locationMatch = callerLine.match(/\(?([^\s()]+:\d+:\d+)\)?$/);
+    const location = locationMatch ? locationMatch[1].split("/").pop() : "unknown";
+    const formattedMessage = `[${type.toUpperCase()}] ${message} (${location})`;
     switch (type) {
       case "error":
-        throw message;
+        console.error(formattedMessage);
+        break;
       case "warn":
-        if (level > 0) {
-          console.warn(message);
-        }
+        if (level > 0) console.warn(formattedMessage);
         break;
       case "info":
-        if (level > 2) {
-          console.info(message);
-        }
+        if (level > 2) console.info(formattedMessage);
         break;
       default:
-        if (level > 1) {
-          console.log(message);
-        }
+        if (level > 1) console.log(formattedMessage);
         break;
     }
   }

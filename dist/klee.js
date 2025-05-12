@@ -1,5 +1,5 @@
 // src/modules/constants.js
-var KLEEVERSION = "0.11.2";
+var KLEEVERSION = "0.11.3";
 
 // src/default.options.js
 function getDefaultOptions(THREE) {
@@ -776,21 +776,23 @@ var Dragging = /* @__PURE__ */ function() {
     App.draggableObject.position.copy(newPosition);
     App.draggableObject.updateMatrixWorld(true);
     if (App.movingLimits !== null) {
-      const size = App.draggableObject.userData.tmp.size;
-      const worldPosition = new THREE.Vector3();
-      App.draggableObject.getWorldPosition(worldPosition);
-      const isOutOfBounds = worldPosition.x < App.movingLimits.min.x + size.x / 2 || worldPosition.x > App.movingLimits.max.x - size.x / 2 || worldPosition.z < App.movingLimits.min.z + size.z / 2 || worldPosition.z > App.movingLimits.max.z - size.z / 2;
-      if (isOutOfBounds) {
-        worldPosition.x = Math.max(
-          App.movingLimits.min.x + size.x / 2,
-          Math.min(App.movingLimits.max.x - size.x / 2, worldPosition.x)
-        );
-        worldPosition.z = Math.max(
-          App.movingLimits.min.z + size.z / 2,
-          Math.min(App.movingLimits.max.z - size.z / 2, worldPosition.z)
-        );
-        const localPosition = App.draggableObject.parent.worldToLocal(worldPosition.clone());
-        App.draggableObject.position.copy(localPosition);
+      const bbox = new THREE.Box3().setFromObject(App.draggableObject);
+      const delta = new THREE.Vector3();
+      if (bbox.min.x < App.movingLimits.min.x) {
+        delta.x = App.movingLimits.min.x - bbox.min.x;
+      } else if (bbox.max.x > App.movingLimits.max.x) {
+        delta.x = App.movingLimits.max.x - bbox.max.x;
+      }
+      if (bbox.min.z < App.movingLimits.min.z) {
+        delta.z = App.movingLimits.min.z - bbox.min.z;
+      } else if (bbox.max.z > App.movingLimits.max.z) {
+        delta.z = App.movingLimits.max.z - bbox.max.z;
+      }
+      if (!delta.equals(new THREE.Vector3())) {
+        const localDelta = App.draggableObject.parent.worldToLocal(
+          App.draggableObject.getWorldPosition(new THREE.Vector3()).add(delta)
+        ).sub(App.draggableObject.position);
+        App.draggableObject.position.add(localDelta);
       }
     }
     let onDragCallback = App.draggableObject.userData?.callbacks?.onDrag ?? (() => {

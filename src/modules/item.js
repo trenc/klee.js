@@ -17,6 +17,20 @@ const Item = (function () {
 		return mesh;
 	}
 
+	function clone (name, options) {
+		const THREE = App.THREE;
+
+		const item = App.scene.getObjectByName(name);
+
+		if (!item) return null;
+
+		let clone = item.clone();
+
+		clone = change(clone, options);
+
+		return clone;
+	}
+
 	function add (options) {
 		if (typeof options === 'object') {
 			if (options.loader) {
@@ -24,7 +38,11 @@ const Item = (function () {
 			}
 
 			if (options.geometry) {
-				return addMesh(options);
+				return addMesh(options, 'create');
+			}
+
+			if (options.cloneOf) {
+				return addMesh(options, 'clone');
 			}
 		}
 
@@ -41,6 +59,22 @@ const Item = (function () {
 		return items;
 	}
 
+	function addMesh (options, modus = 'create') {
+		let mesh = null;
+
+		if (modus === 'create') {
+			mesh = create(options);
+		}
+
+		if (modus === 'clone') {
+			mesh = clone(options.cloneOf, options);
+		}
+
+		addToScene(mesh, options);
+
+		return mesh;
+	}
+
 	async function addFromLoader (options) {
 		let item = await Loaders.load(options);
 
@@ -52,13 +86,13 @@ const Item = (function () {
 			parent.receiveShadow = false;
 			parent.castShadow = false;
 
-			App.scene.add(parent);
+			addToScene(parent, options);
 
 			return parent;
 		} else {
 			item = change(item, options);
 
-			App.scene.add(item);
+			addToScene(item, options);
 
 			return item;
 		}
@@ -114,12 +148,22 @@ const Item = (function () {
 		return mesh;
 	}
 
-	function addMesh (options) {
-		const mesh = create(options);
+	function addToScene (mesh, options) {
+		if (!options.group) {
+			App.scene.add(mesh);
+			return mesh;
+		}
 
-		App.scene.add(mesh);
+		let group;
+		group = App.scene.getObjectByName(options.group);
+		if (!group) {
+			group = new THREE.Group();
+			group.name = options.group;
+			App.scene.add(group)
+		}
 
-		return mesh;
+		group.add(mesh);
+		return group;
 	}
 
 	function change (object, options) {

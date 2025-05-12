@@ -111,36 +111,33 @@ const Dragging = (function () {
 		App.draggableObject.updateMatrixWorld(true);
 
 		if (App.movingLimits !== null) {
-			const size = App.draggableObject.userData.tmp.size;
+			// Recalculate the world-space bounding box
+			const bbox = new THREE.Box3().setFromObject(App.draggableObject);
 
-			// Get the current world position after the initial move
-			const worldPosition = new THREE.Vector3();
-			App.draggableObject.getWorldPosition(worldPosition);
+			const delta = new THREE.Vector3(); // To store any correction needed
 
-			// Apply limits in world space
-			const isOutOfBounds =
-				worldPosition.x < (App.movingLimits.min.x + size.x / 2) ||
-				worldPosition.x > (App.movingLimits.max.x - size.x / 2) ||
-				worldPosition.z < (App.movingLimits.min.z + size.z / 2) ||
-				worldPosition.z > (App.movingLimits.max.z - size.z / 2);
+			// Check and correct min/max X
+			if (bbox.min.x < App.movingLimits.min.x) {
+				delta.x = App.movingLimits.min.x - bbox.min.x;
+			} else if (bbox.max.x > App.movingLimits.max.x) {
+				delta.x = App.movingLimits.max.x - bbox.max.x;
+			}
 
-			if (isOutOfBounds) {
-				// Clamp the world position
-				worldPosition.x = Math.max(
-					App.movingLimits.min.x + size.x / 2,
-					Math.min(App.movingLimits.max.x - size.x / 2, worldPosition.x),
-				);
-				worldPosition.z = Math.max(
-					App.movingLimits.min.z + size.z / 2,
-					Math.min(App.movingLimits.max.z - size.z / 2, worldPosition.z)
-				);
+			// Check and correct min/max Z
+			if (bbox.min.z < App.movingLimits.min.z) {
+				delta.z = App.movingLimits.min.z - bbox.min.z;
+			} else if (bbox.max.z > App.movingLimits.max.z) {
+				delta.z = App.movingLimits.max.z - bbox.max.z;
+			}
 
-				// Convert world position to local position
-				// This automatically handles any nested groups
-				const localPosition = App.draggableObject.parent.worldToLocal(worldPosition.clone());
+			// If any correction is needed, apply it
+			if (!delta.equals(new THREE.Vector3())) {
+				// Convert delta (world space) to local space
+				const localDelta = App.draggableObject.parent.worldToLocal(
+					App.draggableObject.getWorldPosition(new THREE.Vector3()).add(delta)
+				).sub(App.draggableObject.position);
 
-				// Apply the corrected position
-				App.draggableObject.position.copy(localPosition);
+				App.draggableObject.position.add(localDelta);
 			}
 		}
 

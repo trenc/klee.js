@@ -1,8 +1,8 @@
 // src/modules/constants.js
-var KLEEVERSION = "0.11.3";
+var KLEEVERSION = "0.12.0";
 
 // src/default.options.js
-function getDefaultOptions(THREE) {
+function getDefaultOptions(THREE2) {
   return {
     debugLevel: 0,
     // 0,1,2,3
@@ -17,7 +17,7 @@ function getDefaultOptions(THREE) {
         // outputEncoding: THREE.sRGBEncoding,
         shadowMap: {
           enabled: true,
-          type: THREE.PCFSoftShadowMap
+          type: THREE2.PCFSoftShadowMap
         }
       }
     },
@@ -89,7 +89,7 @@ var Utils = class {
 // src/modules/app.js
 var App = /* @__PURE__ */ function() {
   let options = {};
-  let THREE;
+  let THREE2;
   const local = {
     canvas: null,
     camera: null,
@@ -114,15 +114,15 @@ var App = /* @__PURE__ */ function() {
     if (!three || !three.REVISION) {
       error("THREE is not inserted");
     }
-    THREE = { ...three };
+    THREE2 = { ...three };
     if (!initOptions || typeof initOptions !== "object") {
       initOptions = {};
       warn("Options are set to default values");
     }
-    const mergedOptions = Utils.merge(getDefaultOptions(THREE), initOptions);
+    const mergedOptions = Utils.merge(getDefaultOptions(THREE2), initOptions);
     options = { ...mergedOptions };
     local.renderer = initRenderer(options.renderer);
-    local.manager = new THREE.LoadingManager();
+    local.manager = new THREE2.LoadingManager();
   }
   function run(callback) {
     local.renderer.render(local.scene, local.camera);
@@ -169,7 +169,7 @@ var App = /* @__PURE__ */ function() {
     }
     let renderer = createObject(o);
     renderer = applyRendererOptions(renderer, o.properties);
-    renderer.setClearColor(new THREE.Color(o.clearColor), o.opacity);
+    renderer.setClearColor(new THREE2.Color(o.clearColor), o.opacity);
     renderer.setPixelRatio(window.devicePixelRatio);
     if (!local.canvas) {
       local.domElement.appendChild(renderer.domElement);
@@ -180,7 +180,7 @@ var App = /* @__PURE__ */ function() {
   }
   function createObject(o) {
     const args = Array.isArray(o.args) ? o.args : [];
-    const object = new THREE[o.type](...args);
+    const object = new THREE2[o.type](...args);
     return object;
   }
   function applyRendererOptions(renderer, o) {
@@ -229,7 +229,7 @@ var App = /* @__PURE__ */ function() {
       return options;
     },
     get THREE() {
-      return THREE;
+      return THREE2;
     },
     get scene() {
       return local.scene;
@@ -325,8 +325,8 @@ var UserData = /* @__PURE__ */ function() {
     object.userData = { ...object.userData, ...userData };
   }
   function setMovingLimits(object, action) {
-    const THREE = App.THREE;
-    const boundingBox = new THREE.Box3();
+    const THREE2 = App.THREE;
+    const boundingBox = new THREE2.Box3();
     boundingBox.setFromObject(object);
     App.movingLimits = {
       min: boundingBox.min,
@@ -361,9 +361,9 @@ var Object3d = /* @__PURE__ */ function() {
     return object3d;
   }
   function create(options) {
-    const THREE = App.THREE;
+    const THREE2 = App.THREE;
     const args = Array.isArray(options.args) ? options.args : [];
-    let object = new THREE[options.type](...args);
+    let object = new THREE2[options.type](...args);
     object = change(object, options);
     return object;
   }
@@ -377,7 +377,7 @@ var Object3d = /* @__PURE__ */ function() {
     return object;
   }
   function applyProperties(object, options) {
-    const THREE = App.THREE;
+    const THREE2 = App.THREE;
     if (!options || typeof options !== "object") {
       return object;
     }
@@ -385,7 +385,7 @@ var Object3d = /* @__PURE__ */ function() {
       if (options[prop] instanceof Object) {
         if (typeof object[prop] !== "undefined" && "copy" in object[prop]) {
           if ("setFromVector3" in object[prop]) {
-            const toVector3 = new THREE.Vector3();
+            const toVector3 = new THREE2.Vector3();
             toVector3.setFromEuler(object[prop]);
             const mergedVector3 = { ...toVector3, ...options[prop] };
             object[prop].setFromVector3(mergedVector3);
@@ -401,7 +401,7 @@ var Object3d = /* @__PURE__ */ function() {
         }
       } else {
         if (Utils.isThreeColorValue(prop)) {
-          object[prop] = new THREE.Color(options[prop]);
+          object[prop] = new THREE2.Color(options[prop]);
         } else {
           object[prop] = options[prop];
         }
@@ -441,9 +441,9 @@ var Scene = /* @__PURE__ */ function() {
     if (!options) {
       return null;
     }
-    const THREE = App.THREE;
+    const THREE2 = App.THREE;
     const loaderType = options.loader || "TextureLoader";
-    const loader = new THREE[loaderType](App.manager);
+    const loader = new THREE2[loaderType](App.manager);
     const texture = await loader.loadAsync(options.url);
     return texture;
   }
@@ -533,7 +533,7 @@ var Material = /* @__PURE__ */ function() {
     return material;
   }
   function change(object, options) {
-    const THREE = App.THREE;
+    const THREE2 = App.THREE;
     if (options.properties) {
       object = applyProperties(object, options.properties);
     }
@@ -543,7 +543,7 @@ var Material = /* @__PURE__ */ function() {
     if (options.textures) {
       options.textures.forEach(async (texture) => {
         const loaderType = texture.loader || "TextureLoader";
-        const loader = new THREE[loaderType](App.manager);
+        const loader = new THREE2[loaderType](App.manager);
         const mapType = texture.map;
         const mapTexture = await loader.loadAsync(texture.url);
         object[mapType] = mapTexture;
@@ -559,7 +559,7 @@ var Material = /* @__PURE__ */ function() {
     return object;
   }
   function applyProperties(object, options) {
-    const THREE = App.THREE;
+    const THREE2 = App.THREE;
     if (!options || typeof options !== "object") {
       return object;
     }
@@ -568,7 +568,7 @@ var Material = /* @__PURE__ */ function() {
         object[prop] = { ...options[prop] };
       } else {
         if (Utils.isThreeColorValue(prop)) {
-          object[prop] = new THREE.Color(options[prop]);
+          object[prop] = new THREE2.Color(options[prop]);
         } else {
           object[prop] = options[prop];
         }
@@ -604,12 +604,20 @@ var Geometry = /* @__PURE__ */ function() {
 // src/modules/item.js
 var Item = /* @__PURE__ */ function() {
   function create(options) {
-    const THREE = App.THREE;
+    const THREE2 = App.THREE;
     const material = Material.create(options.material);
     const geometry = Geometry.create(options.geometry);
-    let mesh = new THREE.Mesh(geometry, material);
+    let mesh = new THREE2.Mesh(geometry, material);
     mesh = change(mesh, options);
     return mesh;
+  }
+  function clone(name, options) {
+    const THREE2 = App.THREE;
+    const item = App.scene.getObjectByName(name);
+    if (!item) return null;
+    let clone2 = item.clone();
+    clone2 = change(clone2, options);
+    return clone2;
   }
   function add(options) {
     if (typeof options === "object") {
@@ -617,7 +625,10 @@ var Item = /* @__PURE__ */ function() {
         return addFromLoader(options);
       }
       if (options.geometry) {
-        return addMesh(options);
+        return addMesh(options, "create");
+      }
+      if (options.cloneOf) {
+        return addMesh(options, "clone");
       }
     }
     const items = [];
@@ -629,6 +640,17 @@ var Item = /* @__PURE__ */ function() {
     }
     return items;
   }
+  function addMesh(options, modus = "create") {
+    let mesh = null;
+    if (modus === "create") {
+      mesh = create(options);
+    }
+    if (modus === "clone") {
+      mesh = clone(options.cloneOf, options);
+    }
+    addToScene(mesh, options);
+    return mesh;
+  }
   async function addFromLoader(options) {
     let item = await Loaders.load(options);
     if (item.scene) {
@@ -636,25 +658,25 @@ var Item = /* @__PURE__ */ function() {
       parent = change(parent, options);
       parent.receiveShadow = false;
       parent.castShadow = false;
-      App.scene.add(parent);
+      addToScene(parent, options);
       return parent;
     } else {
       item = change(item, options);
-      App.scene.add(item);
+      addToScene(item, options);
       return item;
     }
   }
   function wrapGroupParent(item, options) {
-    const THREE = App.THREE;
-    const box = new THREE.Box3().setFromObject(item);
-    const center = box.getCenter(new THREE.Vector3());
+    const THREE2 = App.THREE;
+    const box = new THREE2.Box3().setFromObject(item);
+    const center = box.getCenter(new THREE2.Vector3());
     const offset = 1e-3;
     const dim = {
       x: box.max.x - box.min.x + offset,
       y: box.max.y - box.min.y + offset,
       z: box.max.z - box.min.z + offset
     };
-    const geo = new THREE.BoxGeometry(dim.x, dim.y, dim.z);
+    const geo = new THREE2.BoxGeometry(dim.x, dim.y, dim.z);
     if (!options.material) {
       options.material = {
         color: 16777215,
@@ -662,8 +684,8 @@ var Item = /* @__PURE__ */ function() {
         opacity: 0
       };
     }
-    const mat = new THREE.MeshBasicMaterial(options.material);
-    const mesh = new THREE.Mesh(geo, mat);
+    const mat = new THREE2.MeshBasicMaterial(options.material);
+    const mesh = new THREE2.Mesh(geo, mat);
     mesh.position.y = dim.y / 2;
     item.position.x += item.position.x - center.x;
     item.position.y += item.position.y - center.y;
@@ -673,16 +695,26 @@ var Item = /* @__PURE__ */ function() {
       if (child.isMesh) {
         child.receiveShadow = options.properties.receiveShadow || false;
         child.castShadow = options.properties.castShadow || false;
-        child.material.side = THREE.DoubleSide;
+        child.material.side = THREE2.DoubleSide;
       }
     });
     mesh.add(item);
     return mesh;
   }
-  function addMesh(options) {
-    const mesh = create(options);
-    App.scene.add(mesh);
-    return mesh;
+  function addToScene(mesh, options) {
+    if (!options.group) {
+      App.scene.add(mesh);
+      return mesh;
+    }
+    let group;
+    group = App.scene.getObjectByName(options.group);
+    if (!group) {
+      group = new THREE.Group();
+      group.name = options.group;
+      App.scene.add(group);
+    }
+    group.add(mesh);
+    return group;
   }
   function change(object, options) {
     object = Object3d.change(object, options);
@@ -713,22 +745,22 @@ var Dragging = /* @__PURE__ */ function() {
   let pointIntersect = null;
   let distance = null;
   function init() {
-    const THREE = App.THREE;
-    plane = new THREE.Plane();
-    planeNormal = new THREE.Vector3(0, 1, 0);
-    pointIntersect = new THREE.Vector3();
-    distance = new THREE.Vector3();
+    const THREE2 = App.THREE;
+    plane = new THREE2.Plane();
+    planeNormal = new THREE2.Vector3(0, 1, 0);
+    pointIntersect = new THREE2.Vector3();
+    distance = new THREE2.Vector3();
   }
   function start(object = null, intersects = null) {
-    const THREE = App.THREE;
+    const THREE2 = App.THREE;
     intersects = intersects ?? (object ? App.raycaster.intersectObject(object) : App.raycaster.intersectObjects(App.draggables));
     if (intersects.length <= 0) return;
     App.draggableObject = object ?? intersects[0].object;
     pointIntersect.copy(intersects[0].point);
     plane.setFromNormalAndCoplanarPoint(planeNormal, pointIntersect);
     distance.subVectors(App.draggableObject.position, intersects[0].point);
-    const bBox = new THREE.Box3().setFromObject(App.draggableObject);
-    const size = new THREE.Vector3();
+    const bBox = new THREE2.Box3().setFromObject(App.draggableObject);
+    const size = new THREE2.Vector3();
     bBox.getSize(size);
     App.draggableObject.userData.tmp = {
       bbox: bBox,
@@ -767,17 +799,17 @@ var Dragging = /* @__PURE__ */ function() {
     App.draggableObject = null;
   }
   function drag() {
-    const THREE = App.THREE;
+    const THREE2 = App.THREE;
     if (!App.actions.isDragging) {
       return;
     }
     App.raycaster.ray.intersectPlane(plane, pointIntersect);
-    const newPosition = new THREE.Vector3().addVectors(pointIntersect, distance);
+    const newPosition = new THREE2.Vector3().addVectors(pointIntersect, distance);
     App.draggableObject.position.copy(newPosition);
     App.draggableObject.updateMatrixWorld(true);
     if (App.movingLimits !== null) {
-      const bbox = new THREE.Box3().setFromObject(App.draggableObject);
-      const delta = new THREE.Vector3();
+      const bbox = new THREE2.Box3().setFromObject(App.draggableObject);
+      const delta = new THREE2.Vector3();
       if (bbox.min.x < App.movingLimits.min.x) {
         delta.x = App.movingLimits.min.x - bbox.min.x;
       } else if (bbox.max.x > App.movingLimits.max.x) {
@@ -788,9 +820,9 @@ var Dragging = /* @__PURE__ */ function() {
       } else if (bbox.max.z > App.movingLimits.max.z) {
         delta.z = App.movingLimits.max.z - bbox.max.z;
       }
-      if (!delta.equals(new THREE.Vector3())) {
+      if (!delta.equals(new THREE2.Vector3())) {
         const localDelta = App.draggableObject.parent.worldToLocal(
-          App.draggableObject.getWorldPosition(new THREE.Vector3()).add(delta)
+          App.draggableObject.getWorldPosition(new THREE2.Vector3()).add(delta)
         ).sub(App.draggableObject.position);
         App.draggableObject.position.add(localDelta);
       }
@@ -814,8 +846,8 @@ var Dragging = /* @__PURE__ */ function() {
 // src/modules/events.js
 var Events = /* @__PURE__ */ function() {
   async function init() {
-    const THREE = App.THREE;
-    App.raycaster = App.raycaster ?? new THREE.Raycaster();
+    const THREE2 = App.THREE;
+    App.raycaster = App.raycaster ?? new THREE2.Raycaster();
     App.mouse = App.mouse ?? {};
     Dragging.init(App.draggables);
     const element = await App.renderer.domElement;
@@ -851,9 +883,9 @@ var Events = /* @__PURE__ */ function() {
 var Collision = /* @__PURE__ */ function() {
   const currentCollisions = [];
   function check(object, onlyVisible = true) {
-    const THREE = App.THREE;
+    const THREE2 = App.THREE;
     let collision = false;
-    const objectBox = new THREE.Box3().setFromObject(object);
+    const objectBox = new THREE2.Box3().setFromObject(object);
     currentCollisions.length = 0;
     App.collidables.forEach((collidable) => {
       if (collidable === object) {
@@ -862,7 +894,7 @@ var Collision = /* @__PURE__ */ function() {
       if (onlyVisible && !collidable.visible) {
         return;
       }
-      const collidableBox = new THREE.Box3().setFromObject(collidable);
+      const collidableBox = new THREE2.Box3().setFromObject(collidable);
       if (objectBox.intersectsBox(collidableBox)) {
         currentCollisions.push(collidable);
         collision = true;

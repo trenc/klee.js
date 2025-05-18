@@ -20,8 +20,8 @@ const Dragging = (function () {
 		const THREE = App.THREE;
 
 		intersects = intersects ?? (object
-			? App.raycaster.intersectObject(object)
-			: App.raycaster.intersectObjects(App.draggables));
+			? App.raycaster.intersectObject(object, true)
+			: App.raycaster.intersectObjects(App.draggables, true));
 
 		if (intersects.length <= 0) return;
 
